@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        "**/*.import": true
+    },
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+}

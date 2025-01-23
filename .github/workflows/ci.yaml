@@ -1,0 +1,297 @@
+name: 'CI'
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  GODOT_VERSION: 4.3
+  EXPORT_NAME: bigmode-2025-game-jam # spell-check-ignore-line
+
+jobs:
+  cache-engine:
+    name: Cache Godot Engine
+    runs-on: ubuntu-latest
+    outputs:
+      engine-cache-key: ${{ steps.restore-engine-cache.outputs.cache-primary-key }}
+      web-export-templates-cache-key: ${{ steps.restore-web-export-templates-cache.outputs.cache-primary-key }}
+      windows-export-templates-cache-key: ${{ steps.restore-windows-export-templates-cache.outputs.cache-primary-key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Restore Engine Cache
+        id: restore-engine-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./godot_stable_linux.x86_64
+          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-engine
+          lookup-only: true
+      - name: Download Godot
+        if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
+        uses: ./.github/actions/download-godot
+        with:
+          godot-version: ${{ env.GODOT_VERSION }}
+      - name: Save Engine Cache
+        if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ./godot_stable_linux.x86_64
+          key: ${{ steps.restore-engine-cache.outputs.cache-primary-key }}
+
+      - name: Restore Web Export Templates Cache
+        id: restore-web-export-templates-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_release.zip
+          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-web-export-templates
+          lookup-only: true
+      - name: Restore Windows Export Templates Cache
+        id: restore-windows-export-templates-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64_console.exe
+          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-windows-export-templates
+          lookup-only: true
+
+      - name: Download Godot Export Templates
+        if: ${{ steps.restore-web-export-templates-cache.outputs.cache-hit != 'true' || steps.restore-windows-export-templates-cache.outputs.cache-hit != 'true' }}
+        uses: ./.github/actions/download-godot-export-templates
+        with:
+          godot-version: ${{ env.GODOT_VERSION }}
+
+      - name: Save Web Export Templates Cache
+        if: ${{ steps.restore-web-export-templates-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_release.zip
+          key: ${{ steps.restore-web-export-templates-cache.outputs.cache-primary-key }}
+      - name: Save Windows Export Templates Cache
+        if: ${{ steps.restore-windows-export-templates-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64_console.exe
+          key: ${{ steps.restore-windows-export-templates-cache.outputs.cache-primary-key }}
+
+  export-web:
+    name: Web Export
+    needs: [cache-engine]
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACT_NAME: web-export
+      EXPORT_PRESET: Web
+      EXPORT_PATH: build/web
+      EXPORT_NAME: index.html
+    outputs:
+      artifact-name: ${{ env.ARTIFACT_NAME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Restore Engine Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./godot_stable_linux.x86_64
+          key: ${{ needs.cache-engine.outputs.engine-cache-key }}
+          fail-on-cache-miss: true
+      - name: Restore Web Export Templates Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_dlink_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_debug.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_nothreads_release.zip
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/web_release.zip
+          key: ${{ needs.cache-engine.outputs.web-export-templates-cache-key }}
+          fail-on-cache-miss: true
+      - name: Export
+        run: |
+          mkdir -v -p $EXPORT_PATH
+          ./godot_stable_linux.x86_64 --headless --verbose --export-release "$EXPORT_PRESET" $EXPORT_PATH/$EXPORT_NAME
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.EXPORT_PATH }}
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '${{ env.EXPORT_PATH }}'
+  deploy-gh-pages:
+    name: Deploy to GitHub Pages
+    needs: [export-web]
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  export-windows:
+    name: Windows Export
+    needs: [cache-engine]
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACT_NAME: windows-export
+      EXPORT_PRESET: Windows Desktop
+      EXPORT_PATH: build/windows
+      EXPORT_NAME: game.exe
+    outputs:
+      artifact-name: ${{ env.ARTIFACT_NAME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Restore Engine Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./godot_stable_linux.x86_64
+          key: ${{ needs.cache-engine.outputs.engine-cache-key }}
+          fail-on-cache-miss: true
+      - name: Restore Windows Export Templates Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_debug_x86_64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_arm64_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_32_console.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64.exe
+            ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable/windows_release_x86_64_console.exe
+          key: ${{ needs.cache-engine.outputs.windows-export-templates-cache-key }}
+          fail-on-cache-miss: true
+      - name: Export
+        run: |
+          mkdir -v -p $EXPORT_PATH
+          ./godot_stable_linux.x86_64 --headless --verbose --export-release "$EXPORT_PRESET" $EXPORT_PATH/$EXPORT_NAME
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.EXPORT_PATH }}
+
+  cache-butler:
+    name: Cache butler
+    runs-on: ubuntu-latest
+    outputs:
+      butler-cache-key: ${{ steps.restore-butler-cache.outputs.cache-primary-key }}
+    steps:
+      - name: Restore Butler Cache
+        id: restore-butler-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./butler
+          key: ${{ runner.os }}-butler
+          lookup-only: true
+      - name: Download butler
+        if: ${{ steps.restore-butler-cache.outputs.cache-hit != 'true' }}
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+      - name: Save Butler Cache
+        if: ${{ steps.restore-butler-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ./butler
+          key: ${{ steps.restore-butler-cache.outputs.cache-primary-key }}
+
+  deploy-to-itch:
+    name: Deploy to itch.io
+    needs: [cache-butler, export-web, export-windows]
+    runs-on: ubuntu-latest
+    env:
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+    strategy:
+      matrix:
+        artifact:
+          - name: ${{ needs.export-web.outputs.artifact-name }}
+            channel: web
+          - name: ${{ needs.export-windows.outputs.artifact-name }}
+            channel: windows
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact.name }}
+          path: build/${{ matrix.artifact.name }}
+      - name: Restore Butler Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./butler
+          key: ${{ needs.cache-butler.outputs.butler-cache-key }}
+          fail-on-cache-miss: true
+      - name: Deploy
+        run: |
+          ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
