@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://c4cd34odmmos7"]
+
+[ext_resource type="Script" path="res://scenes/power_pole.gd" id="1_213qv"]
+[ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
+
+[sub_resource type="Gradient" id="Gradient_3665m"]
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_exbia"]
+gradient = SubResource("Gradient_3665m")
+width = 16
+height = 6
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bic4p"]
+radius = 160.0
+
+[node name="PowerPole" type="StaticBody2D" groups=["machines"]]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_213qv")
+
+[node name="AttachmentPoint" type="Marker2D" parent="."]
+position = Vector2(0, -24)
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_exbia")
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("1_xfd3o")
+offset = Vector2(0, -12)
+
+[node name="ConnectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ConnectionArea"]
+shape = SubResource("CircleShape2D_bic4p")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
+
+[connection signal="body_entered" from="ConnectionArea" to="." method="on_connection_area_body_entered"]

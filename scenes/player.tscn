@@ -143,6 +143,8 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 
 [node name="Player" type="CharacterBody2D"]
 physics_interpolation_mode = 1
+collision_layer = 2
+collision_mask = 7
 script = ExtResource("1_fexe0")
 
 [node name="Visuals" type="Node2D" parent="."]

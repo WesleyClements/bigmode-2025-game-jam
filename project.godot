@@ -16,6 +16,10 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://assets/icon.svg"
 
+[global_group]
+
+machines=""
+
 [input]
 
 move_up={
@@ -53,6 +57,7 @@ move_left={
 2d_physics/layer_1="environment"
 2d_physics/layer_2="player"
 2d_physics/layer_3="enemies"
+2d_physics/layer_4="machines"
 
 [physics]
 
