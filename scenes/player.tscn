@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://cj8ksno35aduj"]
+
+[ext_resource type="Texture2D" uid="uid://b5oivl2h27cbw" path="res://assets/icon.svg" id="1_4j5h3"]
+[ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
+
+[sub_resource type="Gradient" id="Gradient_0g1yi"]
+offsets = PackedFloat32Array(0, 0.383117, 0.597403, 0.714286)
+colors = PackedColorArray(1, 1, 1, 1, 0.570585, 0.570585, 0.570585, 1, 0.12987, 0.12987, 0.12987, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_3jq3d"]
+gradient = SubResource("Gradient_0g1yi")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
+
+[node name="Player" type="CharacterBody2D"]
+physics_interpolation_mode = 1
+script = ExtResource("1_fexe0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+light_mask = 2
+z_as_relative = false
+y_sort_enabled = true
+position = Vector2(0, -4.5)
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("1_4j5h3")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(5, 0, 0, 2, -5, 0, 0, -2)
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+light_mask = 5
+scale = Vector2(1, 0.6)
+shadow_enabled = true
+texture = SubResource("GradientTexture2D_3jq3d")
