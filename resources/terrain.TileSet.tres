@@ -1,0 +1,51 @@
+[gd_resource type="TileSet" load_steps=8 format=3 uid="uid://db4yk56aryubd"]
+
+[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_fdw70"]
+[ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="1_stvpy"]
+[ext_resource type="Texture2D" uid="uid://npe2xdovtrwu" path="res://assets/sprites/blocks.normals.png" id="2_rud37"]
+[ext_resource type="Texture2D" uid="uid://dvygwv2wwwkfp" path="res://assets/sprites/blocks.specular.png" id="4_vwqcv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4w7kd"]
+shader = ExtResource("1_fdw70")
+shader_parameter/block_height = 20.0
+shader_parameter/light_height = 0.5
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_e4lrc"]
+diffuse_texture = ExtResource("1_stvpy")
+normal_texture = ExtResource("2_rud37")
+specular_texture = ExtResource("4_vwqcv")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hl75k"]
+resource_name = "terrain"
+texture = SubResource("CanvasTexture_e4lrc")
+texture_region_size = Vector2i(32, 18)
+0:0/size_in_atlas = Vector2i(1, 2)
+0:0/0 = 0
+0:0/0/texture_origin = Vector2i(0, 10)
+0:0/0/material = SubResource("ShaderMaterial_4w7kd")
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
+1:0/size_in_atlas = Vector2i(1, 2)
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(0, 10)
+1:0/0/material = SubResource("ShaderMaterial_4w7kd")
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
+2:0/size_in_atlas = Vector2i(1, 2)
+2:0/0 = 0
+2:0/0/texture_origin = Vector2i(0, 10)
+2:0/0/material = SubResource("ShaderMaterial_4w7kd")
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
+0:2/size_in_atlas = Vector2i(1, 2)
+0:2/0 = 0
+0:2/0/texture_origin = Vector2i(0, 9)
+0:2/0/material = SubResource("ShaderMaterial_4w7kd")
+
+[resource]
+tile_shape = 1
+tile_layout = 5
+tile_offset_axis = 1
+tile_size = Vector2i(32, 16)
+uv_clipping = true
+occlusion_layer_0/light_mask = 1
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
+sources/0 = SubResource("TileSetAtlasSource_hl75k")

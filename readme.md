@@ -20,3 +20,6 @@ The `scenes` folder contains all the scene files for the game. Each scene repres
 
 ### Scripts
 The `scripts` folder is where all the GDScript files are stored. These scripts define the behavior of the game's objects and are attached to nodes within the scenes. Scripts can control gameplay mechanics, handle user input, and manage game logic.
+
+### Shaders
+The `shaders` folder contains shader files used in the game. Shaders are programs that run on the GPU to control the rendering of graphics, allowing for advanced visual effects such as lighting, shadows, and post-processing.

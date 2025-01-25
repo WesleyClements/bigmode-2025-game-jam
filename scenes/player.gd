@@ -4,6 +4,9 @@ extends CharacterBody2D
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
 
+@onready var animation_tree: AnimationTree = $AnimationTree
+@onready var visuals: Node2D = $Visuals
+
 func _physics_process(delta: float) -> void:
 
 	# Get the input direction and handle the movement/deceleration.
@@ -13,11 +16,20 @@ func _physics_process(delta: float) -> void:
 		Input.get_axis(&"move_up", &"move_down")
 	).normalized()
 	if not direction.is_zero_approx():
+		animation_tree["parameters/conditions/is_idle"] = false
+		animation_tree["parameters/conditions/is_moving"] = true
 		if velocity.length() < max_speed:
 			velocity = velocity.move_toward(direction * max_speed, max_speed * delta / speed_up_time)
 		else:
 			velocity = direction * max_speed
-	else:
+
+	elif not velocity.is_zero_approx():
 		velocity = velocity.move_toward(Vector2(), max_speed * delta / slow_down_time)
+	else:
+		animation_tree["parameters/conditions/is_idle"] = true
+		animation_tree["parameters/conditions/is_moving"] = false
+
+	if not is_zero_approx(direction.x):
+		visuals.scale.x = -1 if direction.x < 0 else 1
 
 	move_and_slide()
