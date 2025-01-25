@@ -21,12 +21,12 @@ script = ExtResource("1_fexe0")
 light_mask = 2
 z_as_relative = false
 y_sort_enabled = true
-position = Vector2(0, -4.5)
-scale = Vector2(0.07, 0.07)
+position = Vector2(0, -9)
+scale = Vector2(0.125, 0.15)
 texture = ExtResource("1_4j5h3")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(5, 0, 0, 2, -5, 0, 0, -2)
+polygon = PackedVector2Array(8, 0, 0, 4, -8, 0, 0, -4)
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
 light_mask = 5
