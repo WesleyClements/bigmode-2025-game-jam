@@ -7,7 +7,15 @@ extends CharacterBody2D
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
 
+
+func _on_area_2d_body_entered(body: Node2D):
+	print("its working")
+	if body.is_in_group(&"pickup"):
+		body.collect()
+
+		
 func _physics_process(delta: float) -> void:
+
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
