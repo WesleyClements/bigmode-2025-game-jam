@@ -1,12 +1,18 @@
-[gd_scene load_steps=8 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=11 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="Script" path="res://scripts/world_populator.gd" id="1_01b0u"]
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
 [ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
 [ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
+[ext_resource type="Script" path="res://resources/ItemRegistry.gd" id="4_e4mk4"]
+[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal.tscn" id="4_g03cq"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/UI.tscn" id="5_p1ybt"]
+
+[sub_resource type="Resource" id="Resource_mh78c"]
+script = ExtResource("4_e4mk4")
+coal_entity_scene = ExtResource("4_g03cq")
 
 [node name="Main" type="Node"]
 
@@ -21,6 +27,7 @@ y_sort_enabled = true
 tile_map_data = PackedByteArray("AAD+/wIAAQAAAAAAAQACAP3/AQAAAAAAAQD//wAAAQAAAAAAAgA=")
 tile_set = ExtResource("2_dcctc")
 script = ExtResource("2_sh2ir")
+item_registry = SubResource("Resource_mh78c")
 
 [node name="Player" parent="World" instance=ExtResource("2_l8qed")]
 position = Vector2(0, 16)

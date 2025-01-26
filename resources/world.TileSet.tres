@@ -32,7 +32,7 @@ texture_region_size = Vector2i(32, 18)
 1:0/0/material = SubResource("ShaderMaterial_4w7kd")
 1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
 1:0/0/custom_data_0 = {
-"coal": {
+"COAL": {
 "max": 3,
 "min": 1
 }
@@ -43,7 +43,7 @@ texture_region_size = Vector2i(32, 18)
 2:0/0/material = SubResource("ShaderMaterial_4w7kd")
 2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
 2:0/0/custom_data_0 = {
-"iron": {
+"IRON": {
 "max": 3,
 "min": 1
 }
