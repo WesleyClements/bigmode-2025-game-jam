@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://c7nx4xr0tlq18"]
+
+[node name="Wire" type="Line2D"]
+y_sort_enabled = true
+width = 2.0
