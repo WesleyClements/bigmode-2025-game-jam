@@ -1,25 +1,27 @@
-class_name MapGenerator
+extends Node
 
-enum TileMaterial {  
+signal map_generated()
+
+enum TileMaterial {
     EMPTY,
-    STONE,      
+    STONE,
     COAL,
     IRON,
-}  
+}
 
 
 # The lower the number, the bigger the features
-const INITIAL_SCALE = 0.081
+@export var initial_scale = 0.081
 # High number for ore so we get lots of little pockets (big number = small features)
-const ORE_SCALE = 0.281
+@export var ore_scale = 0.281
 
 # Similar to conway's game of life, but with different parameters
-# Populated tiles with fewer neighbours than the DEATH_LIMIT will die
-# Empty tiles with more neighbours than the BIRTH_LIMIT will spawn in
+# Populated tiles with fewer neighbours than the death_limit will die
+# Empty tiles with more neighbours than the birth_limit will spawn in
 # Serves to smooth out the caves after generating them from the height map
-const SIMULATION_STEPS = 6
-const DEATH_LIMIT = 3
-const BIRTH_LIMIT = 6
+@export var simulation_steps = 6
+@export var death_limit = 3
+@export var birth_limit = 6
 
 var perlin = PerlinNoise.new()
 
@@ -29,20 +31,29 @@ var center: Vector2
 var maxDstFromCenter: float
 var map = []
 
-func _init(_width: int, _height: int):
+var generating = false
+
+func generate(_width: int, _height: int) -> Array:
+    if generating:
+        return map
+    generating = true
+
     width = _width
     height = _height
     center = Vector2(width / 2.0, height / 2.0)
     maxDstFromCenter = center.length()
-    map.resize(width*height)
+    map.resize(width * height)
+    
+    await get_tree().physics_frame
 
-func generate() -> Array:
-    gen_height_map()
-    smooth()
-    addPrefabs()
-    placeOre(TileMaterial.COAL)
-    placeOre(TileMaterial.IRON)
+    await gen_height_map()
+    await smooth()
+    await addPrefabs()
+    await placeOre(TileMaterial.COAL)
+    await placeOre(TileMaterial.IRON)
 
+    generating = false
+    map_generated.emit()
     return map
 
 func placeOre(oreType: int):
@@ -56,13 +67,14 @@ func placeOre(oreType: int):
             var result = perlin.noise(xNoise, yNoise, oreType * 99.9)
             if result > 0.75:
                 map[index] = oreType
+        await get_tree().physics_frame
 
 func addPrefabs():
     addHomebase()
 
 func addHomebase():
-    for i in range(-5,6):
-        for j in range(-5,6):
+    for i in range(-5, 6):
+        for j in range(-5, 6):
             var x = int(center.x) + i
             var y = int(center.y) + j
             var index = getIndex(x, y)
@@ -72,8 +84,8 @@ func gen_height_map():
     for x in range(width):
         for y in range(height):
             var index = getIndex(x, y)
-            var xNoise = x * INITIAL_SCALE
-            var yNoise = y * INITIAL_SCALE
+            var xNoise = x * initial_scale
+            var yNoise = y * initial_scale
             var dstFromCenter = distanceFromCenter(x, y)
 
             var result = perlin.noiseOctaves(xNoise, yNoise, 0.5, 8)
@@ -85,30 +97,33 @@ func gen_height_map():
             # Threshold decreases farther from center, decreasing the number of tunnels.
             if result < 0.5 - threshold || result > 0.5 + threshold:
                 map[index] = TileMaterial.STONE
+        await get_tree().physics_frame
 
 func smooth():
-    for step in range(SIMULATION_STEPS):
-        smoothStep()
+    for step in range(simulation_steps):
+        await smoothStep()
+        
 
 func smoothStep() -> Array:
     var newMap = []
-    newMap.resize(width*height)
+    newMap.resize(width * height)
     for x in range(width):
         for y in range(height):
             var index = getIndex(x, y)
             var neighbours = countNeighbours(x, y)
             if map[index]:
                 # Lonely cells kill themselves
-                if neighbours < DEATH_LIMIT:
+                if neighbours < death_limit:
                     newMap[index] = TileMaterial.EMPTY
                 else:
                     newMap[index] = TileMaterial.STONE
             else:
                 # Dead cells revive when surrounded
-                if neighbours > BIRTH_LIMIT:
+                if neighbours > birth_limit:
                     newMap[index] = TileMaterial.STONE
                 else:
                     newMap[index] = TileMaterial.EMPTY
+        await get_tree().physics_frame
     map = newMap
     return map
             

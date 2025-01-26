@@ -1,25 +1,23 @@
 extends Node2D
 
-enum TileMaterial {
-	EMPTY,
-	STONE,      
-	COAL,
-	IRON,
-} 
+const TileMaterial = MapGenerator.TileMaterial
 
 const WIDTH = 200
 const HEIGHT = 200
-var map_gen = MapGenerator.new(WIDTH, HEIGHT)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	map_gen.generate()
+	MapGenerator.map_generated.connect(queue_redraw)
+	MapGenerator.generate(WIDTH, HEIGHT)
 
 func _draw():
+	if MapGenerator.generating:
+		draw_string(SystemFont.new(), Vector2(100, 100), "Generating map...")
+		return
 	for i in range(WIDTH * HEIGHT):
-		var x = map_gen.indexToX(i)
-		var y = map_gen.indexToY(i)
-		var mat = map_gen.map[i]
+		var x = MapGenerator.indexToX(i)
+		var y = MapGenerator.indexToY(i)
+		var mat = MapGenerator.map[i]
 		var color: Color
 		match mat:
 			TileMaterial.STONE:
@@ -31,5 +29,5 @@ func _draw():
 			_:
 				color = Color.WHITE
 
-		draw_rect(Rect2(x*5, y*5, 5.0, 5.0), color)
+		draw_rect(Rect2(x * 5, y * 5, 5.0, 5.0), color)
 	pass
