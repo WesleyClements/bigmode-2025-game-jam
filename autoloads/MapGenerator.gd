@@ -2,11 +2,11 @@ extends Node
 
 signal map_generated()
 
-enum TileMaterial {
-    EMPTY,
-    STONE,
-    COAL,
-    IRON,
+const TileMaterial = {
+    &"EMPTY": 0,
+    &"STONE": 1,
+    &"COAL": 2,
+    &"IRON": 3,
 }
 
 
@@ -23,13 +23,17 @@ enum TileMaterial {
 @export var death_limit = 3
 @export var birth_limit = 6
 
-var perlin = PerlinNoise.new()
+
+var noise := FastNoiseLite.new()
+
+var noise_with_octaves := FastNoiseLite.new()
 
 var width: int
 var height: int
 var center: Vector2
 var maxDstFromCenter: float
-var map = []
+var map: Array[int] = []
+var temp_map: Array[int] = []
 
 var generating = false
 
@@ -38,19 +42,29 @@ func generate(_width: int, _height: int) -> Array:
         return map
     generating = true
 
+    noise.noise_type = FastNoiseLite.NoiseType.TYPE_SIMPLEX
+    noise.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM
+    noise.frequency = 0.5
+    noise.seed = randi()
+
+    noise_with_octaves.noise_type = FastNoiseLite.NoiseType.TYPE_SIMPLEX
+    noise_with_octaves.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM
+    noise_with_octaves.fractal_octaves = 8
+    noise_with_octaves.frequency = 0.5
+    noise_with_octaves.seed = randi()
+
     width = _width
     height = _height
     center = Vector2(width / 2.0, height / 2.0)
     maxDstFromCenter = center.length()
     map.resize(width * height)
-    
-    await get_tree().physics_frame
+    temp_map.resize(width * height)
 
-    await gen_height_map()
-    await smooth()
-    await addPrefabs()
-    await placeOre(TileMaterial.COAL)
-    await placeOre(TileMaterial.IRON)
+    gen_height_map()
+    smooth()
+    addPrefabs()
+    placeOre(TileMaterial.COAL)
+    placeOre(TileMaterial.IRON)
 
     generating = false
     map_generated.emit()
@@ -64,10 +78,9 @@ func placeOre(oreType: int):
                 continue
             var xNoise = x * 0.281
             var yNoise = y * 0.281
-            var result = perlin.noise(xNoise, yNoise, oreType * 99.9)
+            var result = get_noise(xNoise, yNoise, oreType * 99.9)
             if result > 0.75:
                 map[index] = oreType
-        await get_tree().physics_frame
 
 func addPrefabs():
     addHomebase()
@@ -88,7 +101,7 @@ func gen_height_map():
             var yNoise = y * initial_scale
             var dstFromCenter = distanceFromCenter(x, y)
 
-            var result = perlin.noiseOctaves(xNoise, yNoise, 0.5, 8)
+            var result = get_noise(xNoise, yNoise, 0.5)
 
             var threshold = cosInterpolate(dstFromCenter / (maxDstFromCenter * 0.9), 0.035, 0.000)
             if threshold < 0:
@@ -97,49 +110,93 @@ func gen_height_map():
             # Threshold decreases farther from center, decreasing the number of tunnels.
             if result < 0.5 - threshold || result > 0.5 + threshold:
                 map[index] = TileMaterial.STONE
-        await get_tree().physics_frame
 
 func smooth():
     for step in range(simulation_steps):
-        await smoothStep()
+        smoothStep()
         
 
 func smoothStep() -> Array:
-    var newMap = []
-    newMap.resize(width * height)
-    for x in range(width):
-        for y in range(height):
-            var index = getIndex(x, y)
+    for y in range(height):
+        var y1 = y * width
+        for x in range(width):
+            var index = x + y1
             var neighbours = countNeighbours(x, y)
             if map[index]:
                 # Lonely cells kill themselves
                 if neighbours < death_limit:
-                    newMap[index] = TileMaterial.EMPTY
+                    temp_map[index] = TileMaterial.EMPTY
                 else:
-                    newMap[index] = TileMaterial.STONE
+                    temp_map[index] = TileMaterial.STONE
             else:
                 # Dead cells revive when surrounded
                 if neighbours > birth_limit:
-                    newMap[index] = TileMaterial.STONE
+                    temp_map[index] = TileMaterial.STONE
                 else:
-                    newMap[index] = TileMaterial.EMPTY
-        await get_tree().physics_frame
-    map = newMap
+                    temp_map[index] = TileMaterial.EMPTY
+    var temp = map
+    map = temp_map
+    temp_map = temp
     return map
             
 
 func countNeighbours(x: int, y: int) -> int:
     var count = 0
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            if i == 0 && j == 0:
-                continue
-            var neighbourX = x + i
-            var neighbourY = y + j
-            if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
-                count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
-            elif map[getIndex(neighbourX, neighbourY)]:
-                count += 1
+    var neighbourX = x + -1
+    var neighbourY = y + -1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + -1
+    neighbourY = y + 0
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + -1
+    neighbourY = y + 1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + 0
+    neighbourY = y + -1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + 0
+    neighbourY = y + 1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + 1
+    neighbourY = y + -1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + 1
+    neighbourY = y + 0
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
+    
+    neighbourX = x + 1
+    neighbourY = y + 1
+    if neighbourX < 0 || neighbourY < 0 || neighbourX >= width || neighbourY >= height:
+        count += 1 # Off the map, assume alive to avoid clearing out the edges of the map
+    elif map[getIndex(neighbourX, neighbourY)]:
+        count += 1
     return count
 
 
@@ -164,3 +221,9 @@ func angleFromCenter(x: int, y: int) -> float:
 func cosInterpolate(t: float, a: float, b: float) -> float:
    var mu = (1 - cos(t * PI)) / 2;
    return a * (1 - mu) + b * mu;
+
+func get_noise(x: float, y: float, z: float) -> float:
+    return (noise.get_noise_3d(x, y, z) + 1.0) / 2.0
+
+func get_noise_with_octaves(x: float, y: float, z: float) -> float:
+    return (noise_with_octaves.get_noise_3d(x, y, z) + 1.0) / 2.0
