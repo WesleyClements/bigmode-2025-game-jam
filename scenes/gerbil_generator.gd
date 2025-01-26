@@ -1,7 +1,7 @@
 extends StaticBody2D
 
 @export var pole_connection_limit: int = 4
-@export var wire_settings: WireSettings
+@export var powered_wire_template: PackedScene
 
 var attached_machines: Dictionary = {}
 
@@ -46,10 +46,12 @@ func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
 	assert(machine.has_method(&"get_attachment_point"))
+	assert(machine.has_method(&"set_powered"))
 	if attached_machines.has(machine):
 		return false
 
 	attached_machines[machine] = machine.get_attachment_point()
+	machine.set_powered(true)
 	update_wires.call_deferred()
 	return true
 	
@@ -94,14 +96,12 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
-	var color = wire_settings.powered_wire_color
 	for machine in attached_machines.keys():
 		assert(not machine == null)
 		var other_attachment_point: Marker2D = attached_machines.get(machine)
 		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
-		var line := wire_settings.template.instantiate()
+		var line := powered_wire_template.instantiate()
 		wires.add_child(line)
-		line.default_color = color
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 
 func on_connection_area_body_entered(body: Node) -> void:

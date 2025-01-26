@@ -9,8 +9,10 @@ enum ConnectionType {
 	MACHINE
 }
 
+@export var wire_template: PackedScene
+@export var powered_wire_template: PackedScene
+
 @export var pole_connection_limit: int = 4
-@export var wire_settings: WireSettings
 
 var id: int
 var powered: bool = false:
@@ -54,11 +56,14 @@ func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
 	assert(machine.has_method(&"get_attachment_point"))
+	assert(machine.has_method(&"set_powered"))
 	if attached_machines.has(machine):
 		return false
 
 	if not machine.has_method(&"connect_machine"):
 		attached_machines[machine] = MachineConnection.create(ConnectionType.MACHINE, machine.get_attachment_point())
+		if powered:
+			machine.set_powered(powered)
 		update_wires.call_deferred()
 		return true
 	
@@ -92,6 +97,7 @@ func connect_machine(machine: Node) -> bool:
 	if (powered == machine.powered and id < machine.id):
 		update_wires.call_deferred()
 	elif powered and not machine.powered:
+		machine.set_powered(powered)
 		update_wires.call_deferred()
 
 	return true
@@ -117,7 +123,6 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
-	var color = wire_settings.powered_wire_color if powered else wire_settings.default_wire_color
 	for machine in attached_machines.keys():
 		assert(not machine == null)
 		var connection: MachineConnection = attached_machines.get(machine)
@@ -129,9 +134,8 @@ func update_wires() -> void:
 		if pole.powered == powered and pole.id < id:
 			continue
 		var offset := 1.5 * (connection.attachment_point.global_position - attachment_point.global_position).normalized()
-		var line := wire_settings.template.instantiate()
+		var line := powered_wire_template.instantiate() if powered else wire_template.instantiate()
 		wires.add_child(line)
-		line.default_color = color
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(connection.attachment_point.global_position) - offset]
 
 func on_connection_area_body_entered(body: Node) -> void:

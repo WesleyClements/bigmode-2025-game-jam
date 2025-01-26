@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
-[ext_resource type="Resource" uid="uid://1utsvfk1t4a8" path="res://resources/default.WireSettings.tres" id="2_7g03s"]
+[ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/powered_wire.tscn" id="2_vlges"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_fm04w"]
 gradient = ExtResource("1_uxvx2")
@@ -20,7 +20,7 @@ radius = 128.0
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_7hibj")
-wire_settings = ExtResource("2_7g03s")
+powered_wire_template = ExtResource("2_vlges")
 
 [node name="Shadow" type="Sprite2D" parent="."]
 texture = SubResource("GradientTexture2D_fm04w")
