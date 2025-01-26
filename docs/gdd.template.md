@@ -12,9 +12,9 @@
   - <Gameplay Mechanic #4>
 
 ## Influences (Brief)
-  - Influence #1
-    - Medium (Television, Games, Literature, Movies, etc.)
-    - /Explain why this is an influence in 1 Paragraph or less/
+  - Factorio
+    - Videogame
+    - idk ask sean
   - Influence #2
     - Medium (Television, Games, Literature, Movies, etc.)
     - /Explain why this is an influence in 1 Paragraph or less/
@@ -27,12 +27,12 @@
 
 ## The elevator Pitch
 
-[A one sentence pitch for your game.]
-Pretend that your were pitching your game to a executive going to the elevator. You have less than 60 Seconds.
+Mining/base building game where you explore a randomized cave and expand your base in order to <win condition>.
 
 ## Project Description (Brief):
 
-[Two Paragraphs at least]
+You spawn on the moon, which is made of cheese, with a gerbil in a hamster wheel and a helper robot in a randomly generated cave system. Since the hamster cannot leave its wheel, robot will have to do all the work. Build an electrical grid with charging stations to power robot, and mining lasers and carts to transport materials it finds. Along the way you may encounter creatures that want to destroy your machines, so build defenses to protect what's yours.
+
 [No more than three paragraphs]
 
 ## Project Description (Detailed)
