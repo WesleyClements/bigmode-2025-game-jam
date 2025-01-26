@@ -97,6 +97,9 @@ CppMapGenerator::smooth(
         }
       }
     }
+    TypedArray<int32_t> swap = input;
+    input = temp;
+    temp = swap;
   }
   return temp;
 }
