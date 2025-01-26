@@ -1,21 +1,21 @@
 [gd_resource type="TileSet" load_steps=11 format=3 uid="uid://db4yk56aryubd"]
 
-[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_fdw70"]
-[ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="1_stvpy"]
-[ext_resource type="Texture2D" uid="uid://npe2xdovtrwu" path="res://assets/sprites/blocks.normals.png" id="2_rud37"]
-[ext_resource type="Texture2D" uid="uid://dvygwv2wwwkfp" path="res://assets/sprites/blocks.specular.png" id="4_vwqcv"]
-[ext_resource type="PackedScene" uid="uid://c4cd34odmmos7" path="res://scenes/power_pole.tscn" id="5_cm0g2"]
-[ext_resource type="PackedScene" uid="uid://o8maovqp3uv1" path="res://scenes/gerbil_generator.tscn" id="6_ekn77"]
+[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_4t0jq"]
+[ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="2_j3cor"]
+[ext_resource type="Texture2D" uid="uid://npe2xdovtrwu" path="res://assets/sprites/blocks.normals.png" id="3_ko1yg"]
+[ext_resource type="Texture2D" uid="uid://dvygwv2wwwkfp" path="res://assets/sprites/blocks.specular.png" id="4_bh2ya"]
+[ext_resource type="PackedScene" uid="uid://c4cd34odmmos7" path="res://scenes/power_pole.tscn" id="5_ryek6"]
+[ext_resource type="PackedScene" uid="uid://o8maovqp3uv1" path="res://scenes/gerbil_generator.tscn" id="6_r7x2t"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4w7kd"]
-shader = ExtResource("1_fdw70")
+shader = ExtResource("1_4t0jq")
 shader_parameter/block_height = 20.0
 shader_parameter/light_height = 0.5
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_e4lrc"]
-diffuse_texture = ExtResource("1_stvpy")
-normal_texture = ExtResource("2_rud37")
-specular_texture = ExtResource("4_vwqcv")
+diffuse_texture = ExtResource("2_j3cor")
+normal_texture = ExtResource("3_ko1yg")
+specular_texture = ExtResource("4_bh2ya")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hl75k"]
 resource_name = "terrain"
@@ -36,16 +36,11 @@ texture_region_size = Vector2i(32, 18)
 2:0/0/texture_origin = Vector2i(0, 10)
 2:0/0/material = SubResource("ShaderMaterial_4w7kd")
 2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, -8, 16, 0, 0, 8, -16, 0)
-0:2/size_in_atlas = Vector2i(1, 2)
-0:2/0 = 0
-0:2/0/texture_origin = Vector2i(0, 9)
-0:2/0/material = SubResource("ShaderMaterial_4w7kd")
-0:2/0/y_sort_origin = -8
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_ffiui"]
 resource_name = "machines"
-scenes/1/scene = ExtResource("5_cm0g2")
-scenes/2/scene = ExtResource("6_ekn77")
+scenes/1/scene = ExtResource("5_ryek6")
+scenes/2/scene = ExtResource("6_r7x2t")
 
 [resource]
 tile_shape = 1

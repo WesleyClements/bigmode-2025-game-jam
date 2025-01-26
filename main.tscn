@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=7 format=4 uid="uid://p5awsdsi1kea"]
 
-[ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/terrain.TileSet.tres" id="1_lqee0"]
+[ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="1_lqee0"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
-[ext_resource type="Script" path="res://scripts/digging.gd" id="2_sh2ir"]
-[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://coal.tscn" id="4_d3qpk"]
-[ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://UI.tscn" id="5_p1ybt"]
+[ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
+[ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
+[ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
+[ext_resource type="PackedScene" path="res://UI.tscn" id="5_p1ybt"]
 
 [node name="Main" type="Node"]
 
@@ -20,20 +21,20 @@ script = ExtResource("2_sh2ir")
 [node name="Player" parent="World" instance=ExtResource("2_l8qed")]
 position = Vector2(0, 16)
 
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+zoom = Vector2(4, 4)
+
 [node name="Floors" type="TileMapLayer" parent="World"]
 z_index = -1
 tile_map_data = PackedByteArray("AAD8//3/AAAAAAIAAAD8//7/AAAAAAIAAAD8////AAAAAAIAAAD8/wAAAAAAAAIAAAD8/wEAAAAAAAIAAAD8/wIAAAAAAAIAAAD8/wMAAAAAAAIAAAD8/wQAAAAAAAIAAAD8/wUAAAAAAAIAAAD9//3/AAAAAAIAAAD9//7/AAAAAAIAAAD9////AAAAAAIAAAD9/wAAAAAAAAIAAAD9/wEAAAAAAAIAAAD9/wIAAAAAAAIAAAD9/wMAAAAAAAIAAAD9/wQAAAAAAAIAAAD9/wUAAAAAAAIAAAD+//3/AAAAAAIAAAD+//7/AAAAAAIAAAD+////AAAAAAIAAAD+/wAAAAAAAAIAAAD+/wEAAAAAAAIAAAD+/wIAAAAAAAIAAAD+/wMAAAAAAAIAAAD+/wQAAAAAAAIAAAD+/wUAAAAAAAIAAAD///3/AAAAAAIAAAD///7/AAAAAAIAAAD/////AAAAAAIAAAD//wAAAAAAAAIAAAD//wEAAAAAAAIAAAD//wIAAAAAAAIAAAD//wMAAAAAAAIAAAD//wQAAAAAAAIAAAD//wUAAAAAAAIAAAAAAP3/AAAAAAIAAAAAAP7/AAAAAAIAAAAAAP//AAAAAAIAAAAAAAAAAAAAAAIAAAAAAAEAAAAAAAIAAAAAAAIAAAAAAAIAAAAAAAMAAAAAAAIAAAAAAAQAAAAAAAIAAAAAAAUAAAAAAAIAAAABAP3/AAAAAAIAAAABAP7/AAAAAAIAAAABAP//AAAAAAIAAAABAAAAAAAAAAIAAAABAAEAAAAAAAIAAAABAAIAAAAAAAIAAAABAAMAAAAAAAIAAAABAAQAAAAAAAIAAAABAAUAAAAAAAIAAAACAP3/AAAAAAIAAAACAP7/AAAAAAIAAAACAP//AAAAAAIAAAACAAAAAAAAAAIAAAACAAEAAAAAAAIAAAACAAIAAAAAAAIAAAACAAMAAAAAAAIAAAACAAQAAAAAAAIAAAACAAUAAAAAAAIAAAADAP3/AAAAAAIAAAADAP7/AAAAAAIAAAADAP//AAAAAAIAAAADAAAAAAAAAAIAAAADAAEAAAAAAAIAAAADAAIAAAAAAAIAAAADAAMAAAAAAAIAAAADAAQAAAAAAAIAAAADAAUAAAAAAAIAAAAEAP3/AAAAAAIAAAAEAP7/AAAAAAIAAAAEAP//AAAAAAIAAAAEAAAAAAAAAAIAAAAEAAEAAAAAAAIAAAAEAAIAAAAAAAIAAAAEAAMAAAAAAAIAAAAEAAQAAAAAAAIAAAAEAAUAAAAAAAIAAAA=")
-tile_set = ExtResource("1_lqee0")
+tile_set = ExtResource("4_c6igf")
 collision_enabled = false
 navigation_enabled = false
-
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(4, 4)
+script = ExtResource("4_iydee")
+floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
 offset_left = -314.0
 offset_top = -90.0
 offset_right = 6.0
 offset_bottom = 110.0
-
-[connection signal="body_entered" from="World/coal" to="UI" method="_on_coal_body_entered"]
