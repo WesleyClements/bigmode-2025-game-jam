@@ -1,4 +1,3 @@
-class_name WorldTileMapLayer
 extends TileMapLayer
 
 func _ready() -> void:

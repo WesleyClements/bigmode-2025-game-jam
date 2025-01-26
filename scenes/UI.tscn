@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cdhfd37vrxpuw"]
 
-[ext_resource type="Script" path="res://ui.gd" id="1_js83p"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="1_js83p"]
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
 
 [node name="UI" type="Control"]

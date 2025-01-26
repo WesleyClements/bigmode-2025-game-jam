@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://caan14o3l5ppr"]
+[gd_scene load_steps=2 format=3 uid="uid://cfgk7wccme61i"]
 
 [ext_resource type="Script" path="res://scripts/mapgen/debug_map_drawer.gd" id="1_51dny"]
 

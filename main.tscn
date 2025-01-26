@@ -1,19 +1,20 @@
 [gd_scene load_steps=8 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="Script" path="res://scripts/world_populator.gd" id="1_01b0u"]
-[ext_resource type="TileSet" uid="uid://ci1y2ctxodoa5" path="res://resources/world.TileSet.tres" id="2_dcctc"]
+[ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
 [ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
-[ext_resource type="TileSet" uid="uid://bb0xqnkoadu5a" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
+[ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
-[ext_resource type="PackedScene" path="res://UI.tscn" id="5_p1ybt"]
+[ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/UI.tscn" id="5_p1ybt"]
 
 [node name="Main" type="Node"]
 
-[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("wallTilemap")]
+[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("wallTilemap", "floor_tilemap")]
 y_sort_enabled = true
 script = ExtResource("1_01b0u")
 wallTilemap = NodePath("Walls")
+floor_tilemap = NodePath("Floors")
 
 [node name="Walls" type="TileMapLayer" parent="World"]
 y_sort_enabled = true
@@ -41,3 +42,4 @@ offset_left = -314.0
 offset_top = -90.0
 offset_right = 6.0
 offset_bottom = 110.0
+script = null

@@ -1,8 +1,13 @@
 extends Node2D
 
+const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
+const FloorTileMapLayer = preload("res://scripts/FloorTileMapLayer.gd")
+
+
 const TileMaterial = MapGenerator.TileMaterial
 
-@export var wallTilemap: TileMapLayer
+@export var wallTilemap: WorldTileMapLayer
+@export var floor_tilemap: FloorTileMapLayer
 
 const WIDTH = 333
 const HEIGHT = 333
@@ -21,13 +26,10 @@ func _ready() -> void:
 		var mat = MapGenerator.map[i]
 		match mat:
 			TileMaterial.STONE:
-				wallTilemap.set_cell(coords, 0, Vector2i(0,0))
+				wallTilemap.set_cell(coords, 0, Vector2i(0, 0))
 			TileMaterial.COAL:
-				wallTilemap.set_cell(coords, 0, Vector2i(1,0))
+				wallTilemap.set_cell(coords, 0, Vector2i(1, 0))
 			TileMaterial.IRON:
-				wallTilemap.set_cell(coords, 0, Vector2i(2,0))
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+				wallTilemap.set_cell(coords, 0, Vector2i(2, 0))
+			_:
+				floor_tilemap.add_floor_tile(coords)
