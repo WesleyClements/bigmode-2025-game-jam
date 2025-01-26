@@ -1,20 +1,7 @@
 extends StaticBody2D
 
-const PowerPole = preload("res://scenes/power_pole.gd")
-
-static var next_id: int = 1
-
-enum ConnectionType {
-	POLE,
-	MACHINE
-}
-
 @export var pole_connection_limit: int = 4
 @export var wire_settings: WireSettings
-
-var id: int
-var powered: bool = false:
-	set = set_powered
 
 var attached_machines: Dictionary = {}
 
@@ -22,10 +9,10 @@ var _updated_wires: bool = false
 
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
+@onready var connection_area: ShapeCast2D = $ConnectionArea
 
 func _ready() -> void:
-	id = next_id
-	next_id += 1
+	connection_area.add_exception(self)
 
 func _exit_tree() -> void:
 	for machine in attached_machines.keys():
@@ -36,20 +23,25 @@ func _exit_tree() -> void:
 func _process(_delta: float) -> void:
 	_updated_wires = false
 
+func _physics_process(_delta: float) -> void:
+	connection_area.force_shapecast_update()
+	for i in range(connection_area.get_collision_count()):
+		var body = connection_area.get_collider(i)
+		if not body.is_in_group(&"machines"):
+			continue
+		if attached_machines.has(body):
+			continue
+		
+		print("connecting machine")
+		connect_machine(body)
+
 func get_attachment_point() -> Marker2D:
 	return attachment_point
 
-func set_powered(value: bool) -> void:
-	if value == powered:
-		return
-	# TODO fix power propagation
-	powered = value
-	update_wires.call_deferred()
-	for machine in attached_machines.keys():
-		assert(not machine == null)
-		assert(machine.has_method(&"set_powered"))
-		machine.set_powered(powered)
-	
+
+func set_powered(_value: bool) -> void:
+	pass
+
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
@@ -57,10 +49,9 @@ func connect_machine(machine: Node) -> bool:
 	if attached_machines.has(machine):
 		return false
 
-	if not machine.has_method(&"connect_machine"):
-		attached_machines[machine] = MachineConnection.create(ConnectionType.MACHINE, machine.get_attachment_point())
-		update_wires.call_deferred()
-		return true
+	attached_machines[machine] = machine.get_attachment_point()
+	update_wires.call_deferred()
+	return true
 	
 	# TODO fix pole connection limit
 	# var pole_count := 0
@@ -83,25 +74,11 @@ func connect_machine(machine: Node) -> bool:
 	# 	if closest_pole == machine:
 	# 		return false
 	# 	disconnect_machine(closest_pole)
-
-	attached_machines[machine] = MachineConnection.create(ConnectionType.POLE, machine.get_attachment_point())
-
-	if machine.connect_machine(self):
-		return false;
-
-	if (powered == machine.powered and id < machine.id):
-		update_wires.call_deferred()
-	elif powered and not machine.powered:
-		update_wires.call_deferred()
-
-	return true
 	
 
 func disconnect_machine(machine: Node) -> void:
 	assert(not machine == null)
-	var connection: MachineConnection = attached_machines.get(machine)
-	attached_machines.erase(machine)
-	if connection == null:
+	if not attached_machines.erase(machine):
 		return
 	if machine.has_method(&"disconnect_machine"):
 		machine.disconnect_machine(self)
@@ -117,22 +94,15 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
-	var color = wire_settings.powered_wire_color if powered else wire_settings.default_wire_color
+	var color = wire_settings.powered_wire_color
 	for machine in attached_machines.keys():
 		assert(not machine == null)
-		var connection: MachineConnection = attached_machines.get(machine)
-		if not connection.type == ConnectionType.POLE:
-			continue
-		if not machine is PowerPole:
-			continue
-		var pole: PowerPole = machine as PowerPole
-		if pole.powered == powered and pole.id < id:
-			continue
-		var offset := 1.5 * (connection.attachment_point.global_position - attachment_point.global_position).normalized()
+		var other_attachment_point: Marker2D = attached_machines.get(machine)
+		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
 		var line := wire_settings.template.instantiate()
 		wires.add_child(line)
 		line.default_color = color
-		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(connection.attachment_point.global_position) - offset]
+		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 
 func on_connection_area_body_entered(body: Node) -> void:
 	if body == self:
@@ -140,13 +110,3 @@ func on_connection_area_body_entered(body: Node) -> void:
 	if not body.is_in_group(&"machines"):
 		return
 	connect_machine(body)
-
-class MachineConnection:
-	var type: ConnectionType
-	var attachment_point: Marker2D
-
-	static func create(_type: ConnectionType, _attachment_point: Marker2D) -> MachineConnection:
-		var connection := MachineConnection.new()
-		connection.type = _type
-		connection.attachment_point = _attachment_point
-		return connection

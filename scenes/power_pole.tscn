@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scenes/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
-[ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/wire.tscn" id="2_g03d0"]
+[ext_resource type="Resource" uid="uid://1utsvfk1t4a8" path="res://resources/default.WireSettings.tres" id="2_pbyih"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="3_vfbas"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_exbia"]
@@ -20,7 +20,7 @@ radius = 96.0
 collision_layer = 8
 collision_mask = 0
 script = ExtResource("1_213qv")
-wire_template = ExtResource("2_g03d0")
+wire_settings = ExtResource("2_pbyih")
 
 [node name="AttachmentPoint" type="Marker2D" parent="."]
 position = Vector2(0, -24)
