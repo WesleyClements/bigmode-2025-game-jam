@@ -21,6 +21,8 @@ var powered: bool = false:
 
 var attached_machines: Dictionary = {}
 
+var _updated_wires: bool = false
+
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
 
@@ -31,7 +33,11 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	for machine in attached_machines.keys():
-		disconnect_machine(machine)
+		assert(not machine == null)
+		machine.disconnect_machine(self)
+
+func _process(_delta: float) -> void:
+	_updated_wires = false
 
 func get_attachment_point() -> Marker2D:
 	return attachment_point
@@ -39,65 +45,63 @@ func get_attachment_point() -> Marker2D:
 func set_powered(value: bool) -> void:
 	if value == powered:
 		return
+	# TODO fix power propagation
 	powered = value
-	update_wires()
+	update_wires.call_deferred()
 	for machine in attached_machines.keys():
 		assert(not machine == null)
 		assert(machine.has_method(&"set_powered"))
-		# TODO fix power propagation
 		machine.set_powered(powered)
 	
 func connect_machine(machine: Node) -> bool:
+	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
 	assert(machine.has_method(&"get_attachment_point"))
 	if attached_machines.has(machine):
 		return false
 
 	if not machine is PowerPole:
-		var connection := MachineConnection.new()
-		connection.type = ConnectionType.MACHINE
-		connection.attachment_point = machine.get_attachment_point()
-		attached_machines[machine] = connection
+		attached_machines[machine] = MachineConnection.create(ConnectionType.MACHINE, machine.get_attachment_point())
 		update_wires.call_deferred()
 		return true
 	
-	var pole_count := 0
+	# TODO fix pole connection limit
+	# var pole_count := 0
 
-	for connection in attached_machines.values():
-		if connection.type == ConnectionType.POLE:
-			pole_count += 1
+	# for connection in attached_machines.values():
+	# 	if connection.type == ConnectionType.POLE:
+	# 		pole_count += 1
 	
-	if pole_count > pole_connection_limit:
-		var min_distance: float = machine.get_attachment_point().global_position.distance_to(attachment_point.global_position)
-		var closest_pole: PowerPole = machine
-		for other_machine in attached_machines.keys():
-			assert(not machine == null)
-			if not other_machine is PowerPole:
-				continue
-			var distance: float = machine.get_attachment_point().global_position.distance_to(other_machine.get_attachment_point().global_position)
-			if distance < min_distance:
-				min_distance = distance
-				closest_pole = other_machine as PowerPole
-		if closest_pole == machine:
-			return false
-		closest_pole.disconnect_machine(machine)
+	# if pole_count > pole_connection_limit:
+	# 	var min_distance: float = machine.get_attachment_point().global_position.distance_to(attachment_point.global_position)
+	# 	var closest_pole: PowerPole = machine
+	# 	for other_machine in attached_machines.keys():
+	# 		assert(not machine == null)
+	# 		if not other_machine is PowerPole:
+	# 			continue
+	# 		var distance: float = machine.get_attachment_point().global_position.distance_to(other_machine.get_attachment_point().global_position)
+	# 		if distance < min_distance:
+	# 			min_distance = distance
+	# 			closest_pole = other_machine as PowerPole
+	# 	if closest_pole == machine:
+	# 		return false
+	# 	disconnect_machine(closest_pole)
 
-	var connection := MachineConnection.new()
-	connection.type = ConnectionType.POLE
-	connection.attachment_point = machine.get_attachment_point()
-	attached_machines[machine] = connection
+	attached_machines[machine] = MachineConnection.create(ConnectionType.POLE, machine.get_attachment_point())
+
+	if machine.connect_machine(self):
+		return false;
 
 	if (powered == machine.powered and id < machine.id):
 		update_wires.call_deferred()
-		return true
-	if powered and not machine.powered:
+	elif powered and not machine.powered:
 		update_wires.call_deferred()
-		return true
 
-	return not machine.connect_machine(self)
+	return true
 	
 
 func disconnect_machine(machine: Node) -> void:
+	assert(not machine == null)
 	var connection: MachineConnection = attached_machines.get(machine)
 	attached_machines.erase(machine)
 	if connection == null:
@@ -107,6 +111,10 @@ func disconnect_machine(machine: Node) -> void:
 	update_wires.call_deferred()
 
 func update_wires() -> void:
+	if _updated_wires:
+		return
+	_updated_wires = true
+
 	# TODO update wires instead of recreating them
 	for wire in wires.get_children():
 		wires.remove_child(wire)
@@ -138,7 +146,8 @@ class MachineConnection:
 	var type: ConnectionType
 	var attachment_point: Marker2D
 
-	static func create(_attachment_point: Marker2D) -> MachineConnection:
+	static func create(_type: ConnectionType, _attachment_point: Marker2D) -> MachineConnection:
 		var connection := MachineConnection.new()
+		connection.type = _type
 		connection.attachment_point = _attachment_point
 		return connection

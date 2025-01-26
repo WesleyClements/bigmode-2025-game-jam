@@ -3,3 +3,4 @@
 [node name="Wire" type="Line2D"]
 y_sort_enabled = true
 width = 2.0
+antialiased = true

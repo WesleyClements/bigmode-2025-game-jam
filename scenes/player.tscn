@@ -1,13 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://t5swrc5qv61o"]
+[gd_scene load_steps=18 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
-
-[sub_resource type="Gradient" id="Gradient_odlfw"]
-colors = PackedColorArray(0, 0, 0, 0.627451, 0, 0, 0, 0)
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h40h1"]
-gradient = SubResource("Gradient_odlfw")
+gradient = ExtResource("2_itq32")
 width = 10
 height = 4
 fill = 1

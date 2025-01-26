@@ -3,12 +3,10 @@
 [ext_resource type="Script" path="res://scenes/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/wire.tscn" id="2_g03d0"]
-
-[sub_resource type="Gradient" id="Gradient_3665m"]
-colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="3_vfbas"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_exbia"]
-gradient = SubResource("Gradient_3665m")
+gradient = ExtResource("3_vfbas")
 width = 16
 height = 6
 fill = 1
