@@ -31,7 +31,6 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	for machine in attached_machines.keys():
-		print("disconnecting machine")
 		disconnect_machine(machine)
 
 func get_attachment_point() -> Marker2D:
@@ -43,6 +42,7 @@ func set_powered(value: bool) -> void:
 	powered = value
 	update_wires()
 	for machine in attached_machines.keys():
+		assert(not machine == null)
 		assert(machine.has_method(&"set_powered"))
 		# TODO fix power propagation
 		machine.set_powered(powered)
@@ -58,7 +58,7 @@ func connect_machine(machine: Node) -> bool:
 		connection.type = ConnectionType.MACHINE
 		connection.attachment_point = machine.get_attachment_point()
 		attached_machines[machine] = connection
-		update_wires()
+		update_wires.call_deferred()
 		return true
 	
 	var pole_count := 0
@@ -71,6 +71,7 @@ func connect_machine(machine: Node) -> bool:
 		var min_distance: float = machine.get_attachment_point().global_position.distance_to(attachment_point.global_position)
 		var closest_pole: PowerPole = machine
 		for other_machine in attached_machines.keys():
+			assert(not machine == null)
 			if not other_machine is PowerPole:
 				continue
 			var distance: float = machine.get_attachment_point().global_position.distance_to(other_machine.get_attachment_point().global_position)
@@ -87,10 +88,10 @@ func connect_machine(machine: Node) -> bool:
 	attached_machines[machine] = connection
 
 	if (powered == machine.powered and id < machine.id):
-		update_wires()
+		update_wires.call_deferred()
 		return true
 	if powered and not machine.powered:
-		update_wires()
+		update_wires.call_deferred()
 		return true
 
 	return not machine.connect_machine(self)
@@ -103,7 +104,7 @@ func disconnect_machine(machine: Node) -> void:
 		return
 	if machine is PowerPole:
 		machine.disconnect_machine(self)
-	update_wires()
+	update_wires.call_deferred()
 
 func update_wires() -> void:
 	# TODO update wires instead of recreating them
@@ -113,8 +114,7 @@ func update_wires() -> void:
 
 	var color = powered_wire_color if powered else default_wire_color
 	for machine in attached_machines.keys():
-		if machine == null:
-			continue
+		assert(not machine == null)
 		var connection: MachineConnection = attached_machines.get(machine)
 		if not connection.type == ConnectionType.POLE:
 			continue
