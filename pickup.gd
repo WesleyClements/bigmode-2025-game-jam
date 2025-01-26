@@ -8,6 +8,7 @@ func _ready():
 #	move_and_collide(linear_velocity)
 	
 func collect():
+	MessageBuss.item_collected.emit(MessageBuss.ItemType.COAL, 1)
 	queue_free()
 
 

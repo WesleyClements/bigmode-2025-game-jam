@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=6 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/terrain.TileSet.tres" id="1_lqee0"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
 [ext_resource type="Script" path="res://scripts/digging.gd" id="2_sh2ir"]
+[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://coal.tscn" id="4_d3qpk"]
+[ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://UI.tscn" id="5_p1ybt"]
 
 [node name="Main" type="Node"]
 
@@ -24,3 +26,11 @@ tile_set = ExtResource("1_lqee0")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(4, 4)
+
+[node name="UI" parent="." instance=ExtResource("5_p1ybt")]
+offset_left = -314.0
+offset_top = -90.0
+offset_right = 6.0
+offset_bottom = 110.0
+
+[connection signal="body_entered" from="World/coal" to="UI" method="_on_coal_body_entered"]
