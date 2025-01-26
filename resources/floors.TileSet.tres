@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=8 format=3 uid="uid://1c8jqy2iqanc"]
+[gd_resource type="TileSet" load_steps=8 format=3 uid="uid://bb0xqnkoadu5a"]
 
 [ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_vqnrh"]
 [ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="2_8anen"]
