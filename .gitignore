@@ -4,3 +4,6 @@
 
 # Build files
 /build/*
+
+# VSCode
+/.vscode/launch.json
