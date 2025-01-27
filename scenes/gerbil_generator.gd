@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+signal powered_changed(powered: bool)
+
 @export var pole_connection_limit: int = 4
 @export var powered_wire_template: PackedScene
 
@@ -31,57 +33,39 @@ func _physics_process(_delta: float) -> void:
 			continue
 		if attached_machines.has(body):
 			continue
-		
-		print("connecting machine")
 		connect_machine(body)
 
 func get_attachment_point() -> Marker2D:
 	return attachment_point
 
+func get_powered() -> bool:
+	return true
 
-func set_powered(_value: bool) -> void:
-	pass
+func get_source() -> Node:
+	return self
 
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
 	assert(machine.has_method(&"get_attachment_point"))
-	assert(machine.has_method(&"set_powered"))
 	if attached_machines.has(machine):
-		return false
+		return true
 
 	attached_machines[machine] = machine.get_attachment_point()
-	machine.set_powered(true)
+	if machine.has_signal(&"power_pole_connected"):
+		machine.emit_signal(&"power_pole_connected", self)
+	if machine.has_method(&"connect_machine"):
+		machine.connect_machine(self)
 	update_wires.call_deferred()
 	return true
-	
-	# TODO fix pole connection limit
-	# var pole_count := 0
-
-	# for connection in attached_machines.values():
-	# 	if connection.type == ConnectionType.POLE:
-	# 		pole_count += 1
-	
-	# if pole_count > pole_connection_limit:
-	# 	var min_distance: float = machine.get_attachment_point().global_position.distance_to(attachment_point.global_position)
-	# 	var closest_pole: PowerPole = machine
-	# 	for other_machine in attached_machines.keys():
-	# 		assert(not machine == null)
-	# 		if not other_machine is PowerPole:
-	# 			continue
-	# 		var distance: float = machine.get_attachment_point().global_position.distance_to(other_machine.get_attachment_point().global_position)
-	# 		if distance < min_distance:
-	# 			min_distance = distance
-	# 			closest_pole = other_machine as PowerPole
-	# 	if closest_pole == machine:
-	# 		return false
-	# 	disconnect_machine(closest_pole)
 	
 
 func disconnect_machine(machine: Node) -> void:
 	assert(not machine == null)
 	if not attached_machines.erase(machine):
 		return
+	if machine.has_signal(&"power_pole_disconnected"):
+		machine.emit_signal(&"power_pole_disconnected", self)
 	if machine.has_method(&"disconnect_machine"):
 		machine.disconnect_machine(self)
 	update_wires.call_deferred()
