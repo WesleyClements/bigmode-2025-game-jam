@@ -1,0 +1,3 @@
+- Make player slide along walls smoothly
+- add energy resource and consumption
+- add machine health

@@ -18,8 +18,10 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	for machine in attached_machines.keys():
-		assert(not machine == null)
-		machine.disconnect_machine(self)
+		if machine == null:
+			continue
+		if machine.has_method(&"disconnect_machine"):
+			machine.disconnect_machine(self)
 	attached_machines.clear()
 
 func _process(_delta: float) -> void:

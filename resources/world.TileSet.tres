@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://db4yk56aryubd"]
+[gd_resource type="TileSet" load_steps=12 format=3 uid="uid://db4yk56aryubd"]
 
 [ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_4t0jq"]
 [ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="2_j3cor"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dvygwv2wwwkfp" path="res://assets/sprites/blocks.specular.png" id="4_bh2ya"]
 [ext_resource type="PackedScene" uid="uid://c4cd34odmmos7" path="res://scenes/power_pole.tscn" id="5_ryek6"]
 [ext_resource type="PackedScene" uid="uid://o8maovqp3uv1" path="res://scenes/gerbil_generator.tscn" id="6_r7x2t"]
+[ext_resource type="PackedScene" uid="uid://d0ppwepihs2sf" path="res://scenes/mining_laser.tscn" id="7_gyegj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4w7kd"]
 shader = ExtResource("1_4t0jq")
@@ -52,7 +53,9 @@ texture_region_size = Vector2i(32, 18)
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_ffiui"]
 resource_name = "machines"
 scenes/1/scene = ExtResource("5_ryek6")
+scenes/1/display_placeholder = ExtResource("5_ryek6")
 scenes/2/scene = ExtResource("6_r7x2t")
+scenes/3/scene = ExtResource("7_gyegj")
 
 [resource]
 tile_shape = 1

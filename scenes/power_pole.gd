@@ -35,8 +35,10 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	for machine in attached_machines.keys():
-		assert(not machine == null)
-		machine.disconnect_machine(self)
+		if machine == null:
+			continue
+		if machine.has_signal(&"power_pole_disconnected"):
+			machine.emit_signal(&"power_pole_disconnected", self)
 	for pole in attached_poles.keys():
 		assert(not pole == null)
 		pole.disconnect_machine(self)
@@ -126,13 +128,14 @@ func disconnect_machine(machine: Node) -> void:
 		update_wires.call_deferred()
 		return
 	
+	var removed_connection: PoleConnection = attached_poles.get(machine)
 	if not attached_poles.erase(machine):
 		return
 
 	if machine.has_method(&"disconnect_machine"):
 		machine.disconnect_machine(self)
 	
-	if powered:
+	if removed_connection.is_power_source:
 		var still_powered := false
 		for pole in attached_poles.keys():
 			assert(not pole == null)

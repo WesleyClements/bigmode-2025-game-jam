@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=12 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="Script" path="res://scripts/world_populator.gd" id="1_01b0u"]
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal.tscn" id="4_g03cq"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/UI.tscn" id="5_p1ybt"]
+[ext_resource type="PackedScene" uid="uid://bkvwxlaf6o3n0" path="res://scenes/weasel.tscn" id="10_olp4k"]
 
 [sub_resource type="Resource" id="Resource_mh78c"]
 script = ExtResource("4_e4mk4")
@@ -24,7 +25,7 @@ floor_tilemap = NodePath("Floors")
 
 [node name="Walls" type="TileMapLayer" parent="World"]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAD+/wIAAQAAAAAAAQACAP3/AQAAAAAAAQD//wAAAQAAAAAAAgA=")
+tile_map_data = PackedByteArray("AAD+/wIAAQAAAAAAAQACAP3/AQAAAAAAAQD//wAAAQAAAAAAAgAFAPz/AQAAAAAAAwA=")
 tile_set = ExtResource("2_dcctc")
 script = ExtResource("2_sh2ir")
 item_registry = SubResource("Resource_mh78c")
@@ -34,6 +35,9 @@ position = Vector2(0, 16)
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(4, 4)
+
+[node name="Weasel" parent="World" instance=ExtResource("10_olp4k")]
+position = Vector2(8, 35)
 
 [node name="Floors" type="TileMapLayer" parent="World"]
 z_index = -1
@@ -45,8 +49,3 @@ script = ExtResource("4_iydee")
 floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
-offset_left = -314.0
-offset_top = -90.0
-offset_right = 6.0
-offset_bottom = 110.0
-script = null

@@ -1,0 +1,130 @@
+[gd_scene load_steps=16 format=3 uid="uid://d0ppwepihs2sf"]
+
+[ext_resource type="Script" path="res://scenes/mining_laser.gd" id="1_0nmhe"]
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_fvpbp"]
+[ext_resource type="Texture2D" uid="uid://dfnqvnmdlnuuv" path="res://assets/sprites/mining_laser_base.png" id="1_q225h"]
+[ext_resource type="Texture2D" uid="uid://6qwvduq4cf0w" path="res://assets/sprites/mining_laser.png" id="3_e51kj"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_87k35"]
+gradient = ExtResource("1_fvpbp")
+width = 24
+height = 8
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="Animation" id="Animation_04dio"]
+resource_name = "power_down"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LaserHead:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.872665]
+}
+
+[sub_resource type="Animation" id="Animation_xrhuw"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LaserHead:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.872665]
+}
+
+[sub_resource type="Animation" id="Animation_siemf"]
+resource_name = "power_up"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LaserHead:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.872665, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ws28p"]
+_data = {
+"RESET": SubResource("Animation_xrhuw"),
+"power_down": SubResource("Animation_04dio"),
+"power_up": SubResource("Animation_siemf")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wdh7x"]
+animation = &"power_down"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_81iqt"]
+animation = &"power_up"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fyjet"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_nwnfk"]
+advance_mode = 2
+advance_condition = &"powered"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_nkkh6"]
+advance_mode = 2
+advance_expression = "not get(\"parameters/conditions/powered\")"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_3r38p"]
+states/power_down/node = SubResource("AnimationNodeAnimation_wdh7x")
+states/power_down/position = Vector2(424, 100)
+states/power_up/node = SubResource("AnimationNodeAnimation_81iqt")
+states/power_up/position = Vector2(646, 100)
+transitions = ["Start", "power_down", SubResource("AnimationNodeStateMachineTransition_fyjet"), "power_down", "power_up", SubResource("AnimationNodeStateMachineTransition_nwnfk"), "power_up", "power_down", SubResource("AnimationNodeStateMachineTransition_nkkh6")]
+
+[node name="MiningLaser" type="StaticBody2D" groups=["machines"]]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_0nmhe")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_87k35")
+
+[node name="Base" type="Sprite2D" parent="."]
+texture = ExtResource("1_q225h")
+offset = Vector2(0, -15.5)
+
+[node name="LaserHead" type="Sprite2D" parent="."]
+position = Vector2(0, -25.5)
+rotation = 0.872665
+texture = ExtResource("3_e51kj")
+offset = Vector2(0, 9.5)
+
+[node name="FirePoint" type="Marker2D" parent="LaserHead"]
+position = Vector2(13, 0)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)
+
+[node name="AttachmentPoint" type="Marker2D" parent="."]
+
+[node name="DetectionCircumference" type="Line2D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ws28p")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeStateMachine_3r38p")
+anim_player = NodePath("../AnimationPlayer")
+parameters/conditions/powered = false
