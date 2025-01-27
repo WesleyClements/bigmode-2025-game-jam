@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://bkvwxlaf6o3n0"]
+
+[ext_resource type="Texture2D" uid="uid://dm2k68vfecd77" path="res://assets/sprites/weasel.png" id="1_bxyi3"]
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_xgpge"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tkt1l"]
+gradient = ExtResource("1_xgpge")
+width = 24
+height = 6
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="Weasel" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 15
+
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_tkt1l")
+offset = Vector2(0, -1)
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("1_bxyi3")
+offset = Vector2(0, -10)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(8, 0, 1, -2, -6, 0, 1, 2)
