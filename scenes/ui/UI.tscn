@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdhfd37vrxpuw"]
+[gd_scene load_steps=7 format=3 uid="uid://cdhfd37vrxpuw"]
 
 [ext_resource type="Script" path="res://scenes/ui/coal_display.gd" id="1_js83p"]
+[ext_resource type="Script" path="res://scenes/ui/ui_wrapper.gd" id="1_k4oql"]
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
 [ext_resource type="PackedScene" uid="uid://cluwtjy0x1ngw" path="res://scenes/ui/build_menu_slot.tscn" id="3_0fm2q"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="4_sadhj"]
@@ -16,13 +17,13 @@ offset_right = -640.0
 offset_bottom = -360.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(2, 2)
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
+script = ExtResource("1_k4oql")
 
 [node name="UI" type="VBoxContainer" parent="UIWrapper"]
 layout_mode = 2
