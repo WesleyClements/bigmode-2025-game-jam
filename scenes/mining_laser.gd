@@ -30,6 +30,7 @@ var powered: bool = false:
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
+			queue_redraw()
 		else:
 			await animation_player.animation_finished
 			powered = true
@@ -57,10 +58,13 @@ func _exit_tree() -> void:
 	power_pole_disconnected.disconnect(on_power_pole_disconnected)
 
 func _draw() -> void:
-	if state == State.MINING:
-		var source_position := to_local(fire_point.get_global_position())
-		var target_position := to_local(laser_target)
-		draw_line(source_position, target_position, beam_color, beam_width)
+	if not powered:
+		return
+	if not state == State.MINING:
+		return
+	var source_position := to_local(fire_point.get_global_position())
+	var target_position := to_local(laser_target)
+	draw_line(source_position, target_position, beam_color, beam_width)
 
 
 func _ready():
