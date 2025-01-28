@@ -75,9 +75,22 @@ func get_source() -> Node:
 			return pole
 	return null
 
+func validate_connection(node: Node) -> bool:
+	if node == null:
+		return false
+	if node == self:
+		return false
+	if not node.is_in_group(&"machines"):
+		return false
+	if not tile_map_detection_area.is_within_detection_distance(node.global_position):
+			return false
+	return true
+
 func search_for_machines() -> void:
 	var machines := []
 	for node: Node in tile_map_detection_area.find_scenes():
+		if node == self:
+			continue
 		if not node.is_in_group(&"machines"):
 			continue
 		machines.append(node)
@@ -88,12 +101,18 @@ func search_for_machines() -> void:
 		connect_machine(node)
 	
 	for node in machine_attachments.keys():
-		if not machines.has(node):
-			disconnect_machine(node)
+		if machines.has(node):
+			continue
+		if node.has_method(&"validate_connection") and node.validate_connection(self):
+			continue
+		disconnect_machine(node)
 
 	for node in pole_connections.keys():
-		if not machines.has(node):
-			disconnect_machine(node)
+		if machines.has(node):
+			continue
+		if node.has_method(&"validate_connection") and node.validate_connection(self):
+			continue
+		disconnect_machine(node)
 	
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
@@ -247,17 +266,17 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 		powered_changed.emit(true)
 
 func on_world_map_child_update(node: Node, is_entering: bool) -> void:
+	if is_entering:
+		if not validate_connection(node):
+			return
+		await node.ready
+		connect_machine(node)
+		return
 	if node == self:
 		return
 	if not node.is_in_group(&"machines"):
 		return
-	if is_entering:
-		if not tile_map_detection_area.is_within_detection_distance(node.global_position):
-			return
-		await node.ready
-		connect_machine(node)
-	else:
-		disconnect_machine(node)
+	disconnect_machine(node)
 
 class PoleConnection:
 	var is_power_source: bool
