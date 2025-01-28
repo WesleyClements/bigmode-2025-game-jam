@@ -10,6 +10,11 @@ enum ActionType {
 @export var wall_tileset_atlas_id := 0
 
 var action_taken: bool = false
+var scene_coords := {}
+
+func _enter_tree() -> void:
+	child_entered_tree.connect(on_child_entered_tree)
+	child_exiting_tree.connect(on_child_exiting_tree)
 
 func _ready() -> void:
 	MessageBuss.request_grid_cell_clear.connect(on_grid_cell_clear_request)
@@ -86,3 +91,15 @@ func on_grid_cell_clear_request(cell_pos: Vector2i) -> void:
 					scene.global_position = to_global(map_to_local(cell_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
 
 	erase_cell.call_deferred(cell_pos)
+
+func get_cell_scene(cell_pos: Vector2i) -> Node2D:
+	return scene_coords.get(cell_pos)
+
+func on_child_entered_tree(child: Node) -> void:
+	await child.ready
+	var coords := local_to_map(to_local(child.global_position))
+	scene_coords[coords] = child
+	child.set_meta(&"tile_coords", coords)
+
+func on_child_exiting_tree(child: Node) -> void:
+	scene_coords.erase(child.get_meta(&"tile_coords"))

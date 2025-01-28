@@ -1,6 +1,6 @@
 extends Control
 
-var coal_collected: = 0 
+var coal_collected := 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -12,9 +12,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
-func on_item_collected(itemtype: MessageBuss.ItemType,amount: int ):
+func on_item_collected(itemtype: MessageBuss.ItemType, amount: int):
 	match itemtype:
 		MessageBuss.ItemType.COAL:
-			print("coal collected")
 			coal_collected = coal_collected + amount
 			$coalcount.text = str(coal_collected)
