@@ -36,7 +36,17 @@ func _physics_process(_delta: float) -> void:
 	
 	action_taken = true
 	
-	var mouse_pos := to_local(get_global_mouse_position())
+	var tile := mouse_to_map(get_global_mouse_position())
+
+	match action:
+		ActionType.PLACE_BLOCK:
+			set_cell(tile, 1, Vector2(0, 0), 1)
+		ActionType.REMOVE_BLOCK:
+			MessageBuss.request_grid_cell_clear.emit(tile)
+
+func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
+	mouse_pos = to_local(mouse_pos)
+
 	var tile: Vector2i = local_to_map(to_local(mouse_pos))
 	var offset := mouse_pos - map_to_local(tile)
 
@@ -44,27 +54,21 @@ func _physics_process(_delta: float) -> void:
 	var is_left := offset.y > b + offset.x / 2.0
 	var is_right := offset.y > b - offset.x / 2.0
 	if is_left and is_right and get_cell_source_id(tile + Vector2i(2, 2)) != -1:
-		tile = tile + Vector2i(2, 2)
-	elif is_left and get_cell_source_id(tile + Vector2i(1, 2)) != -1:
-		tile = tile + Vector2i(1, 2)
-	elif is_right and get_cell_source_id(tile + Vector2i(2, 1)) != -1:
-		tile = tile + Vector2i(2, 1)
-	elif get_cell_source_id(tile + Vector2i(1, 1)) != -1:
-		tile = tile + Vector2i(1, 1)
-	else:
-		if offset.x > 0.0:
-			if get_cell_source_id(tile + Vector2i(1, 0)) != -1:
-				tile = tile + Vector2i(1, 0)
-		elif get_cell_source_id(tile + Vector2i(0, 1)) != -1:
-			tile = tile + Vector2i(0, 1)
+		return tile + Vector2i(2, 2)
+	if is_left and get_cell_source_id(tile + Vector2i(1, 2)) != -1:
+		return tile + Vector2i(1, 2)
+	if is_right and get_cell_source_id(tile + Vector2i(2, 1)) != -1:
+		return tile + Vector2i(2, 1)
+	if get_cell_source_id(tile + Vector2i(1, 1)) != -1:
+		return tile + Vector2i(1, 1)
+	
+	if offset.x > 0.0 and get_cell_source_id(tile + Vector2i(1, 0)) != -1:
+		return tile + Vector2i(1, 0)
+	if offset.x < 0.0 and get_cell_source_id(tile + Vector2i(0, 1)) != -1:
+		return tile + Vector2i(0, 1)
+	
+	return tile
 
-
-	match action:
-		ActionType.PLACE_BLOCK:
-			set_cell(tile, 1, Vector2(0, 0), 1)
-		ActionType.REMOVE_BLOCK:
-			MessageBuss.request_grid_cell_clear.emit(tile)
-		
 
 func on_grid_cell_clear_request(cell_pos: Vector2i) -> void:
 	if get_cell_source_id(cell_pos) == -1:
