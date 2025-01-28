@@ -112,7 +112,7 @@ func _physics_process(_delta: float) -> void:
 				is_waiting = false
 				return
 			var tile_origin = world_map.local_to_map(get_global_position())
-			MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE)
+			MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
 			state = State.IDLE
 			is_waiting = false
 		State.IDLE:
