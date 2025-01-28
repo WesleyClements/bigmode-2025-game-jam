@@ -2,8 +2,8 @@ extends StaticBody2D
 
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
-const PowerPole = preload("res://scenes/power_pole.gd")
-const GerbilGenerator = preload("res://scenes/gerbil_generator.gd")
+const PowerPole = preload("res://scenes/machines/power_pole.gd")
+const GerbilGenerator = preload("res://scenes/machines/gerbil_generator.gd")
 
 static var next_id: int = 1
 
