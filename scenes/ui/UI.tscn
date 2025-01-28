@@ -8,7 +8,7 @@
 
 [node name="CanvasLayer" type="CanvasLayer"]
 
-[node name="UI" type="VBoxContainer" parent="."]
+[node name="UIWrapper" type="MarginContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -19,73 +19,83 @@ grow_vertical = 2
 scale = Vector2(2, 2)
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 16
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
 
-[node name="TopRow" type="HBoxContainer" parent="UI"]
+[node name="UI" type="VBoxContainer" parent="UIWrapper"]
+layout_mode = 2
+
+[node name="TopRow" type="HBoxContainer" parent="UIWrapper/UI"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 432
 alignment = 1
 
-[node name="TopLeft" type="Control" parent="UI/TopRow"]
+[node name="TopLeft" type="Control" parent="UIWrapper/UI/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="UI/TopRow/TopLeft"]
+[node name="Label" type="Label" parent="UIWrapper/UI/TopRow/TopLeft"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
 text = "Top Left"
 
-[node name="TopRight" type="VBoxContainer" parent="UI/TopRow"]
+[node name="TopRight" type="HBoxContainer" parent="UIWrapper/UI/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 2
 
-[node name="CoalDisplay" type="HBoxContainer" parent="UI/TopRow/TopRight" node_paths=PackedStringArray("display")]
+[node name="TopRight" type="VBoxContainer" parent="UIWrapper/UI/TopRow/TopRight"]
+layout_mode = 2
+
+[node name="CoalDisplay" type="HBoxContainer" parent="UIWrapper/UI/TopRow/TopRight/TopRight" node_paths=PackedStringArray("display")]
 layout_mode = 2
 script = ExtResource("1_js83p")
 display = NodePath("Count")
 
-[node name="Icon" type="TextureRect" parent="UI/TopRow/TopRight/CoalDisplay"]
+[node name="Icon" type="TextureRect" parent="UIWrapper/UI/TopRow/TopRight/TopRight/CoalDisplay"]
 layout_mode = 2
 texture = ExtResource("1_s6p1f")
 expand_mode = 2
 
-[node name="Count" type="Label" parent="UI/TopRow/TopRight/CoalDisplay"]
+[node name="Count" type="Label" parent="UIWrapper/UI/TopRow/TopRight/TopRight/CoalDisplay"]
 layout_mode = 2
 
-[node name="BottomRow" type="HBoxContainer" parent="UI"]
+[node name="BottomRow" type="HBoxContainer" parent="UIWrapper/UI"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 32
 
-[node name="BottomLeft" type="VBoxContainer" parent="UI/BottomRow"]
+[node name="BottomLeft" type="VBoxContainer" parent="UIWrapper/UI/BottomRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 2
 
-[node name="BottomCenter" type="VBoxContainer" parent="UI/BottomRow"]
+[node name="BottomCenter" type="VBoxContainer" parent="UIWrapper/UI/BottomRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 2
 
-[node name="BuildMenu" type="HBoxContainer" parent="UI/BottomRow/BottomCenter"]
+[node name="BuildMenu" type="HBoxContainer" parent="UIWrapper/UI/BottomRow/BottomCenter"]
 layout_mode = 2
 alignment = 1
 
-[node name="PowerPoleBuildMenuSlot" parent="UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
+[node name="PowerPoleBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
 layout_mode = 2
 texture = ExtResource("4_sadhj")
 hot_key_name = "Q"
 
-[node name="MiningLaserBuildMenuSlot" parent="UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
+[node name="MiningLaserBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
 layout_mode = 2
 texture = ExtResource("5_6xwpk")
 hot_key_name = "E"
 
-[node name="BottomRight" type="VBoxContainer" parent="UI/BottomRow"]
+[node name="BottomRight" type="VBoxContainer" parent="UIWrapper/UI/BottomRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 2
