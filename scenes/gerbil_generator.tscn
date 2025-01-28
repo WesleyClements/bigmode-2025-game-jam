@@ -4,6 +4,7 @@
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/powered_wire.tscn" id="2_vlges"]
+[ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_fm04w"]
 gradient = ExtResource("1_uxvx2")
@@ -12,9 +13,6 @@ height = 8
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_g6ynu"]
-radius = 128.0
 
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
@@ -32,15 +30,12 @@ offset = Vector2(0, -13)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -3, 7, 0, 0, 3, -7, 0)
 
-[node name="ConnectionArea" type="ShapeCast2D" parent="."]
-process_mode = 3
-scale = Vector2(1, 0.5)
-shape = SubResource("CircleShape2D_g6ynu")
-target_position = Vector2(0, 0)
-collision_mask = 8
-
 [node name="AttachmentPoint" type="Marker2D" parent="."]
 position = Vector2(-9, -23)
 
 [node name="Wires" type="Node2D" parent="."]
 z_index = 100
+
+[node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("5_qnl68")]
+root_node = NodePath("..")
+outline_color = Color(0.999296, 0.615239, 3.85046e-07, 0.501961)
