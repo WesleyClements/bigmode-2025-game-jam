@@ -24,6 +24,8 @@ func _exit_tree() -> void:
 	for machine in attachments.keys():
 		if machine == null:
 			continue
+		if machine.has_signal(&"power_pole_disconnected"):
+			machine.emit_signal(&"power_pole_disconnected", self)
 		if machine.has_method(&"disconnect_machine"):
 			machine.disconnect_machine(self)
 	attachments.clear()
