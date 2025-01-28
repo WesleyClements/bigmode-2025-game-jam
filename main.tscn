@@ -17,10 +17,10 @@ coal_entity_scene = ExtResource("4_g03cq")
 
 [node name="Main" type="Node"]
 
-[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("wallTilemap", "floor_tilemap")]
+[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("wall_tilemap", "floor_tilemap")]
 y_sort_enabled = true
 script = ExtResource("1_01b0u")
-wallTilemap = NodePath("Walls")
+wall_tilemap = NodePath("Walls")
 floor_tilemap = NodePath("Floors")
 
 [node name="Walls" type="TileMapLayer" parent="World"]

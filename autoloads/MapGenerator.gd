@@ -49,7 +49,7 @@ func generate(_width: int, _height: int) -> Array:
 	noise.seed = randi()
 
 	noise_with_octaves.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
-	noise_with_octaves.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM   
+	noise_with_octaves.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM
 	noise_with_octaves.fractal_octaves = 8
 	noise_with_octaves.fractal_gain = 0.45
 	noise_with_octaves.frequency = 1
@@ -131,8 +131,8 @@ func findOpenSpaces():
 
 func countNeighboursFar(x: int, y: int, dst: int) -> int:
 	var count = 0
-	for i in range(-dst, dst+1):
-		for j in range(-dst, dst+1):
+	for i in range(-dst, dst + 1):
+		for j in range(-dst, dst + 1):
 			if i == 0 && j == 0:
 				continue
 			var neighbourX = x + i

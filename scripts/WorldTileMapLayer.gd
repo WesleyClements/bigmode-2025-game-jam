@@ -11,10 +11,12 @@ enum TilesetAtlas {
 	ENTITIES = 1
 }
 
+const BlockType = MessageBuss.BlockType
+
 const BlockCoords = {
-	MessageBuss.BlockType.STONE: Vector2i(0, 0),
-	MessageBuss.BlockType.COAL_ORE: Vector2i(1, 0),
-	MessageBuss.BlockType.IRON_ORE: Vector2i(2, 0),
+	BlockType.STONE: Vector2i(0, 0),
+	BlockType.COAL_ORE: Vector2i(1, 0),
+	BlockType.IRON_ORE: Vector2i(2, 0),
 }
 
 @export var item_registry: ItemRegistry
@@ -23,6 +25,8 @@ const BlockCoords = {
 var action_taken: bool = false
 var scene_coords := {}
 
+@onready var navigation_grid := AStarGrid2D.new()
+
 func _enter_tree() -> void:
 	child_entered_tree.connect(on_child_entered_tree)
 	child_exiting_tree.connect(on_child_exiting_tree)
@@ -30,6 +34,11 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
 	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
+
+	navigation_grid.cell_shape = AStarGrid2D.CELL_SHAPE_ISOMETRIC_DOWN
+	navigation_grid.cell_size = tile_set.tile_size
+	navigation_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+
 
 func _physics_process(_delta: float) -> void:
 	var action := ActionType.NONE
@@ -84,31 +93,38 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	
 	return tile
 
-
-func on_set_world_tile_request(tile_pos: Vector2i, block_type: MessageBuss.BlockType, block_variant: int) -> void:
+func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i = Vector2i(-1, -1), alternative_tile: int = 0) -> void:
+	if source_id == -1:
+		erase_cell(coords)
+	else:
+		set_cell(coords, source_id, atlas_coords, alternative_tile)
+	assert(navigation_grid.is_in_boundsv(coords))
+	navigation_grid.set_point_solid(coords, source_id != -1)
+	
+func on_set_world_tile_request(tile_pos: Vector2i, block_type: BlockType, block_variant: int) -> void:
 	match block_type:
-		MessageBuss.BlockType.NONE:
+		BlockType.NONE:
 			if get_cell_source_id(tile_pos) == -1:
 				return
 			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
-			erase_cell.call_deferred(tile_pos)
-		MessageBuss.BlockType.ENTITY:
+			update_cell(tile_pos)
+		BlockType.ENTITY:
 			if get_cell_source_id(tile_pos) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile_pos) == block_variant:
 				return
 			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
-			set_cell(tile_pos, TilesetAtlas.ENTITIES, Vector2(0, 0), block_variant)
-		MessageBuss.BlockType.STONE, MessageBuss.BlockType.COAL_ORE, MessageBuss.BlockType.IRON_ORE:
+			update_cell(tile_pos, TilesetAtlas.ENTITIES, Vector2(0, 0), block_variant)
+		BlockType.STONE, BlockType.COAL_ORE, BlockType.IRON_ORE:
 			if get_cell_source_id(tile_pos) == TilesetAtlas.TERRAIN and get_cell_atlas_coords(tile_pos) == BlockCoords[block_type] and get_cell_alternative_tile(tile_pos) == block_variant:
 				return
 			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
-			set_cell(tile_pos, TilesetAtlas.TERRAIN, BlockCoords[block_type], block_variant)
+			update_cell(tile_pos, TilesetAtlas.TERRAIN, BlockCoords[block_type], block_variant)
 		_:
 			assert(false, "Unknown block type")
 	
 
-func on_world_tile_changing(tile_pos: Vector2i, block_type: MessageBuss.BlockType, _block_variant: int) -> void:
+func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_variant: int) -> void:
 	match block_type:
-		MessageBuss.BlockType.NONE:
+		BlockType.NONE:
 			var cell_data := get_cell_tile_data(tile_pos)
 			if cell_data != null:
 				var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
@@ -127,13 +143,13 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: MessageBuss.BlockTyp
 							var scene: Node2D = scene_template.instantiate()
 							add_child(scene)
 							scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
-		MessageBuss.BlockType.STONE:
+		BlockType.STONE:
 			pass
-		MessageBuss.BlockType.COAL_ORE:
+		BlockType.COAL_ORE:
 			pass
-		MessageBuss.BlockType.IRON_ORE:
+		BlockType.IRON_ORE:
 			pass
-		MessageBuss.BlockType.ENTITY:
+		BlockType.ENTITY:
 			pass
 		_:
 			assert(false, "Unknown block type")
