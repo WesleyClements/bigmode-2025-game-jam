@@ -6,6 +6,9 @@ const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 @export var root_node: Node2D
 @export var detection_distance := 4
 @export var outline_color := Color(1, 1, 0.0, 0.5)
+@export var display_outline := true:
+	set(value):
+		area_outline.visible = value
 
 
 @onready var world_map: WorldTileMapLayer = null if Engine.is_editor_hint() else root_node.get_parent()
@@ -15,6 +18,7 @@ func _ready() -> void:
 	if not root_node:
 		root_node = owner
 	area_outline.default_color = outline_color
+	area_outline.visible = display_outline
 	var tile_size := get_tile_size()
 	var x := (detection_distance + 0.5) * tile_size.x
 	var y := (detection_distance + 0.5) * tile_size.y
@@ -25,9 +29,13 @@ func get_tile_size() -> Vector2:
 		return Vector2(32, 16) # TODO no magic numbers
 	return world_map.tile_set.tile_size
 
+func get_tile_origin() -> Vector2i:
+	return world_map.local_to_map(world_map.to_local(root_node.global_position))
+
 func is_within_detection_distance(pos: Vector2) -> bool:
-	var offset := root_node.global_position - pos
-	var tile_offset := world_map.local_to_map(world_map.to_local(offset)).abs()
+	var tile_origin := get_tile_origin()
+	var tile_position := world_map.local_to_map(world_map.to_local(pos))
+	var tile_offset := (tile_position - tile_origin).abs()
 	return tile_offset.x <= detection_distance and tile_offset.y <= detection_distance
 
 func find_tiles(predicate: Callable) -> Array[Vector2i]:
@@ -39,7 +47,7 @@ func find_tiles(predicate: Callable) -> Array[Vector2i]:
 	return tiles
 
 func find_scenes() -> Array[Node]:
-	var tile_origin := world_map.local_to_map(world_map.to_local(root_node.global_position))
+	var tile_origin := get_tile_origin()
 	var scenes: Array[Node] = []
 	for x in range(-detection_distance, detection_distance + 1):
 		for y in range(-detection_distance, detection_distance + 1):

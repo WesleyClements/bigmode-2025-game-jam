@@ -6,7 +6,7 @@
 script = ExtResource("1_kntdl")
 
 [node name="AreaOutline" type="Line2D" parent="."]
-points = PackedVector2Array(0, 72, 72, 0, 0, -72, -72, 0)
+points = PackedVector2Array(0, 72, 144, 0, 0, -72, -144, 0)
 closed = true
 width = 0.5
 default_color = Color(1, 1, 0, 0.5)
