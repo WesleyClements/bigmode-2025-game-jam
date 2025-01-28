@@ -1,11 +1,29 @@
 extends Node
-enum ItemType {COAL}
+
+enum BlockType {
+	NONE,
+	ENTITY,
+	STONE,
+	COAL_ORE,
+	IRON_ORE,
+}
+
+enum MachineType {
+	GENERATOR = 2,
+	POWER_LINE = 1,
+	LASER = 3,
+}
+
+enum ItemType {
+	COAL
+}
+
 signal item_collected(type: ItemType, count: int)
 
-signal request_grid_cell_clear(cell_pos: Vector2i)
-signal grid_cell_clearing(cell_pos: Vector2i)
+signal request_set_world_tile(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
+signal world_tile_changing(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
 
 func _ready() -> void:
 	assert(item_collected)
-	assert(request_grid_cell_clear)
-	assert(grid_cell_clearing)
+	assert(request_set_world_tile)
+	assert(world_tile_changing)

@@ -6,8 +6,19 @@ enum ActionType {
 	REMOVE_BLOCK
 }
 
+enum TilesetAtlas {
+	TERRAIN = 0,
+	ENTITIES = 1
+}
+
+const BlockCoords = {
+	MessageBuss.BlockType.STONE: Vector2i(0, 0),
+	MessageBuss.BlockType.COAL_ORE: Vector2i(1, 0),
+	MessageBuss.BlockType.IRON_ORE: Vector2i(2, 0),
+}
+
 @export var item_registry: ItemRegistry
-@export var wall_tileset_atlas_id := 0
+@export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
 
 var action_taken: bool = false
 var scene_coords := {}
@@ -17,7 +28,8 @@ func _enter_tree() -> void:
 	child_exiting_tree.connect(on_child_exiting_tree)
 
 func _ready() -> void:
-	MessageBuss.request_grid_cell_clear.connect(on_grid_cell_clear_request)
+	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
+	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
 
 func _physics_process(_delta: float) -> void:
 	var action := ActionType.NONE
@@ -40,9 +52,12 @@ func _physics_process(_delta: float) -> void:
 
 	match action:
 		ActionType.PLACE_BLOCK:
-			set_cell(tile, 1, Vector2(0, 0), 1)
+			MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.ENTITY, MessageBuss.MachineType.POWER_LINE)
 		ActionType.REMOVE_BLOCK:
-			MessageBuss.request_grid_cell_clear.emit(tile)
+			MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.NONE, 0)
+
+func get_cell_scene(cell_pos: Vector2i) -> Node2D:
+	return scene_coords.get(cell_pos)
 
 func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	mouse_pos = to_local(mouse_pos)
@@ -70,34 +85,58 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	return tile
 
 
-func on_grid_cell_clear_request(cell_pos: Vector2i) -> void:
-	if get_cell_source_id(cell_pos) == -1:
-		return
+func on_set_world_tile_request(tile_pos: Vector2i, block_type: MessageBuss.BlockType, block_variant: int) -> void:
+	match block_type:
+		MessageBuss.BlockType.NONE:
+			if get_cell_source_id(tile_pos) == -1:
+				return
+			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
+			erase_cell.call_deferred(tile_pos)
+		MessageBuss.BlockType.ENTITY:
+			if get_cell_source_id(tile_pos) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile_pos) == block_variant:
+				return
+			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
+			set_cell(tile_pos, TilesetAtlas.ENTITIES, Vector2(0, 0), block_variant)
+		MessageBuss.BlockType.STONE, MessageBuss.BlockType.COAL_ORE, MessageBuss.BlockType.IRON_ORE:
+			if get_cell_source_id(tile_pos) == TilesetAtlas.TERRAIN and get_cell_atlas_coords(tile_pos) == BlockCoords[block_type] and get_cell_alternative_tile(tile_pos) == block_variant:
+				return
+			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
+			set_cell(tile_pos, TilesetAtlas.TERRAIN, BlockCoords[block_type], block_variant)
+		_:
+			assert(false, "Unknown block type")
 	
-	MessageBuss.grid_cell_clearing.emit(cell_pos)
-	var cell_data := get_cell_tile_data(cell_pos)
-	if cell_data != null:
-		var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
-		if not item_drops == null:
-			for item_name: StringName in item_drops.keys():
-				var drop_config: Dictionary = item_drops[item_name]
-				assert(drop_config != null)
-				assert(drop_config.min != null)
-				assert(drop_config.max != null)
-				var item_type: ItemRegistry.ItemType = ItemRegistry.ItemType[item_name]
-				var drop_amount := randi_range(drop_config.min, drop_config.max)
-				var scene_template := item_registry.get_entity_scene(item_type)
-				if scene_template == null: # TODO assert not null
-					continue
-				for _i in range(drop_amount):
-					var scene: Node2D = scene_template.instantiate()
-					add_child(scene)
-					scene.global_position = to_global(map_to_local(cell_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
 
-	erase_cell.call_deferred(cell_pos)
-
-func get_cell_scene(cell_pos: Vector2i) -> Node2D:
-	return scene_coords.get(cell_pos)
+func on_world_tile_changing(tile_pos: Vector2i, block_type: MessageBuss.BlockType, _block_variant: int) -> void:
+	match block_type:
+		MessageBuss.BlockType.NONE:
+			var cell_data := get_cell_tile_data(tile_pos)
+			if cell_data != null:
+				var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
+				if not item_drops == null:
+					for item_name: StringName in item_drops.keys():
+						var drop_config: Dictionary = item_drops[item_name]
+						assert(drop_config != null)
+						assert(drop_config.min != null)
+						assert(drop_config.max != null)
+						var item_type: ItemRegistry.ItemType = ItemRegistry.ItemType[item_name]
+						var drop_amount := randi_range(drop_config.min, drop_config.max)
+						var scene_template := item_registry.get_entity_scene(item_type)
+						if scene_template == null: # TODO assert not null
+							continue
+						for _i in range(drop_amount):
+							var scene: Node2D = scene_template.instantiate()
+							add_child(scene)
+							scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
+		MessageBuss.BlockType.STONE:
+			pass
+		MessageBuss.BlockType.COAL_ORE:
+			pass
+		MessageBuss.BlockType.IRON_ORE:
+			pass
+		MessageBuss.BlockType.ENTITY:
+			pass
+		_:
+			assert(false, "Unknown block type")
 
 func on_child_entered_tree(child: Node) -> void:
 	await child.ready
