@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/wire.tscn" id="2_tlqtr"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/powered_wire.tscn" id="3_q7ibn"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="3_vfbas"]
+[ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="6_n6t5w"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_exbia"]
 gradient = ExtResource("3_vfbas")
@@ -13,9 +14,6 @@ height = 6
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_bic4p"]
-radius = 96.0
 
 [node name="PowerPole" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
@@ -34,18 +32,12 @@ texture = SubResource("GradientTexture2D_exbia")
 texture = ExtResource("1_xfd3o")
 offset = Vector2(0, -12)
 
-[node name="ConnectionArea" type="Area2D" parent="."]
-collision_layer = 8
-collision_mask = 8
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ConnectionArea"]
-scale = Vector2(1, 0.5)
-shape = SubResource("CircleShape2D_bic4p")
-
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
 
 [node name="Wires" type="Node2D" parent="."]
 z_index = 100
 
-[connection signal="body_entered" from="ConnectionArea" to="." method="on_connection_area_body_entered"]
+[node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("6_n6t5w")]
+root_node = NodePath("..")
+detection_distance = 3

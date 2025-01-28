@@ -112,6 +112,7 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 			return
 		if not tile_map_detection_area.is_within_detection_distance(node.global_position):
 			return
-		connect_machine.call_deferred(node)
+		await node.ready
+		connect_machine(node)
 	else:
 		disconnect_machine(node)

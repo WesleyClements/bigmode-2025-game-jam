@@ -1,3 +1,4 @@
 - Make player slide along walls smoothly
 - add energy resource and consumption
 - add machine health
+- make mining laser target center of face of block

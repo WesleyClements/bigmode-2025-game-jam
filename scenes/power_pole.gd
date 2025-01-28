@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
+const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
 const PowerPole = preload("res://scenes/power_pole.gd")
 const GerbilGenerator = preload("res://scenes/gerbil_generator.gd")
 
@@ -21,31 +23,42 @@ signal powered_changed(powered: bool)
 var id: int
 var powered := false
 
-var attached_machines := {}
-var attached_poles := {}
+var machine_attachments := {}
+var pole_connections := {}
 
 var _updated_wires: bool = false
 
+@onready var world_map: WorldTileMapLayer = get_parent()
+@onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
 
-func _ready() -> void:
-	id = next_id
-	next_id += 1
+func _enter_tree() -> void:
+	search_for_machines.call_deferred()
 
 func _exit_tree() -> void:
-	for machine in attached_machines.keys():
+	for machine in machine_attachments.keys():
 		if machine == null:
 			continue
 		if machine.has_signal(&"power_pole_disconnected"):
 			machine.emit_signal(&"power_pole_disconnected", self)
-	for pole in attached_poles.keys():
+	for pole in pole_connections.keys():
 		assert(not pole == null)
 		pole.disconnect_machine(self)
-	attached_machines.clear()
-	attached_poles.clear()
+	machine_attachments.clear()
+	pole_connections.clear()
 	for connection in powered_changed.get_connections():
 		powered_changed.disconnect(connection.callable)
+	
+	world_map.child_entered_tree.disconnect(on_world_map_child_update)
+	world_map.child_exiting_tree.disconnect(on_world_map_child_update)
+
+func _ready() -> void:
+	id = next_id
+	next_id += 1
+	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
+	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
+
 
 func _process(_delta: float) -> void:
 	_updated_wires = false
@@ -57,20 +70,40 @@ func get_powered() -> bool:
 	return powered
 
 func get_source() -> Node:
-	for pole in attached_poles.keys():
-		if attached_poles.get(pole).is_power_source:
+	for pole in pole_connections.keys():
+		if pole_connections.get(pole).is_power_source:
 			return pole
 	return null
+
+func search_for_machines() -> void:
+	var machines := []
+	for node: Node in tile_map_detection_area.find_scenes():
+		if not node.is_in_group(&"machines"):
+			continue
+		machines.append(node)
+		if machine_attachments.has(node):
+			continue
+		if pole_connections.has(node):
+			continue
+		connect_machine(node)
+	
+	for node in machine_attachments.keys():
+		if not machines.has(node):
+			disconnect_machine(node)
+
+	for node in pole_connections.keys():
+		if not machines.has(node):
+			disconnect_machine(node)
 	
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
 	assert(machine.has_method(&"get_attachment_point"))
-	if attached_machines.has(machine) or attached_poles.has(machine):
+	if machine_attachments.has(machine) or pole_connections.has(machine):
 		return false
 
 	if not machine.has_method(&"connect_machine"):
-		attached_machines[machine] = machine.get_attachment_point()
+		machine_attachments[machine] = machine.get_attachment_point()
 		if machine.has_signal(&"power_pole_connected"):
 			machine.emit_signal(&"power_pole_connected", self)
 		update_wires.call_deferred()
@@ -79,14 +112,14 @@ func connect_machine(machine: Node) -> bool:
 	# TODO fix pole connection limit
 	# var pole_count := 0
 
-	# for connection in attached_machines.values():
+	# for connection in machine_attachments.values():
 	# 	if connection.type == ConnectionType.POLE:
 	# 		pole_count += 1
 	
 	# if pole_count > pole_connection_limit:
 	# 	var min_distance: float = machine.get_attachment_point().global_position.distance_to(attachment_point.global_position)
 	# 	var closest_pole: PowerPole = machine
-	# 	for other_machine in attached_machines.keys():
+	# 	for other_machine in machine_attachments.keys():
 	# 		assert(not machine == null)
 	# 		if not other_machine is PowerPole:
 	# 			continue
@@ -99,7 +132,7 @@ func connect_machine(machine: Node) -> bool:
 	# 	disconnect_machine(closest_pole)
 	assert(machine.has_method(&"get_powered"))
 	var is_power_source: bool = not powered and machine.get_powered()
-	attached_poles[machine] = PoleConnection.create(is_power_source, machine.get_attachment_point())
+	pole_connections[machine] = PoleConnection.create(is_power_source, machine.get_attachment_point())
 
 	if is_power_source:
 		powered = true
@@ -108,13 +141,13 @@ func connect_machine(machine: Node) -> bool:
 	assert(machine.has_signal(&"powered_changed"))
 	machine.powered_changed.connect(on_connected_pole_powered_changed.bind(machine))
 
-	if machine.connect_machine(self):
-		return false;
-
 	if powered == machine.get_powered() and machine is PowerPole and id < machine.id:
 		update_wires.call_deferred()
 	elif powered and not machine.get_powered():
 		update_wires.call_deferred()
+	
+	if machine.connect_machine(self):
+		return false;
 
 	return true
 	
@@ -122,14 +155,14 @@ func connect_machine(machine: Node) -> bool:
 func disconnect_machine(machine: Node) -> void:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
-	if attached_machines.erase(machine):
+	if machine_attachments.erase(machine):
 		if machine.has_signal(&"power_pole_disconnected"):
 			machine.emit_signal(&"power_pole_disconnected", self)
 		update_wires.call_deferred()
 		return
 	
-	var removed_connection: PoleConnection = attached_poles.get(machine)
-	if not attached_poles.erase(machine):
+	var removed_connection: PoleConnection = pole_connections.get(machine)
+	if not pole_connections.erase(machine):
 		return
 
 	if machine.has_method(&"disconnect_machine"):
@@ -137,7 +170,7 @@ func disconnect_machine(machine: Node) -> void:
 	
 	if removed_connection.is_power_source:
 		var still_powered := false
-		for pole in attached_poles.keys():
+		for pole in pole_connections.keys():
 			assert(not pole == null)
 			assert(pole.has_method(&"get_powered"))
 			assert(pole.has_method(&"get_source"))
@@ -145,7 +178,7 @@ func disconnect_machine(machine: Node) -> void:
 				continue
 			if pole.get_source() == self:
 				continue
-			var connection: PoleConnection = attached_poles.get(pole)
+			var connection: PoleConnection = pole_connections.get(pole)
 			connection.is_power_source = true
 			still_powered = true
 			break
@@ -165,34 +198,27 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
-	for pole: Node in attached_poles.keys():
+	for pole: Node in pole_connections.keys():
 		assert(not pole == null)
 		if pole.get_powered() == powered and (not pole is PowerPole or pole.id < id):
 			continue
-		var connection: PoleConnection = attached_poles.get(pole)
+		var connection: PoleConnection = pole_connections.get(pole)
 		var offset := 1.5 * (connection.attachment_point.global_position - attachment_point.global_position).normalized()
 		var line := powered_wire_template.instantiate() if powered else wire_template.instantiate()
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(connection.attachment_point.global_position) - offset]
 	
-	for machine: Node in attached_machines.keys():
+	for machine: Node in machine_attachments.keys():
 		assert(not machine == null)
-		var other_attachment_point: Marker2D = attached_machines.get(machine)
+		var other_attachment_point: Marker2D = machine_attachments.get(machine)
 		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
 		var line := powered_wire_template.instantiate() if powered else wire_template.instantiate()
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 		# TODO sort points from bottom left to top right
 
-func on_connection_area_body_entered(body: Node) -> void:
-	if body == self:
-		return
-	if not body.is_in_group(&"machines"):
-		return
-	connect_machine(body)
-
 func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
-	var modified_connection = attached_poles.get(updated_pole)
+	var modified_connection = pole_connections.get(updated_pole)
 	if modified_connection == null:
 		return
 
@@ -200,7 +226,7 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 		if not value:
 			modified_connection.is_power_source = false
 			var still_powered := false
-			for pole in attached_poles.keys():
+			for pole in pole_connections.keys():
 				assert(not pole == null)
 				assert(pole.has_method(&"get_powered"))
 				assert(pole.has_method(&"get_source"))
@@ -208,7 +234,7 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 					continue
 				if pole.get_source() == self:
 					continue
-				var connection: PoleConnection = attached_poles.get(pole)
+				var connection: PoleConnection = pole_connections.get(pole)
 				connection.is_power_source = true
 				still_powered = true
 				break
@@ -219,6 +245,19 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 		modified_connection.is_power_source = true
 		powered = true
 		powered_changed.emit(true)
+
+func on_world_map_child_update(node: Node, is_entering: bool) -> void:
+	if node == self:
+		return
+	if is_entering:
+		if not node.is_in_group(&"machines"):
+			return
+		if not tile_map_detection_area.is_within_detection_distance(node.global_position):
+			return
+		await node.ready
+		connect_machine(node)
+	else:
+		disconnect_machine(node)
 
 class PoleConnection:
 	var is_power_source: bool
