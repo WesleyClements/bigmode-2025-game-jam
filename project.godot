@@ -32,6 +32,10 @@ window/stretch/aspect="keep_height"
 
 machines=""
 
+[gui]
+
+theme/custom="res://resources/default.Theme.tres"
+
 [input]
 
 move_up={
