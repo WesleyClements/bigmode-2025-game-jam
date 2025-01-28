@@ -2,3 +2,4 @@
 - add energy resource and consumption
 - add machine health
 - make mining laser target center of face of block
+- fix laser beam rendering under laser base
