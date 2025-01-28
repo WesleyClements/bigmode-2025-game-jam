@@ -1,9 +1,9 @@
 [gd_scene load_steps=8 format=3 uid="uid://c4cd34odmmos7"]
 
-[ext_resource type="Script" path="res://scenes/power_pole.gd" id="1_213qv"]
+[ext_resource type="Script" path="res://scenes/machines/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
-[ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/wire.tscn" id="2_tlqtr"]
-[ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/powered_wire.tscn" id="3_q7ibn"]
+[ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_tlqtr"]
+[ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="3_q7ibn"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="3_vfbas"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="6_n6t5w"]
 

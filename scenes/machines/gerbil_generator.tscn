@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3 uid="uid://o8maovqp3uv1"]
 
-[ext_resource type="Script" path="res://scenes/gerbil_generator.gd" id="1_7hibj"]
+[ext_resource type="Script" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
-[ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/powered_wire.tscn" id="2_vlges"]
+[ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="2_vlges"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_fm04w"]
