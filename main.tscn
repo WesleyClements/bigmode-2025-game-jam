@@ -6,9 +6,9 @@
 [ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
 [ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
 [ext_resource type="Script" path="res://resources/ItemRegistry.gd" id="4_e4mk4"]
-[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal.tscn" id="4_g03cq"]
+[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal_drop.tscn" id="4_g03cq"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
-[ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/UI.tscn" id="5_p1ybt"]
+[ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/ui/UI.tscn" id="5_p1ybt"]
 [ext_resource type="PackedScene" uid="uid://bkvwxlaf6o3n0" path="res://scenes/weasel.tscn" id="10_olp4k"]
 
 [sub_resource type="Resource" id="Resource_mh78c"]
@@ -25,8 +25,9 @@ floor_tilemap = NodePath("Floors")
 
 [node name="Walls" type="TileMapLayer" parent="World"]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAD+/wIAAQAAAAAAAQACAP3/AQAAAAAAAQD//wAAAQAAAAAAAgAFAPz/AQAAAAAAAwA=")
+tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgADAPz/AQAAAAAAAwA=")
 tile_set = ExtResource("2_dcctc")
+navigation_enabled = false
 script = ExtResource("2_sh2ir")
 item_registry = SubResource("Resource_mh78c")
 

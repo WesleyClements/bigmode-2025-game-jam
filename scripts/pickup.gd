@@ -1,9 +1,16 @@
 extends RigidBody2D
 class_name pickup
 
-func _ready():
-	pass
+const ItemType = MessageBuss.ItemType
+
+@export var item_type: ItemType = ItemType.COAL
+@export var amount: int = 1
+
+func get_type() -> ItemType:
+	return item_type
+
+func get_amount() -> int:
+	return amount
 	
 func collect():
-	MessageBuss.item_collected.emit(MessageBuss.ItemType.COAL, 1)
 	queue_free()

@@ -18,12 +18,12 @@ enum ItemType {
 	COAL
 }
 
-signal item_collected(type: ItemType, count: int)
+signal item_count_updated(type: ItemType, count: int)
 
 signal request_set_world_tile(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
 signal world_tile_changing(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
 
 func _ready() -> void:
-	assert(item_collected)
+	assert(item_count_updated)
 	assert(request_set_world_tile)
 	assert(world_tile_changing)
