@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://cluwtjy0x1ngw"]
+
+[ext_resource type="Script" path="res://scenes/ui/build_menu_slot.gd" id="1_fru0y"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rqp8e"]
+font_size = 12
+
+[node name="BuildMenuSlot" type="MarginContainer"]
+custom_minimum_size = Vector2(32, 32)
+anchors_preset = -1
+anchor_right = 0.025
+anchor_bottom = 0.044
+offset_bottom = 0.319998
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+script = ExtResource("1_fru0y")
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 2
+
+[node name="HotKeyName" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Q"
+label_settings = SubResource("LabelSettings_rqp8e")
+horizontal_alignment = 1
+vertical_alignment = 2

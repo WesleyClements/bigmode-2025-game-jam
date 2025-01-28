@@ -1,6 +1,9 @@
 - Make player slide along walls smoothly
 - add energy resource and consumption
+- make player consume energy when breaking walls
 - add machine health
 - make mining laser target center of face of block
 - fix laser beam rendering under laser base
 - refine selecting entities with mouse
+- update build menu sprites to be uniform
+- add background to ui elements
