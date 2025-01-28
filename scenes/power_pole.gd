@@ -249,9 +249,9 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if node == self:
 		return
+	if not node.is_in_group(&"machines"):
+		return
 	if is_entering:
-		if not node.is_in_group(&"machines"):
-			return
 		if not tile_map_detection_area.is_within_detection_distance(node.global_position):
 			return
 		await node.ready

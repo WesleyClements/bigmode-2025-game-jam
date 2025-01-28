@@ -107,9 +107,11 @@ func update_wires() -> void:
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 
 func on_world_map_child_update(node: Node, is_entering: bool) -> void:
+	if node == self:
+		return
+	if not node.is_in_group(&"machines"):
+		return
 	if is_entering:
-		if not node.is_in_group(&"machines"):
-			return
 		if not tile_map_detection_area.is_within_detection_distance(node.global_position):
 			return
 		await node.ready
