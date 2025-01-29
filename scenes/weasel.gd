@@ -3,6 +3,7 @@ extends CharacterBody2D
 @export var max_speed: float = 35.0
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
+@export var stop_distance: float = 20
 @export var path_weight: float = 0.5
 
 var target: Node2D
@@ -24,7 +25,7 @@ func _physics_process(delta: float) -> void:
 		return
 	var current_pos := global_position
 	var target_pos := target.global_position
-	if current_pos.distance_to(target_pos) < 8.0: # TODO no magic numbers
+	if current_pos.distance_to(target_pos) < stop_distance:
 		return
 
 	queue_redraw()
