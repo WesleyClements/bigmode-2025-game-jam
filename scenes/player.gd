@@ -1,10 +1,25 @@
 extends CharacterBody2D
 
+const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
+
 const ItemType = MessageBuss.ItemType
+const MachineType = MessageBuss.MachineType
+
+enum State {
+	IDLE,
+	MINING,
+	BUILDING,
+}
 
 @export var max_speed: float = 70.0
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
+@export var interaction_range: float = 2.0
+
+var world_map: WorldTileMapLayer
+var previous
+var state: State = State.IDLE
+var selected_building: MachineType = -1
 
 var coal_count: int = 0
 var iron_count: int = 0
@@ -12,9 +27,73 @@ var iron_count: int = 0
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
 
+func _ready() -> void:
+	for node in get_tree().get_nodes_in_group(&"terrain"):
+		if node is WorldTileMapLayer:
+			world_map = node
+			print("Found world map")
+			break
 
-func _on_area_2d_body_entered(body: Node2D):
-	print("its working")
+func _draw():
+	var player_tile := world_map.local_to_map(world_map.to_local(global_position))
+	var center := to_local(world_map.to_global(world_map.map_to_local(player_tile)))
+	var offset := world_map.tile_set.tile_size * (interaction_range + 0.5)
+	draw_polyline([center + Vector2(0, offset.y), center + Vector2(offset.x, 0), center + Vector2(0, -offset.y), center + Vector2(-offset.x, 0), center + Vector2(0, offset.y)], Color(1, 1, 1, 0.5), 1)
+
+		
+func _physics_process(delta: float) -> void:
+	queue_redraw()
+	var movement_direction = Vector2(
+		Input.get_axis(&"move_left", &"move_right"),
+		Input.get_axis(&"move_up", &"move_down")
+	).normalized()
+
+	var speed := max_speed
+
+	if Input.is_action_just_pressed(&"build_power_pole"):
+		state = State.BUILDING
+		selected_building = MachineType.POWER_POLE
+	elif Input.is_action_just_pressed(&"build_laser"):
+		state = State.BUILDING
+		selected_building = MachineType.LASER
+	elif Input.is_action_pressed(&"interact"):
+		var tile := world_map.mouse_to_map(get_global_mouse_position())
+		match state:
+			State.IDLE when Input.is_action_just_pressed(&"interact"):
+				var player_tile := world_map.local_to_map(world_map.to_local(global_position))
+				var tile_offset := (tile - player_tile).abs()
+				if tile_offset.x <= interaction_range and tile_offset.y <= interaction_range and world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN:
+					state = State.MINING
+			State.MINING:
+				MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.NONE, 0)
+				state = State.IDLE
+			State.BUILDING:
+				MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.ENTITY, selected_building)
+				state = State.IDLE
+	elif state == State.MINING:
+		state = State.IDLE
+
+	if not movement_direction.is_zero_approx():
+		animation_tree["parameters/conditions/is_idle"] = false
+		animation_tree["parameters/conditions/is_moving"] = true
+		if velocity.length() < max_speed:
+			velocity = velocity.move_toward(movement_direction * speed, speed * delta / speed_up_time)
+		else:
+			velocity = movement_direction * speed
+
+	elif not velocity.is_zero_approx():
+		velocity = velocity.move_toward(Vector2(), max_speed * delta / slow_down_time)
+	else:
+		animation_tree["parameters/conditions/is_idle"] = true
+		animation_tree["parameters/conditions/is_moving"] = false
+
+	if not is_zero_approx(movement_direction.x):
+		visuals.scale.x = -1 if movement_direction.x < 0 else 1
+
+	move_and_slide()
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.is_in_group(&"pickup"):
 		assert(body.has_method(&"collect"))
 		assert(body.has_method(&"get_type"))
@@ -28,32 +107,3 @@ func _on_area_2d_body_entered(body: Node2D):
 			# ItemType.IRON:
 			# 	iron_count += body.get_amount()
 			# 	MessageBuss.item_count_updated.emit(ItemType.IRON, coal_count)
-
-		
-func _physics_process(delta: float) -> void:
-
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction = Vector2(
-		Input.get_axis(&"move_left", &"move_right"),
-		Input.get_axis(&"move_up", &"move_down")
-	).normalized()
-	if not direction.is_zero_approx():
-		animation_tree["parameters/conditions/is_idle"] = false
-		animation_tree["parameters/conditions/is_moving"] = true
-		if velocity.length() < max_speed:
-			velocity = velocity.move_toward(direction * max_speed, max_speed * delta / speed_up_time)
-		else:
-			velocity = direction * max_speed
-
-	elif not velocity.is_zero_approx():
-		velocity = velocity.move_toward(Vector2(), max_speed * delta / slow_down_time)
-	else:
-		animation_tree["parameters/conditions/is_idle"] = true
-		animation_tree["parameters/conditions/is_moving"] = false
-
-	if not is_zero_approx(direction.x):
-		visuals.scale.x = -1 if direction.x < 0 else 1
-
-	move_and_slide()

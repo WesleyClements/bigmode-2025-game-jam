@@ -1,11 +1,5 @@
 extends TileMapLayer
 
-enum ActionType {
-	NONE,
-	PLACE_BLOCK,
-	REMOVE_BLOCK
-}
-
 enum TilesetAtlas {
 	TERRAIN = 0,
 	ENTITIES = 1
@@ -21,9 +15,11 @@ const BlockCoords = {
 
 @export var item_registry: ItemRegistry
 @export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
+@export var hover_outline_color: Color = Color(1, 1, 1, 0.5)
+@export var hover_outline_width: float = 1.0
 
-var action_taken: bool = false
 var scene_coords := {}
+var hovered_tile: Vector2i = Vector2i(-1, -1)
 
 @onready var navigation_grid := AStarGrid2D.new()
 
@@ -39,31 +35,17 @@ func _ready() -> void:
 	navigation_grid.cell_size = tile_set.tile_size
 	navigation_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 
+func _process(_delta: float) -> void:
+	var mouse_pos := get_global_mouse_position()
+	var tile_pos := mouse_to_map(mouse_pos)
+	if tile_pos != hovered_tile:
+		hovered_tile = tile_pos
+		queue_redraw()
 
-func _physics_process(_delta: float) -> void:
-	var action := ActionType.NONE
-
-	if (Input.is_action_pressed(&"place_block")):
-		action = ActionType.PLACE_BLOCK
-	elif (Input.is_action_pressed(&"remove_block")):
-		action = ActionType.REMOVE_BLOCK
-	
-	if action == ActionType.NONE:
-		action_taken = false
-		return
-	
-	if action_taken:
-		return
-	
-	action_taken = true
-	
-	var tile := mouse_to_map(get_global_mouse_position())
-
-	match action:
-		ActionType.PLACE_BLOCK:
-			MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.ENTITY, MessageBuss.MachineType.POWER_LINE)
-		ActionType.REMOVE_BLOCK:
-			MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.NONE, 0)
+func _draw() -> void:
+	var center := map_to_local(hovered_tile)
+	var half_tile_size := tile_set.tile_size / 2
+	draw_polyline([center + Vector2(0, half_tile_size.y), center + Vector2(half_tile_size.x, 0), center + Vector2(0, -half_tile_size.y), center + Vector2(-half_tile_size.x, 0), center + Vector2(0, half_tile_size.y)], hover_outline_color, hover_outline_width)
 
 func get_cell_scene(cell_pos: Vector2i) -> Node2D:
 	return scene_coords.get(cell_pos)

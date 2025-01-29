@@ -10,7 +10,7 @@ enum BlockType {
 
 enum MachineType {
 	GENERATOR = 2,
-	POWER_LINE = 1,
+	POWER_POLE = 1,
 	LASER = 3,
 }
 

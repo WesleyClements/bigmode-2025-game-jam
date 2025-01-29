@@ -13,7 +13,7 @@ anchor_bottom = 0.044
 offset_bottom = 0.319998
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 4
+size_flags_vertical = 8
 script = ExtResource("1_fru0y")
 
 [node name="Icon" type="TextureRect" parent="."]
