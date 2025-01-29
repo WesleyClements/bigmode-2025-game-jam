@@ -23,7 +23,7 @@ script = ExtResource("1_01b0u")
 wall_tilemap = NodePath("Walls")
 floor_tilemap = NodePath("Floors")
 
-[node name="Walls" type="TileMapLayer" parent="World"]
+[node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true
 tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgADAPz/AQAAAAAAAwA=")
 tile_set = ExtResource("2_dcctc")
