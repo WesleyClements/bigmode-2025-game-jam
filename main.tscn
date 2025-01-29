@@ -1,6 +1,5 @@
-[gd_scene load_steps=12 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=11 format=4 uid="uid://p5awsdsi1kea"]
 
-[ext_resource type="Script" path="res://scripts/world_populator.gd" id="1_01b0u"]
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
 [ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
@@ -17,11 +16,8 @@ coal_entity_scene = ExtResource("4_g03cq")
 
 [node name="Main" type="Node"]
 
-[node name="World" type="Node2D" parent="." node_paths=PackedStringArray("wall_tilemap", "floor_tilemap")]
+[node name="World" type="Node2D" parent="."]
 y_sort_enabled = true
-script = ExtResource("1_01b0u")
-wall_tilemap = NodePath("Walls")
-floor_tilemap = NodePath("Floors")
 
 [node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true

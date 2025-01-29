@@ -21,7 +21,6 @@ collision_mask = 0
 script = ExtResource("1_213qv")
 wire_template = ExtResource("2_tlqtr")
 powered_wire_template = ExtResource("3_q7ibn")
-pole_connection_limit = null
 
 [node name="AttachmentPoint" type="Marker2D" parent="."]
 position = Vector2(0, -24)

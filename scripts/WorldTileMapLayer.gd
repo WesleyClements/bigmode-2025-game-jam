@@ -21,8 +21,6 @@ const BlockCoords = {
 var scene_coords := {}
 var hovered_tile: Vector2i = Vector2i(-1, -1)
 
-@onready var navigation_grid := AStarGrid2D.new()
-
 func _enter_tree() -> void:
 	child_entered_tree.connect(on_child_entered_tree)
 	child_exiting_tree.connect(on_child_exiting_tree)
@@ -31,9 +29,10 @@ func _ready() -> void:
 	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
 	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
 
-	navigation_grid.cell_shape = AStarGrid2D.CELL_SHAPE_ISOMETRIC_DOWN
-	navigation_grid.cell_size = tile_set.tile_size
-	navigation_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+	await WorldMap.map_generated
+	WorldMap.populate_tile_map(self)
+	WorldMap.generate_a_star_grid_2d(self)
+
 
 func _process(_delta: float) -> void:
 	var mouse_pos := get_global_mouse_position()
@@ -80,8 +79,8 @@ func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i =
 		erase_cell(coords)
 	else:
 		set_cell(coords, source_id, atlas_coords, alternative_tile)
-	assert(navigation_grid.is_in_boundsv(coords))
-	navigation_grid.set_point_solid(coords, source_id != -1)
+	assert(WorldMap.a_star_grid_2d.is_in_boundsv(coords))
+	WorldMap.a_star_grid_2d.set_point_solid(coords, source_id != -1)
 	
 func on_set_world_tile_request(tile_pos: Vector2i, block_type: BlockType, block_variant: int) -> void:
 	match block_type:
@@ -108,23 +107,24 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 	match block_type:
 		BlockType.NONE:
 			var cell_data := get_cell_tile_data(tile_pos)
-			if cell_data != null:
-				var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
-				if not item_drops == null:
-					for item_name: StringName in item_drops.keys():
-						var drop_config: Dictionary = item_drops[item_name]
-						assert(drop_config != null)
-						assert(drop_config.min != null)
-						assert(drop_config.max != null)
-						var item_type: ItemRegistry.ItemType = ItemRegistry.ItemType[item_name]
-						var drop_amount := randi_range(drop_config.min, drop_config.max)
-						var scene_template := item_registry.get_entity_scene(item_type)
-						if scene_template == null: # TODO assert not null
-							continue
-						for _i in range(drop_amount):
-							var scene: Node2D = scene_template.instantiate()
-							add_child(scene)
-							scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
+			if cell_data == null:
+				return
+			var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
+			if not item_drops == null:
+				for item_name: StringName in item_drops.keys():
+					var drop_config: Dictionary = item_drops[item_name]
+					assert(drop_config != null)
+					assert(drop_config.min != null)
+					assert(drop_config.max != null)
+					var item_type: ItemRegistry.ItemType = ItemRegistry.ItemType[item_name]
+					var drop_amount := randi_range(drop_config.min, drop_config.max)
+					var scene_template := item_registry.get_entity_scene(item_type)
+					if scene_template == null: # TODO assert not null
+						continue
+					for _i in range(drop_amount):
+						var scene: Node2D = scene_template.instantiate()
+						add_child(scene)
+						scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
 		BlockType.STONE:
 			pass
 		BlockType.COAL_ORE:

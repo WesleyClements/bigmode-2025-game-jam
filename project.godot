@@ -19,7 +19,7 @@ config/icon="res://assets/icon.svg"
 [autoload]
 
 MessageBuss="*res://autoloads/MessageBuss.gd"
-MapGenerator="*res://autoloads/MapGenerator.gd"
+WorldMap="*res://autoloads/WorldMap.tscn"
 
 [display]
 
