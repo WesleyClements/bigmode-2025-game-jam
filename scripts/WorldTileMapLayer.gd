@@ -6,6 +6,7 @@ enum TilesetAtlas {
 }
 
 const BlockType = MessageBuss.BlockType
+const ItemType = MessageBuss.ItemType
 
 const BlockCoords = {
 	BlockType.STONE: Vector2i(0, 0),
@@ -110,21 +111,21 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 			if cell_data == null:
 				return
 			var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
-			if not item_drops == null:
-				for item_name: StringName in item_drops.keys():
-					var drop_config: Dictionary = item_drops[item_name]
-					assert(drop_config != null)
-					assert(drop_config.min != null)
-					assert(drop_config.max != null)
-					var item_type: ItemRegistry.ItemType = ItemRegistry.ItemType[item_name]
-					var drop_amount := randi_range(drop_config.min, drop_config.max)
-					var scene_template := item_registry.get_entity_scene(item_type)
-					if scene_template == null: # TODO assert not null
-						continue
-					for _i in range(drop_amount):
-						var scene: Node2D = scene_template.instantiate()
-						add_child(scene)
-						scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
+			if item_drops == null:
+				return
+			for item_name: StringName in item_drops.keys():
+				var drop_config: Dictionary = item_drops[item_name]
+				assert(drop_config != null)
+				assert(drop_config.min != null)
+				assert(drop_config.max != null)
+				var item_type: ItemType = ItemType[item_name]
+				var drop_amount := randi_range(drop_config.min, drop_config.max)
+				var scene_template := item_registry.get_entity_scene(item_type)
+				assert(scene_template != null)
+				for _i in range(drop_amount):
+					var scene: Node2D = scene_template.instantiate()
+					add_child(scene)
+					scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
 		BlockType.STONE:
 			pass
 		BlockType.COAL_ORE:

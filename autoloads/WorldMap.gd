@@ -56,7 +56,6 @@ func generate() -> bool:
 
 	generating = false
 	map_generated.emit.call_deferred()
-	print("Map generated")
 	return true
 
 func populate_tile_map(tile_map: WorldTileMapLayer) -> void:

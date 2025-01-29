@@ -31,7 +31,6 @@ func _ready() -> void:
 	for node in get_tree().get_nodes_in_group(&"terrain"):
 		if node is WorldTileMapLayer:
 			world_map = node
-			print("Found world map")
 			break
 
 func _draw():
@@ -94,16 +93,17 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.is_in_group(&"pickup"):
-		assert(body.has_method(&"collect"))
-		assert(body.has_method(&"get_type"))
-		assert(body.has_method(&"get_amount"))
-		body.collect()
-		var type = body.get_type()
-		match type:
-			ItemType.COAL:
-				coal_count += body.get_amount()
-				MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
-			# ItemType.IRON:
-			# 	iron_count += body.get_amount()
-			# 	MessageBuss.item_count_updated.emit(ItemType.IRON, coal_count)
+	if not body.is_in_group(&"pickup"):
+		return
+	assert(body.has_method(&"collect"))
+	assert(body.has_method(&"get_type"))
+	assert(body.has_method(&"get_amount"))
+	body.collect()
+	var type = body.get_type()
+	match type:
+		ItemType.COAL:
+			coal_count += body.get_amount()
+			MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
+		ItemType.IRON:
+			iron_count += body.get_amount()
+			MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)

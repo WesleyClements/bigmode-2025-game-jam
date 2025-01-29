@@ -3,7 +3,7 @@ class_name pickup
 
 const ItemType = MessageBuss.ItemType
 
-@export var item_type: ItemType = ItemType.COAL
+@export var item_type: ItemType
 @export var amount: int = 1
 
 func get_type() -> ItemType:

@@ -15,7 +15,8 @@ enum MachineType {
 }
 
 enum ItemType {
-	COAL
+	COAL,
+	IRON,
 }
 
 signal item_count_updated(type: ItemType, count: int)

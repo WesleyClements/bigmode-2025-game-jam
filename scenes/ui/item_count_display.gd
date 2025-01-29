@@ -3,6 +3,7 @@ extends Control
 const ItemType = MessageBuss.ItemType
 
 @export var display: Label
+@export var displayed_item_type: ItemType = ItemType.COAL
 
 func _ready() -> void:
 	MessageBuss.item_count_updated.connect(on_item_count_updated)
@@ -10,6 +11,6 @@ func _ready() -> void:
 	
 
 func on_item_count_updated(item_type: ItemType, count: int):
-	if item_type != ItemType.COAL:
+	if item_type != displayed_item_type:
 		return
 	display.text = str(count)

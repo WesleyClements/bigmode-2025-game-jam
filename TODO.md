@@ -7,3 +7,4 @@
 - refine selecting entities with mouse
 - update build menu sprites to be uniform
 - add background to ui elements
+- smooth weasel movement

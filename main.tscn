@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=12 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
@@ -7,12 +7,14 @@
 [ext_resource type="Script" path="res://resources/ItemRegistry.gd" id="4_e4mk4"]
 [ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal_drop.tscn" id="4_g03cq"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
+[ext_resource type="PackedScene" uid="uid://127jpolr1pnh" path="res://scenes/iron_drop.tscn" id="4_k6jce"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/ui/UI.tscn" id="5_p1ybt"]
 [ext_resource type="PackedScene" uid="uid://bkvwxlaf6o3n0" path="res://scenes/weasel.tscn" id="10_olp4k"]
 
 [sub_resource type="Resource" id="Resource_mh78c"]
 script = ExtResource("4_e4mk4")
 coal_entity_scene = ExtResource("4_g03cq")
+iron_entity_scene = ExtResource("4_k6jce")
 
 [node name="Main" type="Node"]
 

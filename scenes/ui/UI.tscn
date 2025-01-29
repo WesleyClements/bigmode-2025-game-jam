@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://cdhfd37vrxpuw"]
 
-[ext_resource type="Script" path="res://scenes/ui/coal_display.gd" id="1_js83p"]
 [ext_resource type="Script" path="res://scenes/ui/ui_wrapper.gd" id="1_k4oql"]
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
+[ext_resource type="Script" path="res://scenes/ui/item_count_display.gd" id="2_88wpw"]
 [ext_resource type="PackedScene" uid="uid://cluwtjy0x1ngw" path="res://scenes/ui/build_menu_slot.tscn" id="3_0fm2q"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="4_sadhj"]
 [ext_resource type="Texture2D" uid="uid://c15jrwiuhcjb2" path="res://assets/sprites/mining_laser_full.png" id="5_6xwpk"]
@@ -54,7 +54,7 @@ layout_mode = 2
 
 [node name="CoalDisplay" type="HBoxContainer" parent="UIWrapper/UI/TopRow/TopRight/TopRight" node_paths=PackedStringArray("display")]
 layout_mode = 2
-script = ExtResource("1_js83p")
+script = ExtResource("2_88wpw")
 display = NodePath("Count")
 
 [node name="Icon" type="TextureRect" parent="UIWrapper/UI/TopRow/TopRight/TopRight/CoalDisplay"]
@@ -63,6 +63,21 @@ texture = ExtResource("1_s6p1f")
 expand_mode = 2
 
 [node name="Count" type="Label" parent="UIWrapper/UI/TopRow/TopRight/TopRight/CoalDisplay"]
+layout_mode = 2
+
+[node name="IronDisplay" type="HBoxContainer" parent="UIWrapper/UI/TopRow/TopRight/TopRight" node_paths=PackedStringArray("display")]
+layout_mode = 2
+script = ExtResource("2_88wpw")
+display = NodePath("Count")
+displayed_item_type = 1
+
+[node name="Icon" type="TextureRect" parent="UIWrapper/UI/TopRow/TopRight/TopRight/IronDisplay"]
+self_modulate = Color(0.93, 0.5425, 0, 1)
+layout_mode = 2
+texture = ExtResource("1_s6p1f")
+expand_mode = 2
+
+[node name="Count" type="Label" parent="UIWrapper/UI/TopRow/TopRight/TopRight/IronDisplay"]
 layout_mode = 2
 
 [node name="BottomRow" type="HBoxContainer" parent="UIWrapper/UI"]

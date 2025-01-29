@@ -38,6 +38,5 @@ func calculate_size(view_port: Viewport) -> Vector2:
 	# return view_port_size.x
 
 func on_viewport_size_changed():
-	print("Viewport size changed")
 	var view_port := get_viewport()
 	size = calculate_size(view_port) / scale
