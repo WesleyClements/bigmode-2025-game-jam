@@ -1,7 +1,10 @@
 extends StaticBody2D
 
+const MAX_INT := 9223372036854775807
+
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
+const GerbilGenerator = preload("res://scenes/machines/gerbil_generator.gd")
 
 enum State {
 	IDLE,
@@ -18,6 +21,9 @@ signal power_pole_disconnected(pole: Node)
 @export var beam_color := Color(1, 0, 0.953125)
 @export var beam_width := 2.0
 
+var source: Node
+var generator: GerbilGenerator
+var separation_from_source := MAX_INT
 var attached_poles := []
 
 var powered: bool = false:
@@ -56,7 +62,6 @@ var laser_target: Vector2
 @onready var cool_down_timer: Timer = $CoolDownTimer
 @onready var mining_timer: Timer = $MiningTimer
 @onready var consumption_timer: Timer = $ConsumptionTimer
-
 
 func _exit_tree() -> void:
 	for pole in attached_poles:
@@ -138,22 +143,66 @@ func reset_laser_head() -> void:
 	laser_head.scale = Vector2.ONE
 
 func is_valid_mining_target(tile_map: WorldTileMapLayer, tile_offset: Vector2i, tile_origin: Vector2i) -> bool:
-	# if tile_offset.length() > detection_distance:
-	# 	return false
 	var tile_pos := tile_origin + tile_offset
 	return tile_map.get_cell_source_id(tile_pos) in minable_tileset_atlas_ids
+
+func find_source(pole: Node) -> Array:
+	assert(not pole == null)
+	assert(pole.is_in_group(&"machines"))
+	assert(pole.has_method(&"get_source"))
+	var separation := 1
+	var node := pole
+	while node != null and node != node.get_source():
+		node = node.get_source()
+		separation += 1
+	assert(node is GerbilGenerator)
+	return [node, separation]
+
+func update_source() -> void:
+	source = null
+	generator = null
+	separation_from_source = MAX_INT
+
+	for attached_pole in attached_poles:
+		if not attached_pole.get_powered():
+			continue
+		var result := find_source(attached_pole)
+		if result[1] > separation_from_source:
+			continue
+		source = attached_pole
+		generator = result[0]
+		separation_from_source = result[1]
 
 func on_power_pole_connected(pole: Node) -> void:
 	assert(not pole == null)
 	assert(pole.is_in_group(&"machines"))
 	assert(pole.has_method(&"get_powered"))
+	assert(pole.has_method(&"get_source"))
 	assert(pole.has_signal(&"powered_changed"))
 	if attached_poles.has(pole):
 		return
 	attached_poles.append(pole)
-	if pole.get_powered():
-		powered = true
 	pole.powered_changed.connect(on_power_pole_powered_changed.bind(pole))
+	if not pole.get_powered():
+		print("pole not powered")
+		return
+	if powered:
+		print("Powered")
+		var result := find_source(pole)
+		if result[1] > separation_from_source:
+			return
+		source = pole
+		generator = result[0]
+		separation_from_source = result[1]
+	else:
+		print("Not powered")
+		source = pole
+		powered = true
+		assert(generator == null)
+		var result := find_source(pole)
+		generator = result[0]
+		separation_from_source = result[1]
+
 
 func on_power_pole_disconnected(pole: Node) -> void:
 	assert(not pole == null)
@@ -164,37 +213,54 @@ func on_power_pole_disconnected(pole: Node) -> void:
 		return
 	attached_poles.remove_at(index)
 	pole.powered_changed.disconnect(on_power_pole_powered_changed)
-	for attached_pole in attached_poles:
-		assert(not attached_pole == null)
-		assert(attached_pole.has_method(&"get_powered"))
-		if attached_pole.get_powered():
-			powered = true
-			return
-	powered = false
+	if not powered:
+		return
+	if pole != source:
+		return
+
+	update_source()
+	if source == null:
+		powered = false
 
 func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 	if not attached_poles.has(pole):
 		return
-	if value:
+	assert(powered or value)
+	if not powered and value:
+		assert(source == null)
+		assert(generator == null)
+		var result := find_source(pole)
+		source = pole
+		generator = result[0]
+		separation_from_source = result[1]
 		powered = true
-		return
-	for p in attached_poles:
-		if p.get_powered():
-			powered = true
+	elif powered and value:
+		var result := find_source(pole)
+		if result[1] > separation_from_source:
 			return
-	powered = false
+		source = pole
+		generator = result[0]
+		separation_from_source = result[1]
+	elif powered and not value and pole == source:
+		update_source()
+		if source == null:
+			powered = false
 
 func on_cooldown_timer_timeout() -> void:
 	assert(powered)
 	assert(state == State.IDLE or state == State.SEARCHING)
+	assert(source != null)
+	assert(generator != null)
 	state = State.SEARCHING
 
 func on_mining_timer_timeout() -> void:
 	assert(powered)
 	assert(state == State.MINING)
+	assert(source != null)
+	assert(generator != null)
 	var remaining_energy := energy_consumption_rate * fmod(mining_timer.wait_time, consumption_timer.wait_time)
 	if not is_zero_approx(remaining_energy):
-		MessageBuss.consume_energy.emit(remaining_energy)
+		generator.consume_energy(remaining_energy)
 
 	var tile_origin := world_map.local_to_map(get_global_position())
 	MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
@@ -205,4 +271,6 @@ func on_mining_timer_timeout() -> void:
 func on_consumption_timer_timeout() -> void:
 	assert(powered)
 	assert(state == State.MINING)
-	MessageBuss.consume_energy.emit(energy_consumption_rate * consumption_timer.wait_time)
+	assert(source != null)
+	assert(generator != null)
+	generator.consume_energy(energy_consumption_rate * consumption_timer.wait_time)

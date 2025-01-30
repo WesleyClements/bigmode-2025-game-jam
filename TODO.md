@@ -1,6 +1,5 @@
 - Make player slide along walls smoothly
 - make player consume energy when breaking walls
-- make machines consume energy based on the closest generator
 - add machine health
 - fix laser beam rendering under laser base
 - refine selecting entities with mouse

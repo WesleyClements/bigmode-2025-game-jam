@@ -74,8 +74,6 @@ func _exit_tree() -> void:
 	world_map.child_exiting_tree.disconnect(on_world_map_child_update)
 
 func _ready() -> void:
-	MessageBuss.consume_energy.connect(on_consume_energy)
-
 	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
 	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
 
@@ -103,6 +101,9 @@ func validate_connection(node: Node) -> bool:
 	if not tile_map_detection_area.is_within_detection_distance(node.global_position):
 			return false
 	return true
+
+func consume_energy(value: float) -> void:
+	energy -= value
 	
 
 func search_for_machines() -> void:
@@ -181,9 +182,6 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if not node.is_in_group(&"machines"):
 		return
 	disconnect_machine(node)
-
-func on_consume_energy(value: float) -> void:
-	energy -= value
 
 func on_generation_timer_timeout() -> void:
 	if fuel <= 0.0:

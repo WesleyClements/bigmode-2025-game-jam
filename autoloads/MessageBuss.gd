@@ -34,6 +34,3 @@ signal entity_spawning(tile_pos: Vector2i, entity_type: EntityType)
 
 @warning_ignore("unused_signal")
 signal set_selected_entity_type(entity_type: EntityType)
-
-@warning_ignore("unused_signal")
-signal consume_energy(amount: float)
