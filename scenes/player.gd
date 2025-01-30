@@ -21,7 +21,12 @@ enum State {
 var world_map: WorldTileMapLayer
 var previous
 var state: State = State.IDLE
-var selected_building: EntityType
+var selected_building: EntityType:
+	set(value):
+		if value == selected_building:
+			return
+		selected_building = value
+		MessageBuss.set_selected_entity_type.emit(selected_building)
 
 var coal_count := 0.0:
 	set(value):
@@ -80,6 +85,7 @@ func _physics_process(delta: float) -> void:
 					iron_count -= cost
 					MessageBuss.request_spawn_entity.emit(tile, selected_building)
 				state = State.IDLE
+				selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
 
