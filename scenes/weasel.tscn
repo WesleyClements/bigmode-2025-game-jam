@@ -20,23 +20,26 @@ collision_layer = 4
 collision_mask = 15
 script = ExtResource("1_3tarm")
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+physics_interpolation_mode = 1
+
+[node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_tkt1l")
 offset = Vector2(0, -1)
 
-[node name="Body" type="Sprite2D" parent="."]
+[node name="Body" type="Sprite2D" parent="Visuals"]
 texture = ExtResource("1_bxyi3")
 offset = Vector2(0, -10)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(8, 0, 1, -2, -6, 0, 1, 2)
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 10
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 scale = Vector2(1, 0.5)
 shape = SubResource("CircleShape2D_7l1no")
 
-[connection signal="body_entered" from="Area2D" to="." method="on_body_entered"]
+[connection signal="body_entered" from="DetectionArea" to="." method="on_body_entered"]

@@ -9,6 +9,8 @@ extends CharacterBody2D
 var target: Node2D
 var path: PackedVector2Array = []
 
+@onready var visuals: Node2D = $Visuals
+
 func _draw() -> void:
 	var prev: Vector2
 	for i: int in range(path.size()):
@@ -37,6 +39,8 @@ func _physics_process(delta: float) -> void:
 		current_pos.direction_to(path[1])
 	).normalized()
 	velocity = velocity.move_toward(weighted_dir * max_speed, max_speed * delta / speed_up_time) # TODO maintain general direction as path changes
+	if not is_zero_approx(velocity.x):
+		visuals.scale.x = signf(velocity.x)
 	move_and_slide()
 
 
