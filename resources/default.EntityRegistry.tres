@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EntityRegistry" load_steps=2 format=3 uid="uid://jjgw2g514cgo"]
+
+[ext_resource type="Script" path="res://resources/EntityRegistry.gd" id="1_axeqf"]
+
+[resource]
+script = ExtResource("1_axeqf")
+power_pole_cost = 1
+laser_cost = 5

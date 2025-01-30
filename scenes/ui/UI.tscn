@@ -103,11 +103,13 @@ alignment = 1
 
 [node name="PowerPoleBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
 layout_mode = 2
+entity_type = 1
 texture = ExtResource("4_sadhj")
 hot_key_name = "1"
 
 [node name="MiningLaserBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
 layout_mode = 2
+entity_type = 3
 texture = ExtResource("5_6xwpk")
 hot_key_name = "2"
 

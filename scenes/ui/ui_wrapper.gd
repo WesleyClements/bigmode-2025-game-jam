@@ -33,9 +33,6 @@ func calculate_size(view_port: Viewport) -> Vector2:
 		x,
 		project_viewport_size.y
 	)
-	# if view_port_size.x * project_viewport_size.y / project_viewport_size.x > view_port_size.y:
-	# 	return project_viewport_size.x
-	# return view_port_size.x
 
 func on_viewport_size_changed():
 	var view_port := get_viewport()

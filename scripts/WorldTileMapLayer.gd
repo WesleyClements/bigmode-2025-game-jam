@@ -6,6 +6,7 @@ enum TilesetAtlas {
 }
 
 const BlockType = MessageBuss.BlockType
+const EntityType = MessageBuss.EntityType
 const ItemType = MessageBuss.ItemType
 
 const BlockCoords = {
@@ -29,6 +30,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
 	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
+	MessageBuss.request_spawn_entity.connect(on_spawn_entity_request)
 
 	await WorldMap.map_generated
 	WorldMap.populate_tile_map(self)
@@ -90,11 +92,6 @@ func on_set_world_tile_request(tile_pos: Vector2i, block_type: BlockType, block_
 				return
 			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
 			update_cell(tile_pos)
-		BlockType.ENTITY:
-			if get_cell_source_id(tile_pos) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile_pos) == block_variant:
-				return
-			MessageBuss.world_tile_changing.emit(tile_pos, block_type, block_variant)
-			update_cell(tile_pos, TilesetAtlas.ENTITIES, Vector2(0, 0), block_variant)
 		BlockType.STONE, BlockType.COAL_ORE, BlockType.IRON_ORE:
 			if get_cell_source_id(tile_pos) == TilesetAtlas.TERRAIN and get_cell_atlas_coords(tile_pos) == BlockCoords[block_type] and get_cell_alternative_tile(tile_pos) == block_variant:
 				return
@@ -113,6 +110,8 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 			var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
 			if item_drops == null:
 				return
+			
+			var half_tile_size := Vector2(tile_set.tile_size) / 2.0
 			for item_name: StringName in item_drops.keys():
 				var drop_config: Dictionary = item_drops[item_name]
 				assert(drop_config != null)
@@ -122,20 +121,30 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 				var drop_amount := randi_range(drop_config.min, drop_config.max)
 				var scene_template := item_registry.get_entity_scene(item_type)
 				assert(scene_template != null)
-				for _i in range(drop_amount):
-					var scene: Node2D = scene_template.instantiate()
+				for scene: Node2D in range(drop_amount).map(scene_template.instantiate):
 					add_child(scene)
-					scene.global_position = to_global(map_to_local(tile_pos)) + Vector2(randf() - 0.5, randf() - 0.5) * 2.0 * 4.0 # TODO no magic numbers
-		BlockType.STONE:
-			pass
-		BlockType.COAL_ORE:
-			pass
-		BlockType.IRON_ORE:
-			pass
-		BlockType.ENTITY:
+					var offset_x := clampf(randfn(0.0, 0.5), -1.0, 1.0) * half_tile_size.x
+					var y_max := half_tile_size.y - absf(offset_x) / 2.0
+					var offset := Vector2(
+						offset_x,
+						clampf(randfn(0.0, 0.5), -1.0, 1.0) * y_max
+					)
+					scene.global_position = to_global(map_to_local(tile_pos)) + offset
+		BlockType.STONE, BlockType.COAL_ORE, BlockType.IRON_ORE:
 			pass
 		_:
 			assert(false, "Unknown block type")
+
+func on_spawn_entity_request(tile_pos: Vector2i, entity_type: EntityType) -> void:
+	if get_cell_source_id(tile_pos) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile_pos) == entity_type:
+		return
+	MessageBuss.entity_spawning.emit(tile_pos, entity_type)
+	update_cell(
+		tile_pos,
+		TilesetAtlas.ENTITIES,
+		Vector2(0, 0),
+		entity_type
+	)
 
 func on_child_entered_tree(child: Node) -> void:
 	await child.ready

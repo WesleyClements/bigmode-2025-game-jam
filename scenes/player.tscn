@@ -1,7 +1,8 @@
-[gd_scene load_steps=17 format=3 uid="uid://cj8ksno35aduj"]
+[gd_scene load_steps=18 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
+[ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_hp7f3"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h40h1"]
@@ -181,6 +182,7 @@ physics_interpolation_mode = 1
 collision_layer = 2
 collision_mask = 7
 script = ExtResource("1_fexe0")
+entity_registry = ExtResource("2_hp7f3")
 
 [node name="Visuals" type="Node2D" parent="."]
 

@@ -3,7 +3,8 @@ extends CharacterBody2D
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 
 const ItemType = MessageBuss.ItemType
-const MachineType = MessageBuss.MachineType
+const BlockType = MessageBuss.BlockType
+const EntityType = MessageBuss.EntityType
 
 enum State {
 	IDLE,
@@ -11,6 +12,7 @@ enum State {
 	BUILDING,
 }
 
+@export var entity_registry: EntityRegistry
 @export var max_speed: float = 70.0
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
@@ -19,10 +21,16 @@ enum State {
 var world_map: WorldTileMapLayer
 var previous
 var state: State = State.IDLE
-var selected_building: MachineType = -1
+var selected_building: EntityType
 
-var coal_count: int = 0
-var iron_count: int = 0
+var coal_count := 0.0:
+	set(value):
+		coal_count = value
+		MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
+var iron_count := 0.0:
+	set(value):
+		iron_count = value
+		MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
@@ -49,12 +57,12 @@ func _physics_process(delta: float) -> void:
 
 	var speed := max_speed
 
-	if Input.is_action_just_pressed(&"build_power_pole"):
+	if Input.is_action_just_pressed(&"build_power_pole") and iron_count >= entity_registry.get_entity_cost(EntityType.POWER_POLE):
 		state = State.BUILDING
-		selected_building = MachineType.POWER_POLE
-	elif Input.is_action_just_pressed(&"build_laser"):
+		selected_building = EntityType.POWER_POLE
+	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_cost(EntityType.LASER):
 		state = State.BUILDING
-		selected_building = MachineType.LASER
+		selected_building = EntityType.LASER
 	elif Input.is_action_pressed(&"interact"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
@@ -64,10 +72,13 @@ func _physics_process(delta: float) -> void:
 				if tile_offset.x <= interaction_range and tile_offset.y <= interaction_range and world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN:
 					state = State.MINING
 			State.MINING:
-				MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.NONE, 0)
+				MessageBuss.request_set_world_tile.emit(tile, BlockType.NONE, 0)
 				state = State.IDLE
 			State.BUILDING:
-				MessageBuss.request_set_world_tile.emit(tile, MessageBuss.BlockType.ENTITY, selected_building)
+				var cost := entity_registry.get_entity_cost(selected_building)
+				if iron_count >= cost:
+					iron_count -= cost
+					MessageBuss.request_spawn_entity.emit(tile, selected_building)
 				state = State.IDLE
 	elif state == State.MINING:
 		state = State.IDLE
@@ -103,7 +114,5 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	match type:
 		ItemType.COAL:
 			coal_count += body.get_amount()
-			MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
 		ItemType.IRON:
 			iron_count += body.get_amount()
-			MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)

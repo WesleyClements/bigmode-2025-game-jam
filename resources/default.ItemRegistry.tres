@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ItemRegistry" load_steps=4 format=3 uid="uid://coud2jncat4dk"]
+
+[ext_resource type="PackedScene" uid="uid://dqcmb4di314pm" path="res://scenes/coal_drop.tscn" id="1_ugbcr"]
+[ext_resource type="PackedScene" uid="uid://127jpolr1pnh" path="res://scenes/iron_drop.tscn" id="2_d0hut"]
+[ext_resource type="Script" path="res://resources/ItemRegistry.gd" id="3_u2dbj"]
+
+[resource]
+script = ExtResource("3_u2dbj")
+coal_entity_scene = ExtResource("1_ugbcr")
+iron_entity_scene = ExtResource("2_d0hut")
