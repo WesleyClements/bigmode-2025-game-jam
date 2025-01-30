@@ -35,6 +35,7 @@ var _tile_map: WorldTileMapLayer
 func _ready() -> void:
 	a_star_grid_2d.cell_shape = AStarGrid2D.CELL_SHAPE_ISOMETRIC_DOWN
 	a_star_grid_2d.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
+	a_star_grid_2d.jumping_enabled = true
 
 	generate()
 
@@ -89,5 +90,7 @@ func get_navigation_path(from: Vector2, to: Vector2) -> PackedVector2Array:
 	var from_tile := _tile_map.local_to_map(_tile_map.to_local(from))
 	var to_tile := _tile_map.local_to_map(_tile_map.to_local(to))
 	var path := a_star_grid_2d.get_point_path(from_tile, to_tile, false)
-	path.append(to)
+	if path.size() == 0:
+		return path
+	path[path.size() - 1] = to
 	return path

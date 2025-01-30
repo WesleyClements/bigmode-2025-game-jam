@@ -8,3 +8,4 @@
 - update build menu sprites to be uniform
 - add background to ui elements
 - smooth weasel movement
+- add feedback to ui when in progress of placing machine
