@@ -37,6 +37,8 @@ var iron_count := 0.0:
 		iron_count = value
 		MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)
 
+var interaction: Node = null
+
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
 
@@ -68,10 +70,10 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_cost(EntityType.LASER):
 		state = State.BUILDING
 		selected_building = EntityType.LASER
-	elif Input.is_action_pressed(&"interact"):
+	elif Input.is_action_pressed(&"tile_map_interaction"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
-			State.IDLE when Input.is_action_just_pressed(&"interact"):
+			State.IDLE when Input.is_action_just_pressed(&"tile_map_interaction"):
 				var player_tile := world_map.local_to_map(world_map.to_local(global_position))
 				var tile_offset := (tile - player_tile).abs()
 				if tile_offset.x <= interaction_range and tile_offset.y <= interaction_range and world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN:
@@ -88,6 +90,9 @@ func _physics_process(delta: float) -> void:
 				selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
+	
+	if Input.is_action_just_pressed(&"interact") and interaction != null:
+		interaction.interact(self)
 
 	if not movement_direction.is_zero_approx():
 		animation_tree["parameters/conditions/is_idle"] = false
@@ -109,7 +114,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func _on_area_2d_body_entered(body: Node2D) -> void:
+func on_body_entered_pickup_area(body: Node2D) -> void:
 	if not body.is_in_group(&"pickup"):
 		return
 	assert(body.has_method(&"collect"))
@@ -122,3 +127,8 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 			coal_count += body.get_amount()
 		ItemType.IRON:
 			iron_count += body.get_amount()
+
+func on_area_enter_interaction_area(area: Area2D) -> void:
+	assert(area.has_method(&"get_interaction"))
+	interaction = area.get_interaction()
+	assert(interaction.has_method(&"interact"))

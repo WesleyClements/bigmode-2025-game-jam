@@ -55,6 +55,7 @@ var _updated_wires: bool = false
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var generation_timer: Timer = $GenerationTimer
 @onready var energy_display: Label = $EnergyDisplay
+@onready var button_prompt: Panel = $ButtonPrompt
 
 func _enter_tree() -> void:
 	search_for_machines.call_deferred()
@@ -82,7 +83,6 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_updated_wires = false
-	
 
 func get_attachment_point() -> Marker2D:
 	return attachment_point
@@ -193,3 +193,6 @@ func on_generation_timer_timeout() -> void:
 
 func on_energy_changed() -> void:
 	energy_display.text = "E : " + str(energy) + "\nF : " + str(fuel)
+
+func on_player_interaction_area(_body: Node, entered: bool) -> void:
+	button_prompt.visible = entered

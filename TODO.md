@@ -1,5 +1,6 @@
 - Make player slide along walls smoothly
 - make player consume energy when breaking walls
+- make machines consume energy based on the closest generator
 - add machine health
 - make mining laser target center of face of block
 - fix laser beam rendering under laser base
@@ -7,3 +8,4 @@
 - update build menu sprites to be uniform
 - add background to ui elements
 - smooth weasel movement
+- allow holding "e" to continuously deposit coal into generator
