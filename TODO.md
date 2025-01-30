@@ -1,5 +1,4 @@
 - Make player slide along walls smoothly
-- add energy resource and consumption
 - make player consume energy when breaking walls
 - add machine health
 - make mining laser target center of face of block
@@ -8,4 +7,3 @@
 - update build menu sprites to be uniform
 - add background to ui elements
 - smooth weasel movement
-- add feedback to ui when in progress of placing machine

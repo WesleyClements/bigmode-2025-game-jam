@@ -134,3 +134,20 @@ outline_color = Color(1, 0, 0.952941, 0.501961)
 libraries = {
 "": SubResource("AnimationLibrary_ws28p")
 }
+
+[node name="CoolDownTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="MiningTimer" type="Timer" parent="."]
+process_callback = 0
+one_shot = true
+
+[node name="ConsumptionTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+
+[connection signal="timeout" from="CoolDownTimer" to="." method="on_cooldown_timer_timeout"]
+[connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
+[connection signal="timeout" from="ConsumptionTimer" to="." method="on_consumption_timer_timeout"]

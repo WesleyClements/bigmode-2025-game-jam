@@ -4,11 +4,48 @@ const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
 
 signal powered_changed(powered: bool)
+signal energy_changed(energy: float)
+signal fuel_changed(fuel: float)
 
-@export var pole_connection_limit: int = 4
+@export var wire_template: PackedScene
 @export var powered_wire_template: PackedScene
 
+@export var pole_connection_limit: int = 4
+
+@export var generation_rate: float = 1.0
+@export var fuel_consumption_rate: float = 1.0
+
 var attachments: Dictionary = {}
+
+var energy: float = 0.0:
+	set(value):
+		value = maxf(value, 0.0)
+		if is_equal_approx(energy, value):
+			return
+		var was_powered := energy > 0.0
+		energy = 0.0 if is_zero_approx(value) else value
+		energy_changed.emit(energy)
+
+		if not was_powered and energy > 0.0:
+			powered_changed.emit(true)
+			update_wires.call_deferred()
+		elif was_powered and energy == 0.0:
+			powered_changed.emit(false)
+			update_wires.call_deferred()
+
+		
+var fuel: float = 0.0:
+	set(value):
+		value = maxf(value, 0.0)
+		if is_equal_approx(fuel, value):
+			return
+		fuel = 0.0 if is_zero_approx(value) else value
+		fuel_changed.emit(fuel)
+
+		if generation_timer.is_stopped() and fuel > 0.0:
+			generation_timer.start()
+		elif not generation_timer.is_stopped() and fuel == 0.0:
+			generation_timer.stop()
 
 var _updated_wires: bool = false
 
@@ -16,6 +53,8 @@ var _updated_wires: bool = false
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
+@onready var generation_timer: Timer = $GenerationTimer
+@onready var energy_display: Label = $EnergyDisplay
 
 func _enter_tree() -> void:
 	search_for_machines.call_deferred()
@@ -34,8 +73,12 @@ func _exit_tree() -> void:
 	world_map.child_exiting_tree.disconnect(on_world_map_child_update)
 
 func _ready() -> void:
+	MessageBuss.consume_energy.connect(on_consume_energy)
+
 	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
 	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
+
+	fuel = 5.0
 
 func _process(_delta: float) -> void:
 	_updated_wires = false
@@ -45,7 +88,7 @@ func get_attachment_point() -> Marker2D:
 	return attachment_point
 
 func get_powered() -> bool:
-	return true
+	return not is_zero_approx(energy)
 
 func get_source() -> Node:
 	return self
@@ -117,11 +160,12 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
+	var template := powered_wire_template if get_powered() else wire_template
 	for machine in attachments.keys():
 		assert(not machine == null)
 		var other_attachment_point: Marker2D = attachments.get(machine)
 		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
-		var line := powered_wire_template.instantiate()
+		var line := template.instantiate()
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 
@@ -137,3 +181,15 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if not node.is_in_group(&"machines"):
 		return
 	disconnect_machine(node)
+
+func on_consume_energy(value: float) -> void:
+	energy -= value
+
+func on_generation_timer_timeout() -> void:
+	if fuel <= 0.0:
+		return
+	fuel -= fuel_consumption_rate * generation_timer.wait_time
+	energy += generation_rate * generation_timer.wait_time
+
+func on_energy_changed() -> void:
+	energy_display.text = "E : " + str(energy) + "\nF : " + str(fuel)

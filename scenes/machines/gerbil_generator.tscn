@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://o8maovqp3uv1"]
+[gd_scene load_steps=9 format=3 uid="uid://o8maovqp3uv1"]
 
 [ext_resource type="Script" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
+[ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_5qgbl"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="2_vlges"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
 
@@ -14,10 +15,14 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+[sub_resource type="LabelSettings" id="LabelSettings_2f7d7"]
+font_size = 8
+
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_7hibj")
+wire_template = ExtResource("2_5qgbl")
 powered_wire_template = ExtResource("2_vlges")
 
 [node name="Shadow" type="Sprite2D" parent="."]
@@ -39,3 +44,29 @@ z_index = 100
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("5_qnl68")]
 root_node = NodePath("..")
 outline_color = Color(0.999296, 0.615239, 3.85046e-07, 0.501961)
+
+[node name="GenerationTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+
+[node name="EnergyDisplay" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -47.0
+offset_right = 20.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 8
+text = "E :
+F :"
+label_settings = SubResource("LabelSettings_2f7d7")
+horizontal_alignment = 1
+
+[connection signal="energy_changed" from="." to="." method="on_energy_changed" unbinds=1]
+[connection signal="fuel_changed" from="." to="." method="on_energy_changed" unbinds=1]
+[connection signal="timeout" from="GenerationTimer" to="." method="on_generation_timer_timeout"]

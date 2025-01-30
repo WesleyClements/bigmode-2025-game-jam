@@ -12,10 +12,8 @@ enum State {
 signal power_pole_connected(pole: Node)
 signal power_pole_disconnected(pole: Node)
 
-@export var minable_tileset_atlas_ids: Array[int] = [0]
-@export var detection_distance := 4.0
-@export var mining_time := 0.5
-@export var cool_down_time := 0.1
+@export var minable_tileset_atlas_ids: PackedInt32Array = [0]
+@export var energy_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -8)
 @export var beam_color := Color(1, 0, 0.953125)
 @export var beam_width := 2.0
@@ -30,13 +28,22 @@ var powered: bool = false:
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
+			state = State.IDLE
 			queue_redraw()
 		else:
 			await animation_player.animation_finished
 			powered = true
 
-var state := State.IDLE
-var is_waiting := false
+var state := State.IDLE:
+	set(value):
+		if state == value:
+			return
+		state = value
+		if state == State.IDLE:
+			cool_down_timer.stop()
+			mining_timer.stop()
+			consumption_timer.stop()
+
 var mining_target_tile: Vector2i
 var laser_target: Vector2
 
@@ -46,6 +53,9 @@ var laser_target: Vector2
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var laser_head: Node2D = $Laser/LaserHead
 @onready var fire_point: Marker2D = $Laser/LaserHead/FirePoint
+@onready var cool_down_timer: Timer = $CoolDownTimer
+@onready var mining_timer: Timer = $MiningTimer
+@onready var consumption_timer: Timer = $ConsumptionTimer
 
 
 func _exit_tree() -> void:
@@ -72,25 +82,25 @@ func _ready():
 	power_pole_disconnected.connect(on_power_pole_disconnected)
 
 func _physics_process(_delta: float) -> void:
-	if is_waiting:
-		return
 	if not powered:
 		return
 	match state:
-		State.SEARCHING:
+		State.IDLE when cool_down_timer.is_stopped():
+			cool_down_timer.start()
+			queue_redraw()
+		State.SEARCHING when cool_down_timer.is_stopped():
 			var tile_origin := world_map.local_to_map(get_global_position())
 			var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
 			if potential_mining_targets.size() == 0:
 				reset_laser_head()
-				is_waiting = true
-				await get_tree().create_timer(cool_down_time).timeout
-				is_waiting = false
+				cool_down_timer.start()
 				return
 			mining_target_tile = potential_mining_targets[randi_range(0, potential_mining_targets.size() - 1)]
 			if mining_target_tile.x < -mining_target_tile.y:
 				laser_head.position.y = -1.0
 				const INV_SQRT_2 := 0.70710678
-				var dot = Vector2(-INV_SQRT_2, -INV_SQRT_2).normalized().dot(Vector2(mining_target_tile).normalized())
+				const UP = Vector2(-INV_SQRT_2, -INV_SQRT_2)
+				var dot = UP.dot(Vector2(mining_target_tile).normalized())
 				laser_head.scale = Vector2(
 					lerpf(1.0, 0.7, dot),
 					lerpf(1.0, 0.8, dot)
@@ -103,24 +113,12 @@ func _physics_process(_delta: float) -> void:
 			) + target_offset
 			laser_head.look_at(laser_target)
 			state = State.MINING
-		State.MINING:
+		State.MINING when mining_timer.is_stopped():
 			queue_redraw()
-			is_waiting = true
-			await get_tree().create_timer(mining_time).timeout
-			if not powered:
-				state = State.IDLE
-				is_waiting = false
-				return
-			var tile_origin = world_map.local_to_map(get_global_position())
-			MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
-			state = State.IDLE
-			is_waiting = false
-		State.IDLE:
-			queue_redraw()
-			is_waiting = true
-			await get_tree().create_timer(cool_down_time).timeout
-			state = State.SEARCHING
-			is_waiting = false
+			mining_timer.start()
+			print("Mining")
+			consumption_timer.start()
+			
 
 func get_attachment_point() -> Marker2D:
 	return attachment_point
@@ -176,3 +174,26 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 			powered = true
 			return
 	powered = false
+
+func on_cooldown_timer_timeout() -> void:
+	assert(powered)
+	assert(state == State.IDLE or state == State.SEARCHING)
+	state = State.SEARCHING
+
+func on_mining_timer_timeout() -> void:
+	assert(powered)
+	assert(state == State.MINING)
+	var remaining_energy := energy_consumption_rate * fmod(mining_timer.wait_time, consumption_timer.wait_time)
+	if not is_zero_approx(remaining_energy):
+		MessageBuss.consume_energy.emit(remaining_energy)
+
+	var tile_origin := world_map.local_to_map(get_global_position())
+	MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
+
+	queue_redraw()
+	state = State.IDLE
+
+func on_consumption_timer_timeout() -> void:
+	assert(powered)
+	assert(state == State.MINING)
+	MessageBuss.consume_energy.emit(energy_consumption_rate * consumption_timer.wait_time)
