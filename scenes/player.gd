@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 		animation_tree["parameters/conditions/is_moving"] = false
 
 	if not is_zero_approx(movement_direction.x):
-		visuals.scale.x = -signf(movement_direction.x)
+		visuals.scale.x = signf(movement_direction.x)
 
 	move_and_slide()
 
