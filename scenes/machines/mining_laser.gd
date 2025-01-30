@@ -14,7 +14,7 @@ signal power_pole_disconnected(pole: Node)
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
 @export var energy_consumption_rate := 1.0
-@export var target_offset := Vector2(0, -8)
+@export var target_offset := Vector2(0, -10)
 @export var beam_color := Color(1, 0, 0.953125)
 @export var beam_width := 2.0
 
@@ -108,9 +108,18 @@ func _physics_process(_delta: float) -> void:
 			else:
 				laser_head.position.y = 0.0
 				laser_head.scale = Vector2.ONE
-			laser_target = world_map.to_global(
-				world_map.map_to_local(tile_origin + mining_target_tile)
-			) + target_offset
+
+			var target_center := world_map.map_to_local(tile_origin + mining_target_tile)
+
+			var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
+			var target_face_offset: Vector2
+			if absf(mining_target_tile.x) < absf(mining_target_tile.y):
+				quarter_tile_size = Vector2(quarter_tile_size.x, -quarter_tile_size.y)
+				target_face_offset = quarter_tile_size if mining_target_tile.y > 0 else -quarter_tile_size
+			else:
+				target_face_offset = quarter_tile_size if mining_target_tile.x < 0 else -quarter_tile_size
+
+			laser_target = world_map.to_global(target_center + target_face_offset + target_offset)
 			laser_head.look_at(laser_target)
 			state = State.MINING
 		State.MINING when mining_timer.is_stopped():
