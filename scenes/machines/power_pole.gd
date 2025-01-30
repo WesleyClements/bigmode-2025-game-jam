@@ -23,8 +23,9 @@ signal powered_changed(powered: bool)
 var id: int
 var powered := false
 
-var machine_attachments := {}
+var source: Node
 var pole_connections := {}
+var machine_attachments := {}
 
 var _updated_wires: bool = false
 
@@ -70,10 +71,7 @@ func get_powered() -> bool:
 	return powered
 
 func get_source() -> Node:
-	for pole in pole_connections.keys():
-		if pole_connections.get(pole).is_power_source:
-			return pole
-	return null
+	return source
 
 func validate_connection(node: Node) -> bool:
 	if node == null:
@@ -150,10 +148,10 @@ func connect_machine(machine: Node) -> bool:
 	# 		return false
 	# 	disconnect_machine(closest_pole)
 	assert(machine.has_method(&"get_powered"))
-	var is_power_source: bool = not powered and machine.get_powered()
-	pole_connections[machine] = PoleConnection.create(is_power_source, machine.get_attachment_point())
+	pole_connections[machine] = machine.get_attachment_point()
 
-	if is_power_source:
+	if not powered and machine.get_powered():
+		source = machine
 		powered = true
 		powered_changed.emit(true)
 	
@@ -179,29 +177,16 @@ func disconnect_machine(machine: Node) -> void:
 			machine.emit_signal(&"power_pole_disconnected", self)
 		update_wires.call_deferred()
 		return
-	
-	var removed_connection: PoleConnection = pole_connections.get(machine)
+
 	if not pole_connections.erase(machine):
 		return
 
 	if machine.has_method(&"disconnect_machine"):
 		machine.disconnect_machine(self)
 	
-	if removed_connection.is_power_source:
-		var still_powered := false
-		for pole in pole_connections.keys():
-			assert(not pole == null)
-			assert(pole.has_method(&"get_powered"))
-			assert(pole.has_method(&"get_source"))
-			if not pole.get_powered():
-				continue
-			if pole.get_source() == self:
-				continue
-			var connection: PoleConnection = pole_connections.get(pole)
-			connection.is_power_source = true
-			still_powered = true
-			break
-		if not still_powered:
+	if machine == source:
+		update_source()
+		if source == null:
 			powered = false
 			powered_changed.emit(false)
 
@@ -217,51 +202,51 @@ func update_wires() -> void:
 		wires.remove_child(wire)
 		wire.queue_free()
 
+	var template := powered_wire_template if powered else wire_template
+	const WIRE_OFFSET_LENGTH := 1.5
 	for pole: Node in pole_connections.keys():
 		assert(not pole == null)
 		if pole.get_powered() == powered and (not pole is PowerPole or pole.id < id):
 			continue
-		var connection: PoleConnection = pole_connections.get(pole)
-		var offset := 1.5 * (connection.attachment_point.global_position - attachment_point.global_position).normalized()
-		var line := powered_wire_template.instantiate() if powered else wire_template.instantiate()
+		var other_attachment_point: Marker2D = pole_connections.get(pole)
+		assert(not other_attachment_point == null)
+		var wire_direction := (other_attachment_point.global_position - attachment_point.global_position).normalized()
+		var offset := WIRE_OFFSET_LENGTH * wire_direction
+		var line := template.instantiate()
 		wires.add_child(line)
-		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(connection.attachment_point.global_position) - offset]
+		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 	
-	for machine: Node in machine_attachments.keys():
-		assert(not machine == null)
-		var other_attachment_point: Marker2D = machine_attachments.get(machine)
-		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
-		var line := powered_wire_template.instantiate() if powered else wire_template.instantiate()
+	for other_attachment_point: Marker2D in machine_attachments.values():
+		var wire_direction := (other_attachment_point.global_position - attachment_point.global_position).normalized()
+		var offset := WIRE_OFFSET_LENGTH * wire_direction
+		var line := template.instantiate()
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 		# TODO sort points from bottom left to top right
 
+func update_source() -> void:
+	source = null
+	for pole in pole_connections.keys():
+		assert(not pole == null)
+		assert(pole.has_method(&"get_powered"))
+		assert(pole.has_method(&"get_source"))
+		if not pole.get_powered():
+			continue
+		if pole.get_source() == self:
+			continue
+		source = pole
+		break
+
 func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
-	var modified_connection = pole_connections.get(updated_pole)
-	if modified_connection == null:
+	if not pole_connections.has(updated_pole):
 		return
 
-	if modified_connection.is_power_source:
-		if not value:
-			modified_connection.is_power_source = false
-			var still_powered := false
-			for pole in pole_connections.keys():
-				assert(not pole == null)
-				assert(pole.has_method(&"get_powered"))
-				assert(pole.has_method(&"get_source"))
-				if not pole.get_powered():
-					continue
-				if pole.get_source() == self:
-					continue
-				var connection: PoleConnection = pole_connections.get(pole)
-				connection.is_power_source = true
-				still_powered = true
-				break
-			if not still_powered:
-				powered = false
-				powered_changed.emit(false)
+	if updated_pole == source and not value:
+		update_source()
+		if source == null:
+			powered = false
+			powered_changed.emit(false)
 	elif value and not powered:
-		modified_connection.is_power_source = true
 		powered = true
 		powered_changed.emit(true)
 
@@ -277,13 +262,3 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if not node.is_in_group(&"machines"):
 		return
 	disconnect_machine(node)
-
-class PoleConnection:
-	var is_power_source: bool
-	var attachment_point: Marker2D
-
-	static func create(_is_power_source: bool, _attachment_point: Marker2D) -> PoleConnection:
-		var connection := PoleConnection.new()
-		connection.is_power_source = _is_power_source
-		connection.attachment_point = _attachment_point
-		return connection
