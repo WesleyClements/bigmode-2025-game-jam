@@ -190,7 +190,7 @@ func on_generation_timer_timeout() -> void:
 	energy += generation_rate * generation_timer.wait_time
 
 func on_energy_changed() -> void:
-	energy_display.text = "E : " + str(energy) + "\nF : " + str(fuel)
+	energy_display.text = "E : " + str(ceilf(energy)) + "\nF : " + str(ceilf(fuel))
 
 func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered
