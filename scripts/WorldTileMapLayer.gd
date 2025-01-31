@@ -44,6 +44,12 @@ func _process(_delta: float) -> void:
 		hovered_tile = tile_pos
 		queue_redraw()
 
+func _physics_process(_delta: float) -> void:
+	if Input.is_action_just_pressed(&"remove_entity"):
+		var mouse_pos := get_global_mouse_position()
+		var tile_pos := mouse_to_map(mouse_pos)
+		MessageBuss.request_set_world_tile.emit(tile_pos, BlockType.NONE, 0)
+
 func _draw() -> void:
 	var center := map_to_local(hovered_tile)
 	var half_tile_size := tile_set.tile_size / 2
