@@ -1,0 +1,8 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bqksu8mj8082m"]
+
+[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_8bkv5"]
+
+[resource]
+shader = ExtResource("1_8bkv5")
+shader_parameter/depth_color = Color(0.29, 0.262933, 0.232, 0.356863)
+shader_parameter/depth_offset = 0.4

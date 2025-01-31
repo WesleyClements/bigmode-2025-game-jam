@@ -1,14 +1,9 @@
-[gd_resource type="TileSet" load_steps=8 format=3 uid="uid://1c8jqy2iqanc"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://1c8jqy2iqanc"]
 
-[ext_resource type="Shader" path="res://shaders/terrain.gdshader" id="1_vqnrh"]
+[ext_resource type="Material" uid="uid://bqksu8mj8082m" path="res://resources/terrain.ShaderMaterial.tres" id="1_g238g"]
 [ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="2_8anen"]
 [ext_resource type="Texture2D" uid="uid://npe2xdovtrwu" path="res://assets/sprites/blocks.normals.png" id="3_0dcm0"]
 [ext_resource type="Texture2D" uid="uid://dvygwv2wwwkfp" path="res://assets/sprites/blocks.specular.png" id="4_qfkko"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4w7kd"]
-shader = ExtResource("1_vqnrh")
-shader_parameter/block_height = 20.0
-shader_parameter/light_height = 0.5
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_e4lrc"]
 diffuse_texture = ExtResource("2_8anen")
@@ -22,7 +17,7 @@ texture_region_size = Vector2i(32, 18)
 0:2/size_in_atlas = Vector2i(1, 2)
 0:2/0 = 0
 0:2/0/texture_origin = Vector2i(0, 9)
-0:2/0/material = SubResource("ShaderMaterial_4w7kd")
+0:2/0/material = ExtResource("1_g238g")
 0:2/0/y_sort_origin = -8
 
 [resource]

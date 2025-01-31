@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_axeqf")
-power_pole_cost = 1
+power_pole_cost = 0
 laser_cost = 5
