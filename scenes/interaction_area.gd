@@ -12,12 +12,10 @@ func get_interaction() -> Node:
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	print("Player exited")
 	player_entered.emit(body)
 
 
 func _on_body_exited(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	print("Player exited")
 	player_exited.emit(body)

@@ -21,7 +21,12 @@ signal powered_changed(powered: bool)
 @export var pole_connection_limit: int = 4
 
 var id: int
-var powered := false
+var powered := false:
+	set(value):
+		if powered == value:
+			return
+		powered = value
+		powered_changed.emit(value)
 
 var source: Node
 var pole_connections := {}
@@ -153,7 +158,6 @@ func connect_machine(machine: Node) -> bool:
 	if not powered and machine.get_powered():
 		source = machine
 		powered = true
-		powered_changed.emit(true)
 	
 	assert(machine.has_signal(&"powered_changed"))
 	machine.powered_changed.connect(on_connected_pole_powered_changed.bind(machine))
@@ -188,7 +192,6 @@ func disconnect_machine(machine: Node) -> void:
 		update_source()
 		if source == null:
 			powered = false
-			powered_changed.emit(false)
 
 	update_wires.call_deferred()
 
@@ -242,13 +245,16 @@ func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 		return
 
 	if updated_pole == source and not value:
+		assert(powered)
 		update_source()
 		if source == null:
 			powered = false
-			powered_changed.emit(false)
+			update_wires.call_deferred()
 	elif value and not powered:
+		assert(source == null)
+		source = updated_pole
 		powered = true
-		powered_changed.emit(true)
+		update_wires.call_deferred()
 
 func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if is_entering:

@@ -7,3 +7,4 @@
 - add background to ui elements
 - smooth weasel movement
 - allow holding "e" to continuously deposit coal into generator
+- add tool or something for removing machines

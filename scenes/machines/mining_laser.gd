@@ -130,7 +130,6 @@ func _physics_process(_delta: float) -> void:
 		State.MINING when mining_timer.is_stopped():
 			queue_redraw()
 			mining_timer.start()
-			print("Mining")
 			consumption_timer.start()
 			
 
