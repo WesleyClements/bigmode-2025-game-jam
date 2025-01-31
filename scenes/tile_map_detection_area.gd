@@ -8,7 +8,9 @@ const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 @export var outline_color := Color(1, 1, 0.0, 0.5)
 @export var display_outline := true:
 	set(value):
-		area_outline.visible = value
+		if area_outline != null:
+			area_outline.visible = value
+		display_outline = value
 
 
 @onready var world_map: WorldTileMapLayer = null if Engine.is_editor_hint() else root_node.get_parent()

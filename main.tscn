@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=8 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
@@ -7,7 +7,6 @@
 [ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/ui/UI.tscn" id="5_p1ybt"]
-[ext_resource type="PackedScene" uid="uid://bkvwxlaf6o3n0" path="res://scenes/weasel.tscn" id="10_olp4k"]
 
 [node name="Main" type="Node"]
 
@@ -16,7 +15,7 @@ y_sort_enabled = true
 
 [node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAADAPz/AQAAAAAAAwD//wAAAQAAAAAAAgA=")
+tile_map_data = PackedByteArray("AAADAPz/AQAAAAAAAwD//wAAAQAAAAAAAgD8/wAAAQAAAAAABAA=")
 tile_set = ExtResource("2_dcctc")
 navigation_enabled = false
 script = ExtResource("2_sh2ir")
@@ -28,9 +27,6 @@ position = Vector2(0, 16)
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(4, 4)
 
-[node name="Weasel" parent="World" instance=ExtResource("10_olp4k")]
-position = Vector2(8, 35)
-
 [node name="Floors" type="TileMapLayer" parent="World"]
 z_index = -100
 tile_map_data = PackedByteArray("AAD8//3/AAAAAAIAAAD8//7/AAAAAAIAAAD8////AAAAAAIAAAD8/wAAAAAAAAIAAAD8/wEAAAAAAAIAAAD8/wIAAAAAAAIAAAD8/wMAAAAAAAIAAAD8/wQAAAAAAAIAAAD8/wUAAAAAAAIAAAD9//3/AAAAAAIAAAD9//7/AAAAAAIAAAD9////AAAAAAIAAAD9/wAAAAAAAAIAAAD9/wEAAAAAAAIAAAD9/wIAAAAAAAIAAAD9/wMAAAAAAAIAAAD9/wQAAAAAAAIAAAD9/wUAAAAAAAIAAAD+//3/AAAAAAIAAAD+//7/AAAAAAIAAAD+////AAAAAAIAAAD+/wAAAAAAAAIAAAD+/wEAAAAAAAIAAAD+/wIAAAAAAAIAAAD+/wMAAAAAAAIAAAD+/wQAAAAAAAIAAAD+/wUAAAAAAAIAAAD///3/AAAAAAIAAAD///7/AAAAAAIAAAD/////AAAAAAIAAAD//wAAAAAAAAIAAAD//wEAAAAAAAIAAAD//wIAAAAAAAIAAAD//wMAAAAAAAIAAAD//wQAAAAAAAIAAAD//wUAAAAAAAIAAAAAAP3/AAAAAAIAAAAAAP7/AAAAAAIAAAAAAP//AAAAAAIAAAAAAAAAAAAAAAIAAAAAAAEAAAAAAAIAAAAAAAIAAAAAAAIAAAAAAAMAAAAAAAIAAAAAAAQAAAAAAAIAAAAAAAUAAAAAAAIAAAABAP3/AAAAAAIAAAABAP7/AAAAAAIAAAABAP//AAAAAAIAAAABAAAAAAAAAAIAAAABAAEAAAAAAAIAAAABAAIAAAAAAAIAAAABAAMAAAAAAAIAAAABAAQAAAAAAAIAAAABAAUAAAAAAAIAAAACAP3/AAAAAAIAAAACAP7/AAAAAAIAAAACAP//AAAAAAIAAAACAAAAAAAAAAIAAAACAAEAAAAAAAIAAAACAAIAAAAAAAIAAAACAAMAAAAAAAIAAAACAAQAAAAAAAIAAAACAAUAAAAAAAIAAAADAP3/AAAAAAIAAAADAP7/AAAAAAIAAAADAP//AAAAAAIAAAADAAAAAAAAAAIAAAADAAEAAAAAAAIAAAADAAIAAAAAAAIAAAADAAMAAAAAAAIAAAADAAQAAAAAAAIAAAADAAUAAAAAAAIAAAAEAP3/AAAAAAIAAAAEAP7/AAAAAAIAAAAEAP//AAAAAAIAAAAEAAAAAAAAAAIAAAAEAAEAAAAAAAIAAAAEAAIAAAAAAAIAAAAEAAMAAAAAAAIAAAAEAAQAAAAAAAIAAAAEAAUAAAAAAAIAAAA=")
@@ -41,6 +37,3 @@ script = ExtResource("4_iydee")
 floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
-
-[connection signal="energy_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_energy_changed" unbinds=1]
-[connection signal="fuel_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_energy_changed" unbinds=1]
