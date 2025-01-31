@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=2 format=3 uid="uid://br1fg0a2ovjpb"]
 
-[sub_resource type="SystemFont" id="SystemFont_wmxsp"]
+[ext_resource type="FontFile" uid="uid://4p10s53khw81" path="res://assets/fonts/m5x7.ttf" id="1_i1tac"]
 
 [resource]
-default_font = SubResource("SystemFont_wmxsp")
+default_font = ExtResource("1_i1tac")

@@ -1,11 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://cluwtjy0x1ngw"]
+[gd_scene load_steps=12 format=3 uid="uid://cluwtjy0x1ngw"]
 
 [ext_resource type="Script" path="res://scenes/ui/build_menu_slot.gd" id="1_fru0y"]
 [ext_resource type="Shader" path="res://shaders/grey_scale.gdshader" id="2_02wo3"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_mvclf"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_rqp8e"]
-font_size = 12
 
 [sub_resource type="Animation" id="Animation_ybsbf"]
 length = 0.001
@@ -151,7 +148,6 @@ offset_right = 32.0
 offset_bottom = 32.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-label_settings = SubResource("LabelSettings_rqp8e")
 horizontal_alignment = 1
 vertical_alignment = 2
 

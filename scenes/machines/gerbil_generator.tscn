@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://o8maovqp3uv1"]
+[gd_scene load_steps=10 format=3 uid="uid://o8maovqp3uv1"]
 
 [ext_resource type="Script" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
@@ -16,9 +16,6 @@ height = 8
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
-
-[sub_resource type="LabelSettings" id="LabelSettings_2f7d7"]
-font_size = 8
 
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
@@ -66,19 +63,17 @@ grow_vertical = 0
 size_flags_vertical = 8
 text = "E :
 F :"
-label_settings = SubResource("LabelSettings_2f7d7")
 horizontal_alignment = 1
 
 [node name="ButtonPrompt" type="Panel" parent="."]
-visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -17.0
-offset_top = -20.0
-offset_right = 17.0
+offset_left = -21.5
+offset_top = -19.0
+offset_right = 21.5
 offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -89,13 +84,14 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -2.0
+offset_right = 1.0
+offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 8
 text = "Press E"
-label_settings = SubResource("LabelSettings_2f7d7")
 horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="InteractionArea" parent="." node_paths=PackedStringArray("interaction") instance=ExtResource("7_ceurq")]
 interaction = NodePath("GerbilGeneratorInteraction")
