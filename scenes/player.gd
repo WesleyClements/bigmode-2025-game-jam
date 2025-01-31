@@ -96,7 +96,7 @@ func _physics_process(delta: float) -> void:
 	elif state == State.MINING:
 		state = State.IDLE
 	
-	if Input.is_action_just_pressed(&"interact") and interaction != null:
+	if Input.is_action_pressed(&"interact") and interaction != null:
 		interaction.interact(self)
 
 	if not movement_direction.is_zero_approx():

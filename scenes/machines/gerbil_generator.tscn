@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_5qgbl"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="2_vlges"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
-[ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="7_ceurq"]
+[ext_resource type="PackedScene" path="res://scenes/interaction_area.tscn" id="7_ceurq"]
 [ext_resource type="Script" path="res://scenes/machines/gerbil_generator_interaction.gd" id="8_ftyqi"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_fm04w"]

@@ -3,7 +3,7 @@ extends Node
 const Player = preload("res://scenes/player.gd")
 const GerbilGenerator = preload("res://scenes/machines/gerbil_generator.gd")
 
-@export var deposit_amount: float = 1.0
+@export var deposit_amount: float = 0.1
 
 @onready var generator: GerbilGenerator = owner
 
