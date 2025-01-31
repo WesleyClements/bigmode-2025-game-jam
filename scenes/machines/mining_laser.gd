@@ -155,7 +155,7 @@ func find_source(pole: Node) -> Array:
 	while node != null and node != node.get_source():
 		node = node.get_source()
 		separation += 1
-	assert(node is GerbilGenerator)
+	assert(node == null or node is GerbilGenerator)
 	return [node, separation]
 
 func update_source() -> void:
@@ -184,10 +184,8 @@ func on_power_pole_connected(pole: Node) -> void:
 	attached_poles.append(pole)
 	pole.powered_changed.connect(on_power_pole_powered_changed.bind(pole))
 	if not pole.get_powered():
-		print("pole not powered")
 		return
-	if powered:
-		print("Powered")
+	if source != null:
 		var result := find_source(pole)
 		if result[1] > separation_from_source:
 			return
@@ -195,10 +193,8 @@ func on_power_pole_connected(pole: Node) -> void:
 		generator = result[0]
 		separation_from_source = result[1]
 	else:
-		print("Not powered")
 		source = pole
 		powered = true
-		assert(generator == null)
 		var result := find_source(pole)
 		generator = result[0]
 		separation_from_source = result[1]
@@ -213,7 +209,7 @@ func on_power_pole_disconnected(pole: Node) -> void:
 		return
 	attached_poles.remove_at(index)
 	pole.powered_changed.disconnect(on_power_pole_powered_changed)
-	if not powered:
+	if source == null:
 		return
 	if pole != source:
 		return
@@ -226,22 +222,21 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 	if not attached_poles.has(pole):
 		return
 	assert(powered or value)
-	if not powered and value:
-		assert(source == null)
+	if source == null and value:
 		assert(generator == null)
 		var result := find_source(pole)
 		source = pole
 		generator = result[0]
 		separation_from_source = result[1]
 		powered = true
-	elif powered and value:
+	elif source != null and value:
 		var result := find_source(pole)
 		if result[1] > separation_from_source:
 			return
 		source = pole
 		generator = result[0]
 		separation_from_source = result[1]
-	elif powered and not value and pole == source:
+	elif source != null and not value and pole == source:
 		update_source()
 		if source == null:
 			powered = false
