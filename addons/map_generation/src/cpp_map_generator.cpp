@@ -65,7 +65,7 @@ CppMapGenerator::smooth(
             temp[index] = 0;
           }
           else {
-            temp[index] = 1;
+            temp[index] = current_value;
           }
         }
         else {

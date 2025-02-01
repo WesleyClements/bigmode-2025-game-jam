@@ -15,14 +15,14 @@ signal map_generated()
 # The lower the number, the bigger the features
 @export var initial_scale = 0.081
 # High number for ore so we get lots of little pockets (big number = small features)
-@export var ore_scale = 0.481
+@export var ore_scale = 0.281
 
 # Similar to conway's game of life, but with different parameters
 # Populated tiles with fewer neighbours than the death_limit will die
 # Empty tiles with more neighbours than the birth_limit will spawn in
 # Serves to smooth out the caves after generating them from the height map
 @export var simulation_steps = 4
-@export var death_limit = 3
+@export var death_limit = 5
 @export var birth_limit = 6
 
 var map_data: Array[int] = []
