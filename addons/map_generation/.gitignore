@@ -6,3 +6,5 @@
 msvc_capture.log
 
 *.obj
+
+~*.dll
