@@ -1,7 +1,6 @@
 - Make player slide along walls smoothly
 - fix laser beam rendering under laser base
 - refine selecting entities with mouse
-- update build menu sprites to be uniform
 - add background to ui elements
 - add tool or something for removing machines
 - update world gen to include more ore
@@ -9,3 +8,4 @@
 - add preview (sprite/range) when placing machine
 - make player laser hit rock face
 - make build menu flash red if not enough
+- make out of power symbol for machines not powered

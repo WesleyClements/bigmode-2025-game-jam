@@ -30,7 +30,7 @@ texture = SubResource("GradientTexture2D_exbia")
 
 [node name="Body" type="Sprite2D" parent="."]
 texture = ExtResource("1_xfd3o")
-offset = Vector2(0, -12)
+offset = Vector2(0, -14)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
