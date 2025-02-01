@@ -35,6 +35,7 @@ var fuel: float = 0.0:
 			update_wires.call_deferred()
 
 var _updated_wires: bool = false
+var force_show_outline: bool = false
 
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var attachment_point: Marker2D = $AttachmentPoint
@@ -65,6 +66,9 @@ func _ready() -> void:
 
 	hover_entered.connect(on_hover_changed.bind(true))
 	hover_exited.connect(on_hover_changed.bind(false))
+
+	MessageBuss.build_mode_entered.connect(on_build_mode_changed.bind(true))
+	MessageBuss.build_mode_exited.connect(on_build_mode_changed.bind(false))
 
 
 func _process(_delta: float) -> void:
@@ -178,4 +182,10 @@ func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered
 
 func on_hover_changed(is_hovered: bool) -> void:
+	if force_show_outline:
+		return
 	tile_map_detection_area.display_outline = is_hovered
+
+func on_build_mode_changed(build_mode: bool) -> void:
+	force_show_outline = build_mode
+	tile_map_detection_area.display_outline = build_mode

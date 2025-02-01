@@ -27,19 +27,26 @@ var state: State = State.IDLE:
 	set(value):
 		if value == state:
 			return
+		match state:
+			State.MINING:
+				body_sprite.frame = 0 # TODO no magic numbers
+				mining_timer.stop()
+			State.BUILDING:
+				MessageBuss.build_mode_exited.emit()
 		state = value
 		match state:
 			State.MINING:
 				body_sprite.frame = 1 # TODO no magic numbers
-			_:
-				body_sprite.frame = 0 # TODO no magic numbers
-				mining_timer.stop()
+			State.BUILDING:
+				MessageBuss.build_mode_entered.emit()
+
 var selected_building: EntityType:
 	set(value):
 		if value == selected_building:
 			return
 		selected_building = value
 		MessageBuss.set_selected_entity_type.emit(selected_building)
+
 var target_tile: Vector2i
 
 var coal_count := 0.0:

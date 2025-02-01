@@ -6,3 +6,4 @@
 - add tool or something for removing machines
 - update world gen to include more ore
 - make lasers respect los
+- add preview (sprite/range) when placing machine
