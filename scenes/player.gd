@@ -97,7 +97,7 @@ func _physics_process(delta: float) -> void:
 		state = State.IDLE
 	
 	if Input.is_action_pressed(&"interact") and interaction != null:
-		interaction.interact(self)
+		interaction.interact(self, Input.is_action_just_pressed(&"interact"))
 
 	if not movement_direction.is_zero_approx():
 		animation_tree["parameters/conditions/is_idle"] = false

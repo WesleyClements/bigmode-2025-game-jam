@@ -16,7 +16,7 @@ signal power_pole_connected(pole: Node)
 signal power_pole_disconnected(pole: Node)
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
-@export var energy_consumption_rate := 1.0
+@export var fuel_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -10)
 @export var beam_color := Color(1, 0, 0.953125)
 @export var beam_width := 2.0
@@ -252,9 +252,9 @@ func on_mining_timer_timeout() -> void:
 	assert(state == State.MINING)
 	assert(source != null)
 	assert(generator != null)
-	var remaining_energy := energy_consumption_rate * fmod(mining_timer.wait_time, consumption_timer.wait_time)
+	var remaining_energy := fuel_consumption_rate * fmod(mining_timer.wait_time, consumption_timer.wait_time)
 	if not is_zero_approx(remaining_energy):
-		generator.consume_energy(remaining_energy)
+		generator.consume_fuel(remaining_energy)
 
 	var tile_origin := world_map.local_to_map(get_global_position())
 	MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
@@ -267,4 +267,4 @@ func on_consumption_timer_timeout() -> void:
 	assert(state == State.MINING)
 	assert(source != null)
 	assert(generator != null)
-	generator.consume_energy(energy_consumption_rate * consumption_timer.wait_time)
+	generator.consume_fuel(fuel_consumption_rate * consumption_timer.wait_time)

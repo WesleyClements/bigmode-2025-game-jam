@@ -5,7 +5,6 @@ const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
 
 signal powered_changed(powered: bool)
 signal energy_changed(energy: float)
-signal fuel_changed(fuel: float)
 
 @export var wire_template: PackedScene
 @export var powered_wire_template: PackedScene
@@ -17,35 +16,21 @@ signal fuel_changed(fuel: float)
 
 var attachments: Dictionary = {}
 
-var energy: float = 0.0:
-	set(value):
-		value = maxf(value, 0.0)
-		if is_equal_approx(energy, value):
-			return
-		var was_powered := energy > 0.0
-		energy = 0.0 if is_zero_approx(value) else value
-		energy_changed.emit(energy)
-
-		if not was_powered and energy > 0.0:
-			powered_changed.emit(true)
-			update_wires.call_deferred()
-		elif was_powered and energy == 0.0:
-			powered_changed.emit(false)
-			update_wires.call_deferred()
-
-		
 var fuel: float = 0.0:
 	set(value):
 		value = maxf(value, 0.0)
 		if is_equal_approx(fuel, value):
 			return
+		var was_powered := fuel > 0.0
 		fuel = 0.0 if is_zero_approx(value) else value
-		fuel_changed.emit(fuel)
+		energy_changed.emit(fuel)
 
-		if generation_timer.is_stopped() and fuel > 0.0:
-			generation_timer.start()
-		elif not generation_timer.is_stopped() and fuel == 0.0:
-			generation_timer.stop()
+		if not was_powered and fuel > 0.0:
+			powered_changed.emit(true)
+			update_wires.call_deferred()
+		elif was_powered and fuel == 0.0:
+			powered_changed.emit(false)
+			update_wires.call_deferred()
 
 var _updated_wires: bool = false
 
@@ -53,8 +38,7 @@ var _updated_wires: bool = false
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
-@onready var generation_timer: Timer = $GenerationTimer
-@onready var energy_display: Label = $EnergyDisplay
+@onready var fuel_display: Label = $FuelDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
 
 func _enter_tree() -> void:
@@ -77,8 +61,6 @@ func _ready() -> void:
 	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
 	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
 
-	fuel = 5.0
-
 func _process(_delta: float) -> void:
 	_updated_wires = false
 
@@ -86,7 +68,7 @@ func get_attachment_point() -> Marker2D:
 	return attachment_point
 
 func get_powered() -> bool:
-	return not is_zero_approx(energy)
+	return not is_zero_approx(fuel)
 
 func get_source() -> Node:
 	return self
@@ -102,8 +84,8 @@ func validate_connection(node: Node) -> bool:
 			return false
 	return true
 
-func consume_energy(value: float) -> void:
-	energy -= value
+func consume_fuel(value: float) -> void:
+	fuel -= value
 	
 
 func search_for_machines() -> void:
@@ -183,14 +165,8 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 		return
 	disconnect_machine(node)
 
-func on_generation_timer_timeout() -> void:
-	if fuel <= 0.0:
-		return
-	fuel -= fuel_consumption_rate * generation_timer.wait_time
-	energy += generation_rate * generation_timer.wait_time
-
 func on_energy_changed() -> void:
-	energy_display.text = "E : " + str(ceilf(energy)) + "\nF : " + str(ceilf(fuel))
+	fuel_display.text = "F : " + str(ceilf(fuel))
 
 func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered

@@ -24,6 +24,5 @@ display_outline = false
 
 [node name="SpawnTimer" type="Timer" parent="."]
 process_callback = 0
-autostart = true
 
 [connection signal="timeout" from="SpawnTimer" to="." method="on_spawn_timer_timeout"]
