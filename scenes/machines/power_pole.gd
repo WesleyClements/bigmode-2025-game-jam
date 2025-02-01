@@ -14,6 +14,8 @@ enum ConnectionType {
 }
 
 signal powered_changed(powered: bool)
+signal hover_entered()
+signal hover_exited()
 
 @export var wire_template: PackedScene
 @export var powered_wire_template: PackedScene
@@ -64,6 +66,9 @@ func _ready() -> void:
 	next_id += 1
 	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
 	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
+
+	hover_entered.connect(on_hover_changed.bind(true))
+	hover_exited.connect(on_hover_changed.bind(false))
 
 
 func _process(_delta: float) -> void:
@@ -268,3 +273,6 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	if not node.is_in_group(&"machines"):
 		return
 	disconnect_machine(node)
+
+func on_hover_changed(is_hovered: bool) -> void:
+	tile_map_detection_area.display_outline = is_hovered

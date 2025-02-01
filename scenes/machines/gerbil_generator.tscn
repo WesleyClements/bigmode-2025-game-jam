@@ -43,6 +43,7 @@ z_index = 100
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("5_qnl68")]
 root_node = NodePath("..")
 outline_color = Color(0.999296, 0.615239, 3.85046e-07, 0.501961)
+display_outline = false
 
 [node name="FuelDisplay" type="Label" parent="."]
 anchors_preset = 7

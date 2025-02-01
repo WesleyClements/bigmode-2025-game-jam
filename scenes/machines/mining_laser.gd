@@ -14,6 +14,8 @@ enum State {
 
 signal power_pole_connected(pole: Node)
 signal power_pole_disconnected(pole: Node)
+signal hover_entered()
+signal hover_exited()
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
 @export var mineable_tileset_atlas_coords: Array[Vector2i] = [Vector2i(1, 0), Vector2i(1, 0)]
@@ -86,6 +88,9 @@ func _draw() -> void:
 func _ready():
 	power_pole_connected.connect(on_power_pole_connected)
 	power_pole_disconnected.connect(on_power_pole_disconnected)
+
+	hover_entered.connect(on_hover_changed.bind(true))
+	hover_exited.connect(on_hover_changed.bind(false))
 
 func _physics_process(_delta: float) -> void:
 	if not powered:
@@ -271,3 +276,6 @@ func on_consumption_timer_timeout() -> void:
 	assert(source != null)
 	assert(generator != null)
 	generator.consume_fuel(fuel_consumption_rate * consumption_timer.wait_time)
+
+func on_hover_changed(is_hovered: bool) -> void:
+	tile_map_detection_area.display_outline = is_hovered

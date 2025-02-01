@@ -49,9 +49,28 @@ func _process(_delta: float) -> void:
 func update_hover_position(tile_pos: Vector2i) -> void:
 	if tile_pos == hovered_tile:
 		return
+	notify_hover_exit(hovered_tile)
 	position = world_map.map_to_local(tile_pos)
 	hovered_tile = tile_pos
 	outline.position = Vector2(0.0, 0.0)
 	if world_map.get_cell_source_id(hovered_tile) == TilesetAtlas.TERRAIN:
 		position.y += world_map.tile_set.tile_size.y
 		outline.position.y += -20.0 - world_map.tile_set.tile_size.y # TODO no magic numbers
+	else:
+		notify_hover_enter(hovered_tile)
+
+func notify_hover_enter(tile_pos: Vector2i) -> void:
+	var scene := world_map.get_cell_scene(tile_pos)
+	if scene == null:
+		return
+	if not scene.has_signal(&"hover_entered"):
+		return
+	scene.hover_entered.emit()
+
+func notify_hover_exit(tile_pos: Vector2i) -> void:
+	var scene := world_map.get_cell_scene(tile_pos)
+	if scene == null:
+		return
+	if not scene.has_signal(&"hover_exited"):
+		return
+	scene.hover_exited.emit()
