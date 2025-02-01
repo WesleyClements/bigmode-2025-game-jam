@@ -16,6 +16,7 @@ signal power_pole_connected(pole: Node)
 signal power_pole_disconnected(pole: Node)
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
+@export var mineable_tileset_atlas_coords: Array[Vector2i] = [Vector2i(1, 0), Vector2i(1, 0)]
 @export var fuel_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -10)
 @export var beam_color := Color(1, 0, 0.953125)
@@ -143,7 +144,9 @@ func reset_laser_head() -> void:
 
 func is_valid_mining_target(tile_map: WorldTileMapLayer, tile_offset: Vector2i, tile_origin: Vector2i) -> bool:
 	var tile_pos := tile_origin + tile_offset
-	return tile_map.get_cell_source_id(tile_pos) in minable_tileset_atlas_ids
+	if not tile_map.get_cell_source_id(tile_pos) in minable_tileset_atlas_ids:
+		return false
+	return tile_map.get_cell_atlas_coords(tile_pos) in mineable_tileset_atlas_coords
 
 func find_source(pole: Node) -> Array:
 	assert(not pole == null)
