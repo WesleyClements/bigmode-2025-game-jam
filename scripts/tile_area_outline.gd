@@ -8,16 +8,18 @@ static func _append_points(array: PackedVector2Array, start_point: Vector2, offs
 
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 
-@export var root_node: Node2D:
+@export var root_node: Node:
 	get:
 		return root_node if root_node else owner
 @export var tile_radius := 4
 
-@onready var world_map: WorldTileMapLayer = null if Engine.is_editor_hint() else root_node.get_parent()
+var _editor_points: PackedVector2Array = []
+
+func _draw():
+	if Engine.is_editor_hint():
+		draw_polyline(_editor_points, default_color, width)
 
 func _ready():
-	if Engine.is_editor_hint() and self != owner:
-		return
 	var points_per_side := tile_radius * 2 + 1
 	var tile_size := get_tile_size()
 	var segment_size := tile_size / 2.0
@@ -54,10 +56,15 @@ func _ready():
 		points_per_side,
 		points_per_side * 3
 	)
-	points = outline_points
+	if Engine.is_editor_hint():
+		_editor_points = outline_points
+		queue_redraw()
+	else:
+		points = outline_points
 
 
 func get_tile_size() -> Vector2:
 	if Engine.is_editor_hint():
 		return Vector2(32, 16) # TODO no magic numbers
-	return world_map.tile_set.tile_size
+	assert(root_node.get_parent().has_method(&"get_tile_size"))
+	return root_node.get_parent().get_tile_size() # TODO export node that provides tile size

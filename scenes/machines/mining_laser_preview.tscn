@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://bre75a4qxd0ds"]
+
+[ext_resource type="Texture2D" uid="uid://c15jrwiuhcjb2" path="res://assets/sprites/mining_laser_full.png" id="1_5hv2n"]
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_0jut7"]
+[ext_resource type="Script" path="res://scripts/tile_area_outline.gd" id="2_kxsuu"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wccka"]
+gradient = ExtResource("2_0jut7")
+width = 24
+height = 8
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="MiningLaserPreview" type="Sprite2D"]
+y_sort_enabled = true
+texture = ExtResource("1_5hv2n")
+offset = Vector2(0, -14)
+
+[node name="Shadow" type="Sprite2D" parent="."]
+y_sort_enabled = true
+position = Vector2(0, -1)
+texture = SubResource("GradientTexture2D_wccka")
+offset = Vector2(0, 1)
+
+[node name="TileAreaOutline" type="Line2D" parent="." node_paths=PackedStringArray("root_node")]
+closed = true
+width = 2.0
+default_color = Color(1, 0, 0.952941, 0.501961)
+script = ExtResource("2_kxsuu")
+root_node = NodePath("..")

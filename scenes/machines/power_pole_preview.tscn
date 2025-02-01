@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6msa23sg50i1"]
+
+[ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_ohuye"]
+[ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_i6evg"]
+[ext_resource type="Script" path="res://scripts/tile_area_outline.gd" id="3_ylt7r"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_exbia"]
+gradient = ExtResource("2_i6evg")
+width = 16
+height = 6
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="PowerPolePreview" type="Sprite2D"]
+y_sort_enabled = true
+texture = ExtResource("1_ohuye")
+offset = Vector2(0, -14)
+
+[node name="Shadow" type="Sprite2D" parent="."]
+y_sort_enabled = true
+position = Vector2(0, -1)
+texture = SubResource("GradientTexture2D_exbia")
+offset = Vector2(0, 1)
+
+[node name="TileAreaOutline" type="Line2D" parent="." node_paths=PackedStringArray("root_node")]
+closed = true
+width = 2.0
+default_color = Color(1, 1, 0, 0.501961)
+script = ExtResource("3_ylt7r")
+root_node = NodePath("..")
+tile_radius = 3

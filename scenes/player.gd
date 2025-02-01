@@ -39,6 +39,10 @@ var state: State = State.IDLE:
 				body_sprite.frame = 1 # TODO no magic numbers
 			State.BUILDING:
 				MessageBuss.build_mode_entered.emit()
+				building_preview = entity_registry.get_entity_preview_scene(selected_building).instantiate()
+				add_child(building_preview)
+				update_building_preview()
+
 
 var selected_building: EntityType:
 	set(value):
@@ -46,6 +50,8 @@ var selected_building: EntityType:
 			return
 		selected_building = value
 		MessageBuss.set_selected_entity_type.emit(selected_building)
+
+var building_preview: Node2D = null
 
 var target_tile: Vector2i
 
@@ -105,11 +111,11 @@ func _physics_process(delta: float) -> void:
 	var speed := max_speed
 
 	if Input.is_action_just_pressed(&"build_power_pole") and iron_count >= entity_registry.get_entity_cost(EntityType.POWER_POLE):
-		state = State.BUILDING
 		selected_building = EntityType.POWER_POLE
-	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_cost(EntityType.LASER):
 		state = State.BUILDING
+	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_cost(EntityType.LASER):
 		selected_building = EntityType.LASER
+		state = State.BUILDING
 	elif Input.is_action_pressed(&"tile_map_interaction"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
@@ -144,11 +150,16 @@ func _physics_process(delta: float) -> void:
 					if iron_count >= cost:
 						iron_count -= cost
 						MessageBuss.request_spawn_entity.emit(tile, selected_building)
-					state = State.IDLE
 					selected_building = EntityType.NONE
+					remove_child(building_preview)
+					building_preview.queue_free()
+					building_preview = null
+					state = State.IDLE
 	elif state == State.MINING:
 		state = State.IDLE
 		mining_timer.stop()
+	elif state == State.BUILDING:
+		update_building_preview()
 	
 	if Input.is_action_pressed(&"interact") and interaction != null:
 		interaction.interact(self, Input.is_action_just_pressed(&"interact"))
@@ -172,6 +183,9 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+func get_tile_size() -> Vector2i:
+	return world_map.tile_set.tile_size
+
 func is_within_interaction_range(tile: Vector2i) -> bool:
 	var tile_pos := world_map.map_to_local(tile)
 	var player_pos := world_map.to_local(global_position)
@@ -181,6 +195,19 @@ func is_within_interaction_range(tile: Vector2i) -> bool:
 
 func can_mine_tile(tile: Vector2i) -> bool:
 	return world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN
+
+func update_building_preview() -> void:
+	assert(state == State.BUILDING)
+	assert(selected_building != EntityType.NONE)
+	if building_preview == null:
+		return
+	
+	var tile := world_map.mouse_to_map(get_global_mouse_position())
+	if not world_map.get_cell_source_id(tile) == -1:
+		building_preview.visible = false
+		return
+	building_preview.visible = true
+	building_preview.global_position = world_map.to_global(world_map.map_to_local(tile))
 
 
 func on_body_entered_pickup_area(body: Node2D) -> void:

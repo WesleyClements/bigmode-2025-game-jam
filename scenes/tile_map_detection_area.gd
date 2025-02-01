@@ -1,6 +1,13 @@
 @tool
 extends TileAreaOutline
 
+@onready var world_map: WorldTileMapLayer = null if Engine.is_editor_hint() else root_node.get_parent()
+
+func get_tile_size() -> Vector2:
+	if Engine.is_editor_hint():
+		return Vector2(32, 16) # TODO no magic numbers
+	return world_map.tile_set.tile_size
+
 func get_tile_origin() -> Vector2i:
 	return world_map.local_to_map(world_map.to_local(root_node.global_position))
 
