@@ -155,6 +155,8 @@ func update_wires() -> void:
 	var template := powered_wire_template if get_powered() else wire_template
 	for machine in attachments.keys():
 		assert(not machine == null)
+		if machine.has_signal(&"power_pole_disconnected"):
+			continue
 		var other_attachment_point: Marker2D = attachments.get(machine)
 		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
 		var line := template.instantiate()

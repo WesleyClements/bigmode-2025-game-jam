@@ -228,12 +228,12 @@ func update_wires() -> void:
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 	
-	for other_attachment_point: Marker2D in machine_attachments.values():
-		var wire_direction := (other_attachment_point.global_position - attachment_point.global_position).normalized()
-		var offset := WIRE_OFFSET_LENGTH * wire_direction
-		var line := template.instantiate()
-		wires.add_child(line)
-		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
+	# for other_attachment_point: Marker2D in machine_attachments.values():
+	# 	var wire_direction := (other_attachment_point.global_position - attachment_point.global_position).normalized()
+	# 	var offset := WIRE_OFFSET_LENGTH * wire_direction
+	# 	var line := template.instantiate()
+	# 	wires.add_child(line)
+	# 	line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
 		# TODO sort points from bottom left to top right
 
 func update_source() -> void:
