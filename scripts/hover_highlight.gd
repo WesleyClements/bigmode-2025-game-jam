@@ -4,6 +4,7 @@ const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const Player = preload("res://scenes/player.gd")
 
 const TilesetAtlas = WorldTileMapLayer.TilesetAtlas
+const BlockType = MessageBuss.BlockType
 
 @export var too_far_color: Color = Color(1.0, 0.0, 0.0)
 
@@ -34,6 +35,8 @@ func _ready() -> void:
 	outline_color = outline.default_color
 	too_far_color.a = outline_color.a
 
+	MessageBuss.world_tile_changing.connect(world_tile_changing.unbind(2))
+
 func _process(_delta: float) -> void:
 	var mouse_pos := get_global_mouse_position()
 	var tile_pos := world_map.mouse_to_map(mouse_pos)
@@ -47,16 +50,16 @@ func _process(_delta: float) -> void:
 		break
 
 func update_hover_position(tile_pos: Vector2i) -> void:
-	if tile_pos == hovered_tile:
-		return
-	notify_hover_exit(hovered_tile)
+	var is_new := tile_pos != hovered_tile
+	if is_new:
+		notify_hover_exit(hovered_tile)
 	position = world_map.map_to_local(tile_pos)
 	hovered_tile = tile_pos
 	outline.position = Vector2(0.0, 0.0)
 	if world_map.get_cell_source_id(hovered_tile) == TilesetAtlas.TERRAIN:
 		position.y += world_map.tile_set.tile_size.y
 		outline.position.y += -20.0 - world_map.tile_set.tile_size.y # TODO no magic numbers
-	else:
+	elif is_new:
 		notify_hover_enter(hovered_tile)
 
 func notify_hover_enter(tile_pos: Vector2i) -> void:
@@ -74,3 +77,17 @@ func notify_hover_exit(tile_pos: Vector2i) -> void:
 	if not scene.has_signal(&"hover_exited"):
 		return
 	scene.hover_exited.emit()
+
+func world_tile_changing(changing_tile_pos: Vector2i) -> void:
+	if changing_tile_pos != hovered_tile:
+		return
+	var mouse_pos := get_global_mouse_position()
+	var tile_pos := world_map.mouse_to_map(mouse_pos)
+	
+	update_hover_position(tile_pos)
+	outline.default_color = too_far_color
+	for player: Player in players:
+		if not player.is_within_interaction_range(tile_pos):
+			continue
+		outline.default_color = outline_color
+		break
