@@ -2,11 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/tile_map_detection_area.gd" id="1_kntdl"]
 
-[node name="TileMapDetectionArea" type="Node2D"]
-script = ExtResource("1_kntdl")
-
-[node name="AreaOutline" type="Line2D" parent="."]
-points = PackedVector2Array(0, 72, 144, 0, 0, -72, -144, 0)
+[node name="TileMapDetectionArea" type="Line2D"]
 closed = true
-width = 0.5
-default_color = Color(1, 1, 0, 0.5)
+width = 2.0
+default_color = Color(1, 1, 0, 0.501961)
+script = ExtResource("1_kntdl")

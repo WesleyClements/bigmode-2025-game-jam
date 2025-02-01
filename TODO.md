@@ -7,3 +7,5 @@
 - update world gen to include more ore
 - make lasers respect los
 - add preview (sprite/range) when placing machine
+- make player laser hit rock face
+- make build menu flash red if not enough

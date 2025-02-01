@@ -70,7 +70,6 @@ func _ready() -> void:
 	MessageBuss.build_mode_entered.connect(on_build_mode_changed.bind(true))
 	MessageBuss.build_mode_exited.connect(on_build_mode_changed.bind(false))
 
-
 func _process(_delta: float) -> void:
 	_updated_wires = false
 
@@ -184,8 +183,8 @@ func on_player_interaction_area(_body: Node, entered: bool) -> void:
 func on_hover_changed(is_hovered: bool) -> void:
 	if force_show_outline:
 		return
-	tile_map_detection_area.display_outline = is_hovered
+	tile_map_detection_area.visible = is_hovered
 
 func on_build_mode_changed(build_mode: bool) -> void:
 	force_show_outline = build_mode
-	tile_map_detection_area.display_outline = build_mode
+	tile_map_detection_area.visible = build_mode
