@@ -17,8 +17,6 @@ const BlockCoords = {
 
 @export var item_registry: ItemRegistry
 @export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
-@export var hover_outline_color: Color = Color(1, 1, 1, 0.5)
-@export var hover_outline_width: float = 1.0
 
 var scene_coords := {}
 var hovered_tile: Vector2i = Vector2i(-1, -1)
@@ -49,11 +47,6 @@ func _physics_process(_delta: float) -> void:
 		var mouse_pos := get_global_mouse_position()
 		var tile_pos := mouse_to_map(mouse_pos)
 		MessageBuss.request_set_world_tile.emit(tile_pos, BlockType.NONE, 0)
-
-func _draw() -> void:
-	var center := map_to_local(hovered_tile)
-	var half_tile_size := tile_set.tile_size / 2
-	draw_polyline([center + Vector2(0, half_tile_size.y), center + Vector2(half_tile_size.x, 0), center + Vector2(0, -half_tile_size.y), center + Vector2(-half_tile_size.x, 0), center + Vector2(0, half_tile_size.y)], hover_outline_color, hover_outline_width)
 
 func get_cell_scene(cell_pos: Vector2i) -> Node2D:
 	return scene_coords.get(cell_pos)
