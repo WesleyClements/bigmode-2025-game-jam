@@ -16,7 +16,7 @@ enum State {
 @export var max_speed: float = 70.0
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
-@export var interaction_range: float = 2.0
+@export var interaction_range: float = 2.5
 @export var mining_power: float = 1.0
 
 var world_map: WorldTileMapLayer
@@ -136,13 +136,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func is_within_interaction_range(tile: Vector2i) -> bool:
-	var player_tile := world_map.local_to_map(world_map.to_local(global_position))
-	var tile_offset := (tile - player_tile).abs()
-	if tile_offset.x > interaction_range:
-		return false
-	if tile_offset.y > interaction_range:
-		return false
-	return true
+	var tile_pos := world_map.map_to_local(tile)
+	var player_pos := world_map.to_local(global_position)
+	var offset := tile_pos - player_pos
+	offset /= Vector2(world_map.tile_set.tile_size)
+	return offset.length() <= interaction_range
 
 func can_mine_tile(tile: Vector2i) -> bool:
 	return world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN
