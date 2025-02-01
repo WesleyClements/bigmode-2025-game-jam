@@ -17,6 +17,7 @@ enum State {
 @export var speed_up_time: float = 0.1
 @export var slow_down_time: float = 0.1
 @export var interaction_range: float = 2.0
+@export var mining_power: float = 1.0
 
 var world_map: WorldTileMapLayer
 var previous
@@ -27,7 +28,7 @@ var state: State = State.IDLE:
 		state = value
 		match state:
 			State.MINING:
-				mining_timer.start()
+				pass
 			_:
 				mining_timer.stop()
 var selected_building: EntityType:
@@ -86,11 +87,17 @@ func _physics_process(delta: float) -> void:
 			State.IDLE:
 				if is_within_interaction_range(tile) and can_mine_tile(tile):
 					state = State.MINING
+					target_tile = tile
+					var energy_cost := world_map.get_cell_energy_cost(tile)
+					mining_timer.wait_time = energy_cost / mining_power
+					mining_timer.start()
 			State.MINING:
 				if target_tile != tile:
 					if is_within_interaction_range(tile) and can_mine_tile(tile):
-						target_tile = tile
 						mining_timer.stop()
+						target_tile = tile
+						var energy_cost := world_map.get_cell_energy_cost(tile)
+						mining_timer.wait_time = energy_cost / mining_power
 						mining_timer.start()
 					else:
 						state = State.IDLE
@@ -104,6 +111,7 @@ func _physics_process(delta: float) -> void:
 					selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
+		mining_timer.stop()
 	
 	if Input.is_action_pressed(&"interact") and interaction != null:
 		interaction.interact(self, Input.is_action_just_pressed(&"interact"))

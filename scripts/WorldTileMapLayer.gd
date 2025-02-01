@@ -76,6 +76,12 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	
 	return tile
 
+func get_cell_energy_cost(coords: Vector2i) -> float:
+	var cell_data := get_cell_tile_data(coords)
+	if cell_data == null:
+		return -1.0
+	return cell_data.get_custom_data(&"energy_cost")
+
 func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i = Vector2i(-1, -1), alternative_tile: int = 0) -> void:
 	if source_id == -1:
 		erase_cell(coords)
