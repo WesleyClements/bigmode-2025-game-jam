@@ -48,7 +48,7 @@ func _ready() -> void:
 func on_item_count_updated(type: ItemType, count: int) -> void:
 	if type != ItemType.IRON:
 		return
-	var cost := entity_registry.get_entity_cost(entity_type)
+	var cost := entity_registry.get_entity_build_cost(entity_type)
 	enabled = count >= cost
 
 @warning_ignore("shadowed_variable")

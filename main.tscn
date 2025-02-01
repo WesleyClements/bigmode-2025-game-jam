@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=4 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=10 format=4 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
 [ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
 [ext_resource type="Resource" uid="uid://coud2jncat4dk" path="res://resources/default.ItemRegistry.tres" id="3_iqjcs"]
+[ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="4_1x7m5"]
 [ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
 [ext_resource type="Script" path="res://scripts/hover_highlight.gd" id="4_lmn7l"]
@@ -21,6 +22,7 @@ tile_set = ExtResource("2_dcctc")
 navigation_enabled = false
 script = ExtResource("2_sh2ir")
 item_registry = ExtResource("3_iqjcs")
+entity_registry = ExtResource("4_1x7m5")
 
 [node name="HoverHighlight" type="Node2D" parent="World/Walls"]
 script = ExtResource("4_lmn7l")
@@ -46,3 +48,5 @@ script = ExtResource("4_iydee")
 floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
+
+[connection signal="energy_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_energy_changed" unbinds=1]

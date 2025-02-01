@@ -16,6 +16,7 @@ const BlockCoords = {
 }
 
 @export var item_registry: ItemRegistry
+@export var entity_registry: EntityRegistry
 @export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
 
 var scene_coords := {}
@@ -26,14 +27,14 @@ func _enter_tree() -> void:
 	child_exiting_tree.connect(on_child_exiting_tree)
 
 func _ready() -> void:
-	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
-	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
-	MessageBuss.request_spawn_entity.connect(on_spawn_entity_request)
 
 	await WorldMap.map_generated
 	WorldMap.populate_tile_map(self)
 	# WorldMap.generate_a_star_grid_2d(self)
 
+	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
+	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
+	MessageBuss.request_spawn_entity.connect(on_spawn_entity_request)
 
 func _process(_delta: float) -> void:
 	var mouse_pos := get_global_mouse_position()
@@ -41,12 +42,6 @@ func _process(_delta: float) -> void:
 	if tile_pos != hovered_tile:
 		hovered_tile = tile_pos
 		queue_redraw()
-
-func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"remove_entity"):
-		var mouse_pos := get_global_mouse_position()
-		var tile_pos := mouse_to_map(mouse_pos)
-		MessageBuss.request_set_world_tile.emit(tile_pos, BlockType.NONE, 0)
 
 func get_cell_scene(cell_pos: Vector2i) -> Node2D:
 	return scene_coords.get(cell_pos)
@@ -76,11 +71,23 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	
 	return tile
 
-func get_cell_energy_cost(coords: Vector2i) -> float:
+func get_cell_item_drops(coords: Vector2i) -> Dictionary:
 	var cell_data := get_cell_tile_data(coords)
-	if cell_data == null:
-		return -1.0
-	return cell_data.get_custom_data(&"energy_cost")
+	if cell_data != null:
+		return cell_data.get_custom_data(&"item_drops")
+	if get_cell_source_id(coords) == TilesetAtlas.ENTITIES:
+		var entity_type := get_cell_alternative_tile(coords)
+		return entity_registry.get_entity_item_drops(entity_type)
+	return {}
+
+func get_cell_mining_energy_cost(coords: Vector2i) -> float:
+	var cell_data := get_cell_tile_data(coords)
+	if cell_data != null:
+		return cell_data.get_custom_data(&"energy_cost")
+	if get_cell_source_id(coords) == TilesetAtlas.ENTITIES:
+		var entity_type := get_cell_alternative_tile(coords)
+		return entity_registry.get_entity_mining_energy_cost(entity_type)
+	return -1.0
 
 func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i = Vector2i(-1, -1), alternative_tile: int = 0) -> void:
 	if source_id == -1:
@@ -109,13 +116,9 @@ func on_set_world_tile_request(tile_pos: Vector2i, block_type: BlockType, block_
 func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_variant: int) -> void:
 	match block_type:
 		BlockType.NONE:
-			var cell_data := get_cell_tile_data(tile_pos)
-			if cell_data == null:
-				return
-			var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
-			if item_drops == null:
-				return
-			
+			var item_drops := get_cell_item_drops(tile_pos)
+			assert(item_drops != null)
+
 			var half_tile_size := Vector2(tile_set.tile_size) / 2.0
 			for item_name: StringName in item_drops.keys():
 				var drop_config: Dictionary = item_drops[item_name]

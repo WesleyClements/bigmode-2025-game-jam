@@ -20,6 +20,7 @@ enum State {
 @export var mining_power: float = 1.0
 @export var laser_color: Color = Color(1, 0, 0.953125)
 @export var laser_width: float = 1.5
+@export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
 
 var world_map: WorldTileMapLayer
 var previous
@@ -110,10 +111,10 @@ func _physics_process(delta: float) -> void:
 
 	var speed := max_speed
 
-	if Input.is_action_just_pressed(&"build_power_pole") and iron_count >= entity_registry.get_entity_cost(EntityType.POWER_POLE):
+	if Input.is_action_just_pressed(&"build_power_pole") and iron_count >= entity_registry.get_entity_build_cost(EntityType.POWER_POLE):
 		selected_building = EntityType.POWER_POLE
 		state = State.BUILDING
-	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_cost(EntityType.LASER):
+	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_build_cost(EntityType.LASER):
 		selected_building = EntityType.LASER
 		state = State.BUILDING
 	elif Input.is_action_pressed(&"tile_map_interaction"):
@@ -123,7 +124,7 @@ func _physics_process(delta: float) -> void:
 				if is_within_interaction_range(tile) and can_mine_tile(tile):
 					state = State.MINING
 					target_tile = tile
-					var energy_cost := world_map.get_cell_energy_cost(tile)
+					var energy_cost := world_map.get_cell_mining_energy_cost(tile)
 					mining_timer.wait_time = energy_cost / mining_power
 					mining_timer.start()
 			State.MINING:
@@ -146,7 +147,7 @@ func _physics_process(delta: float) -> void:
 
 			State.BUILDING:
 				if is_within_interaction_range(tile):
-					var cost := entity_registry.get_entity_cost(selected_building)
+					var cost := entity_registry.get_entity_build_cost(selected_building)
 					if iron_count >= cost:
 						iron_count -= cost
 						MessageBuss.request_spawn_entity.emit(tile, selected_building)
@@ -194,7 +195,17 @@ func is_within_interaction_range(tile: Vector2i) -> bool:
 	return offset.length() <= interaction_range
 
 func can_mine_tile(tile: Vector2i) -> bool:
-	return world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN
+	match world_map.get_cell_source_id(tile):
+		-1:
+			return false
+		WorldTileMapLayer.TilesetAtlas.TERRAIN:
+			return true
+		WorldTileMapLayer.TilesetAtlas.ENTITIES:
+			return world_map.get_cell_alternative_tile(tile) in minable_entity_types
+		_:
+			assert(false, "Unknown source id")
+	return false
+	
 
 func update_building_preview() -> void:
 	assert(state == State.BUILDING)
