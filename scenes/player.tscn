@@ -1,9 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://cj8ksno35aduj"]
+[gd_scene load_steps=20 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_hp7f3"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
+[ext_resource type="Texture2D" uid="uid://by700onp21lqn" path="res://assets/sprites/player_beaming.png" id="5_vt3jp"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h40h1"]
 gradient = ExtResource("2_itq32")
@@ -12,6 +13,20 @@ height = 6
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_tfsft"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_cyxtv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_vt3jp")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [sub_resource type="Gradient" id="Gradient_0g1yi"]
 offsets = PackedFloat32Array(0, 0.383117, 0.597403, 0.714286)
@@ -189,13 +204,17 @@ entity_registry = ExtResource("2_hp7f3")
 [node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_h40h1")
 
-[node name="Body" type="Sprite2D" parent="Visuals"]
+[node name="Body" type="AnimatedSprite2D" parent="Visuals"]
 light_mask = 2
 z_as_relative = false
 y_sort_enabled = true
 scale = Vector2(1, 0.9)
-texture = ExtResource("2_cyxtv")
+sprite_frames = SubResource("SpriteFrames_tfsft")
 offset = Vector2(1, -8)
+
+[node name="LaserSpawnPoint" type="Marker2D" parent="Visuals/Body"]
+unique_name_in_owner = true
+position = Vector2(6, -7.5)
 
 [node name="PointLight2D" type="PointLight2D" parent="Visuals"]
 visible = false

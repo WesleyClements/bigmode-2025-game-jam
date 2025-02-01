@@ -18,6 +18,8 @@ enum State {
 @export var slow_down_time: float = 0.1
 @export var interaction_range: float = 2.5
 @export var mining_power: float = 1.0
+@export var laser_color: Color = Color(1, 0, 0.953125)
+@export var laser_width: float = 1.5
 
 var world_map: WorldTileMapLayer
 var previous
@@ -28,8 +30,9 @@ var state: State = State.IDLE:
 		state = value
 		match state:
 			State.MINING:
-				pass
+				body_sprite.frame = 1 # TODO no magic numbers
 			_:
+				body_sprite.frame = 0 # TODO no magic numbers
 				mining_timer.stop()
 var selected_building: EntityType:
 	set(value):
@@ -52,7 +55,9 @@ var interaction: Node = null
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
+@onready var body_sprite: AnimatedSprite2D = $Visuals/Body
 @onready var mining_timer: Timer = $MiningTimer
+@onready var laser_spawn_point: Node2D = %LaserSpawnPoint
 
 func _ready() -> void:
 	for node in get_tree().get_nodes_in_group(&"terrain"):
@@ -60,6 +65,23 @@ func _ready() -> void:
 			world_map = node
 			break
 
+func _draw():
+	if state != State.MINING:
+		return
+	var spawn_point := to_local(laser_spawn_point.global_position)
+	var target := to_local(world_map.to_global(world_map.map_to_local(target_tile)))
+	var offset := (target - spawn_point)
+	const SLOPE_THRESHOLD = 0.5
+	if not is_zero_approx(offset.x) and absf(offset.y) / absf(offset.x) > SLOPE_THRESHOLD:
+		const STEEP_SLOPE_OFFSET = Vector2(0.5, 0.5)
+		spawn_point.x += signf(offset.x) * STEEP_SLOPE_OFFSET.x
+		spawn_point.y += -signf(offset.y) * STEEP_SLOPE_OFFSET.y
+	draw_line(
+		spawn_point,
+		to_local(world_map.to_global(world_map.map_to_local(target_tile))),
+		laser_color,
+		laser_width
+	)
 		
 func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"give_coal"):
@@ -101,6 +123,11 @@ func _physics_process(delta: float) -> void:
 						mining_timer.start()
 					else:
 						state = State.IDLE
+
+				var to_target := world_map.map_to_local(target_tile) - world_map.to_local(global_position)
+				if not is_zero_approx(to_target.x):
+					visuals.scale.x = signf(to_target.x)
+
 			State.BUILDING:
 				if is_within_interaction_range(tile):
 					var cost := entity_registry.get_entity_cost(selected_building)
@@ -130,7 +157,7 @@ func _physics_process(delta: float) -> void:
 		animation_tree["parameters/conditions/is_idle"] = true
 		animation_tree["parameters/conditions/is_moving"] = false
 
-	if not is_zero_approx(movement_direction.x):
+	if not is_zero_approx(movement_direction.x) and state != State.MINING:
 		visuals.scale.x = signf(movement_direction.x)
 
 	move_and_slide()
