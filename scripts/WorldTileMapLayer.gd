@@ -81,8 +81,8 @@ func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i =
 		erase_cell(coords)
 	else:
 		set_cell(coords, source_id, atlas_coords, alternative_tile)
-	assert(WorldMap.a_star_grid_2d.is_in_boundsv(coords))
-	WorldMap.a_star_grid_2d.set_point_solid(coords, source_id != -1)
+	# assert(WorldMap.a_star_grid_2d.is_in_boundsv(coords))
+	# WorldMap.a_star_grid_2d.set_point_solid(coords, source_id != -1)
 	
 func on_set_world_tile_request(tile_pos: Vector2i, block_type: BlockType, block_variant: int) -> void:
 	match block_type:
