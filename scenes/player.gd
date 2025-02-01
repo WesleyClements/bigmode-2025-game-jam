@@ -114,15 +114,18 @@ func _physics_process(delta: float) -> void:
 					mining_timer.wait_time = energy_cost / mining_power
 					mining_timer.start()
 			State.MINING:
-				if target_tile != tile:
-					if is_within_interaction_range(tile) and can_mine_tile(tile):
-						mining_timer.stop()
-						target_tile = tile
-						var energy_cost := world_map.get_cell_energy_cost(tile)
-						mining_timer.wait_time = energy_cost / mining_power
-						mining_timer.start()
-					else:
-						state = State.IDLE
+				# if target_tile != tile:
+				# 	if is_within_interaction_range(tile) and can_mine_tile(tile):
+				# 		mining_timer.stop()
+				# 		target_tile = tile
+				# 		var energy_cost := world_map.get_cell_energy_cost(tile)
+				# 		mining_timer.wait_time = energy_cost / mining_power
+				# 		mining_timer.start()
+				# 	else:
+				# 		state = State.IDLE
+				if not is_within_interaction_range(target_tile):
+					state = State.IDLE
+					mining_timer.stop()
 
 				var to_target := world_map.map_to_local(target_tile) - world_map.to_local(global_position)
 				if not is_zero_approx(to_target.x):
