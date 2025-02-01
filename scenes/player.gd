@@ -20,6 +20,7 @@ enum State {
 @export var mining_power: float = 1.0
 @export var laser_color: Color = Color(1, 0, 0.953125)
 @export var laser_width: float = 1.5
+@export var mining_target_offset := Vector2(0, -6)
 @export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
 
 var world_map: WorldTileMapLayer
@@ -90,20 +91,57 @@ func _draw():
 		const STEEP_SLOPE_OFFSET = Vector2(0.5, 0.5)
 		spawn_point.x += signf(offset.x) * STEEP_SLOPE_OFFSET.x
 		spawn_point.y += -signf(offset.y) * STEEP_SLOPE_OFFSET.y
+
+	var tile_offset := world_map.local_to_map(world_map.to_local(global_position)) - target_tile
+	var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
+	var target_face_offset: Vector2
+	if tile_offset.x <= 0 and tile_offset.y <= 0:
+		target_face_offset = Vector2(
+			quarter_tile_size.x if absf(tile_offset.x) < absf(tile_offset.y) else -quarter_tile_size.x,
+			-quarter_tile_size.y
+		)
+	else:
+		var half_tile_size := Vector2(world_map.tile_set.tile_size) / 2.0
+		var t := clampf(
+			remap(
+				(-target).angle_to(Vector2.DOWN),
+				-PI / 3.0,
+				PI / 3.0,
+				0.0, 
+				1.0
+			),
+			0.0,
+			1.0
+		)
+		var x_offset:float = Tween.interpolate_value(
+			-quarter_tile_size.x,
+			half_tile_size.x,
+			t,
+			1.0,
+			Tween.TRANS_LINEAR,
+			Tween.EASE_IN_OUT
+		)
+		target_face_offset = Vector2(
+			x_offset,
+			half_tile_size.y - absf(x_offset) / 2.0
+		)
+
 	draw_line(
 		spawn_point,
-		to_local(world_map.to_global(world_map.map_to_local(target_tile))),
+		target + target_face_offset + mining_target_offset,
 		laser_color,
 		laser_width
 	)
-		
+
+func _process(_delta: float) -> void:
+	queue_redraw()
+
 func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"give_coal"):
 		coal_count += 1
 	if Input.is_action_pressed(&"give_iron"):
 		iron_count += 1
 
-	queue_redraw()
 	var movement_direction = Vector2(
 		Input.get_axis(&"move_left", &"move_right"),
 		Input.get_axis(&"move_up", &"move_down")

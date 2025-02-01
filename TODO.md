@@ -4,8 +4,10 @@
 - add background to ui elements
 - add tool or something for removing machines
 - update world gen to include more ore
-- make lasers respect los
+- make lasers (player/mining laser) respect los
 - add preview (sprite/range) when placing machine
-- make player laser hit rock face
 - make build menu flash red if not enough
 - make out of power symbol for machines not powered
+- add hover animation to dropped items
+- add velocity to items as the spawn
+- fix build menu color not resetting
