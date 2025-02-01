@@ -217,6 +217,10 @@ anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/is_idle = false
 parameters/conditions/is_moving = false
 
+[node name="MiningTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
 [node name="PickUpArea" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 16
@@ -231,5 +235,6 @@ collision_mask = 32
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="InteractionArea"]
 polygon = PackedVector2Array(0, -6, 12, 0, 0, 6, -12, 0)
 
+[connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
 [connection signal="body_entered" from="PickUpArea" to="." method="on_body_entered_pickup_area"]
 [connection signal="area_entered" from="InteractionArea" to="." method="on_area_enter_interaction_area"]

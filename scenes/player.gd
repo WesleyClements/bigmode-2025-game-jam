@@ -20,13 +20,23 @@ enum State {
 
 var world_map: WorldTileMapLayer
 var previous
-var state: State = State.IDLE
+var state: State = State.IDLE:
+	set(value):
+		if value == state:
+			return
+		state = value
+		match state:
+			State.MINING:
+				mining_timer.start()
+			_:
+				mining_timer.stop()
 var selected_building: EntityType:
 	set(value):
 		if value == selected_building:
 			return
 		selected_building = value
 		MessageBuss.set_selected_entity_type.emit(selected_building)
+var target_tile: Vector2i
 
 var coal_count := 0.0:
 	set(value):
@@ -41,6 +51,7 @@ var interaction: Node = null
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
+@onready var mining_timer: Timer = $MiningTimer
 
 func _ready() -> void:
 	for node in get_tree().get_nodes_in_group(&"terrain"):
@@ -78,14 +89,17 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_pressed(&"tile_map_interaction"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
-			State.IDLE when Input.is_action_just_pressed(&"tile_map_interaction"):
-				var player_tile := world_map.local_to_map(world_map.to_local(global_position))
-				var tile_offset := (tile - player_tile).abs()
-				if tile_offset.x <= interaction_range and tile_offset.y <= interaction_range and world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN:
+			State.IDLE:
+				if can_mine_tile(tile):
 					state = State.MINING
 			State.MINING:
-				MessageBuss.request_set_world_tile.emit(tile, BlockType.NONE, 0)
-				state = State.IDLE
+				if target_tile != tile:
+					if can_mine_tile(tile):
+						target_tile = tile
+						mining_timer.stop()
+						mining_timer.start()
+					else:
+						state = State.IDLE
 			State.BUILDING:
 				var cost := entity_registry.get_entity_cost(selected_building)
 				if iron_count >= cost:
@@ -118,6 +132,15 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+func can_mine_tile(tile: Vector2i) -> bool:
+	var player_tile := world_map.local_to_map(world_map.to_local(global_position))
+	var tile_offset := (tile - player_tile).abs()
+	if tile_offset.x > interaction_range:
+		return false
+	if tile_offset.y > interaction_range:
+		return false
+	return world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN
+
 
 func on_body_entered_pickup_area(body: Node2D) -> void:
 	if not body.is_in_group(&"pickup"):
@@ -137,3 +160,8 @@ func on_area_enter_interaction_area(area: Area2D) -> void:
 	assert(area.has_method(&"get_interaction"))
 	interaction = area.get_interaction()
 	assert(interaction.has_method(&"interact"))
+
+func on_mining_timer_timeout() -> void:
+	assert(state == State.MINING)
+	MessageBuss.request_set_world_tile.emit(target_tile, BlockType.NONE, 0)
+	state = State.IDLE
