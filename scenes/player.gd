@@ -59,12 +59,6 @@ func _ready() -> void:
 			world_map = node
 			break
 
-func _draw():
-	var player_tile := world_map.local_to_map(world_map.to_local(global_position))
-	var center := to_local(world_map.to_global(world_map.map_to_local(player_tile)))
-	var offset := world_map.tile_set.tile_size * (interaction_range + 0.5)
-	draw_polyline([center + Vector2(0, offset.y), center + Vector2(offset.x, 0), center + Vector2(0, -offset.y), center + Vector2(-offset.x, 0), center + Vector2(0, offset.y)], Color(1, 1, 1, 0.5), 1)
-
 		
 func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"give_coal"):
@@ -90,23 +84,24 @@ func _physics_process(delta: float) -> void:
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
 			State.IDLE:
-				if can_mine_tile(tile):
+				if is_within_interaction_range(tile) and can_mine_tile(tile):
 					state = State.MINING
 			State.MINING:
 				if target_tile != tile:
-					if can_mine_tile(tile):
+					if is_within_interaction_range(tile) and can_mine_tile(tile):
 						target_tile = tile
 						mining_timer.stop()
 						mining_timer.start()
 					else:
 						state = State.IDLE
 			State.BUILDING:
-				var cost := entity_registry.get_entity_cost(selected_building)
-				if iron_count >= cost:
-					iron_count -= cost
-					MessageBuss.request_spawn_entity.emit(tile, selected_building)
-				state = State.IDLE
-				selected_building = EntityType.NONE
+				if is_within_interaction_range(tile):
+					var cost := entity_registry.get_entity_cost(selected_building)
+					if iron_count >= cost:
+						iron_count -= cost
+						MessageBuss.request_spawn_entity.emit(tile, selected_building)
+					state = State.IDLE
+					selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
 	
@@ -132,13 +127,16 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func can_mine_tile(tile: Vector2i) -> bool:
+func is_within_interaction_range(tile: Vector2i) -> bool:
 	var player_tile := world_map.local_to_map(world_map.to_local(global_position))
 	var tile_offset := (tile - player_tile).abs()
 	if tile_offset.x > interaction_range:
 		return false
 	if tile_offset.y > interaction_range:
 		return false
+	return true
+
+func can_mine_tile(tile: Vector2i) -> bool:
 	return world_map.get_cell_source_id(tile) == WorldTileMapLayer.TilesetAtlas.TERRAIN
 
 

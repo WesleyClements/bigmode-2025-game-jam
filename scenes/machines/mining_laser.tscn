@@ -114,6 +114,7 @@ texture = ExtResource("4_evo81")
 offset = Vector2(0, 9.5)
 
 [node name="LaserHead" type="Sprite2D" parent="Laser"]
+modulate = Color(0.419608, 0.419608, 0.419608, 1)
 rotation = 0.872665
 texture = ExtResource("3_e51kj")
 offset = Vector2(0, 9.5)

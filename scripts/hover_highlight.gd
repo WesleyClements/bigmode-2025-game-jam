@@ -1,10 +1,14 @@
 extends Node2D
 
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
+const Player = preload("res://scenes/player.gd")
 
 const TilesetAtlas = WorldTileMapLayer.TilesetAtlas
 
+@export var too_far_color: Color = Color(1.0, 0.0, 0.0)
+
 var hovered_tile: Vector2i
+var outline_color: Color
 
 @onready var world_map: WorldTileMapLayer:
 	set(value):
@@ -20,14 +24,29 @@ var hovered_tile: Vector2i
 			Vector2(-half_tile_size.x, 0)
 		]
 
+@onready var players: Array[Node]
+
 @onready var outline: Line2D = $Outline
 
 func _ready() -> void:
 	world_map = get_parent()
+	players = get_tree().get_nodes_in_group(&"player")
+	outline_color = outline.default_color
+	too_far_color.a = outline_color.a
 
 func _process(_delta: float) -> void:
 	var mouse_pos := get_global_mouse_position()
 	var tile_pos := world_map.mouse_to_map(mouse_pos)
+	
+	update_hover_position(tile_pos)
+	outline.default_color = too_far_color
+	for player: Player in players:
+		if not player.is_within_interaction_range(tile_pos):
+			continue
+		outline.default_color = outline_color
+		break
+
+func update_hover_position(tile_pos: Vector2i) -> void:
 	if tile_pos == hovered_tile:
 		return
 	position = world_map.map_to_local(tile_pos)
