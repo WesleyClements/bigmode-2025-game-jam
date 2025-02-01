@@ -89,15 +89,20 @@ size_flags_vertical = 8
 text = "Press E"
 horizontal_alignment = 1
 
+[node name="GerbilGeneratorInteraction" type="Node" parent="."]
+script = ExtResource("8_ftyqi")
+
+[node name="ContinuousInteractionTimer" type="Timer" parent="GerbilGeneratorInteraction"]
+wait_time = 0.3
+one_shot = true
+
 [node name="InteractionArea" parent="." node_paths=PackedStringArray("interaction") instance=ExtResource("7_ceurq")]
-interaction = NodePath("GerbilGeneratorInteraction")
+interaction = NodePath("../GerbilGeneratorInteraction")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="InteractionArea"]
 polygon = PackedVector2Array(0, -16, 32, 0, 0, 16, -32, 0)
 
-[node name="GerbilGeneratorInteraction" type="Node" parent="InteractionArea"]
-script = ExtResource("8_ftyqi")
-
 [connection signal="energy_changed" from="." to="." method="on_energy_changed" unbinds=1]
+[connection signal="timeout" from="GerbilGeneratorInteraction/ContinuousInteractionTimer" to="GerbilGeneratorInteraction" method="on_continuous_interaction_timer_timeout"]
 [connection signal="player_entered" from="InteractionArea" to="." method="on_player_interaction_area" binds= [true]]
 [connection signal="player_exited" from="InteractionArea" to="." method="on_player_interaction_area" binds= [false]]
