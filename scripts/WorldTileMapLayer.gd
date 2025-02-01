@@ -32,7 +32,7 @@ func _ready() -> void:
 
 	await WorldMap.map_generated
 	WorldMap.populate_tile_map(self)
-	WorldMap.generate_a_star_grid_2d(self)
+	# WorldMap.generate_a_star_grid_2d(self)
 
 
 func _process(_delta: float) -> void:
