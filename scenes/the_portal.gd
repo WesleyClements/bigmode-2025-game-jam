@@ -20,15 +20,17 @@ var iron: float = 0.0:
 		if iron == value:
 			return
 		iron = value
+		var frame_count := portal_sprite.sprite_frames.get_frame_count(&"default")
+		portal_sprite.frame = floorf((frame_count - 1) * iron / target_amount) as int
 		iron_changed.emit(iron)
 		if iron == target_amount:
 			VictoryHandler.you_win.emit()
-			animation_player.play(&"Ignite_portal")
+			portal_sprite.frame = frame_count - 1
 
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var iron_display: Label = $IronDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var portal_sprite: AnimatedSprite2D = $Portal
 
 func _ready() -> void:
 	iron_changed.emit(iron)

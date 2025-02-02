@@ -6,84 +6,69 @@
 [ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="4_61xxw"]
 [ext_resource type="Script" path="res://scenes/the_portal_interaction.gd" id="5_8v4pk"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_1lhx7"]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_yjomj"]
+gradient = ExtResource("1_obyk1")
+width = 40
+height = 9
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2nmp0"]
 atlas = ExtResource("3_c71x1")
 region = Rect2(0, 0, 32, 64)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_6uatt"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_u3dvi"]
 atlas = ExtResource("3_c71x1")
 region = Rect2(32, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8xdbl"]
+atlas = ExtResource("3_c71x1")
+region = Rect2(64, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rvtl5"]
+atlas = ExtResource("3_c71x1")
+region = Rect2(96, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nipg2"]
+atlas = ExtResource("3_c71x1")
+region = Rect2(128, 0, 32, 64)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_iok8r"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_1lhx7")
+"texture": SubResource("AtlasTexture_2nmp0")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_6uatt")
+"texture": SubResource("AtlasTexture_u3dvi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8xdbl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rvtl5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nipg2")
 }],
 "loop": true,
 "name": &"default",
 "speed": 5.0
 }]
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_yjomj"]
-gradient = ExtResource("1_obyk1")
-width = 24
-height = 8
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0.5, 0)
-
-[sub_resource type="Animation" id="Animation_x5nn5"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Portal:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_6sq75"]
-resource_name = "Ignite_portal"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Portal:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [0, 1]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_5u1xt"]
-_data = {
-"Ignite_portal": SubResource("Animation_6sq75"),
-"RESET": SubResource("Animation_x5nn5")
-}
-
 [node name="ThePortal" type="StaticBody2D"]
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_a444q")
 
+[node name="Shadow" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_yjomj")
+
 [node name="Portal" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -24)
 sprite_frames = SubResource("SpriteFrames_iok8r")
-
-[node name="Shadow" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_yjomj")
+offset = Vector2(0, -6)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -3, 7, 0, 0, 3, -7, 0)
@@ -137,6 +122,7 @@ text = "Press E"
 horizontal_alignment = 1
 
 [node name="InteractionArea" parent="." node_paths=PackedStringArray("interaction") instance=ExtResource("4_61xxw")]
+visible = false
 interaction = NodePath("../ThePortalInteraction")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="InteractionArea"]
@@ -148,11 +134,6 @@ script = ExtResource("5_8v4pk")
 [node name="ContinuousInteractionTimer" type="Timer" parent="ThePortalInteraction" groups=["the_portal"]]
 wait_time = 0.3
 one_shot = true
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_5u1xt")
-}
 
 [connection signal="iron_changed" from="." to="." method="on_energy_changed" unbinds=1]
 [connection signal="player_entered" from="InteractionArea" to="." method="on_player_interaction_area" binds= [true]]
