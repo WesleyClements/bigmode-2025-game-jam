@@ -28,11 +28,12 @@ var iron: float = 0.0:
 			portal_sprite.frame = frame_count - 1
 
 @onready var world_map: WorldTileMapLayer = get_parent()
-@onready var iron_display: Label = $IronDisplay
+@onready var iron_display: Label = $IronDisplayPanel/IronDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
 @onready var portal_sprite: AnimatedSprite2D = $Portal
 
 func _ready() -> void:
+	portal_sprite.frame = 0
 	iron_changed.emit(iron)
 
 	hover_entered.connect(on_hover_changed.bind(true))

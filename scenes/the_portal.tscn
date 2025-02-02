@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://bhdcqa1rkul33"]
+[gd_scene load_steps=15 format=3 uid="uid://bhdcqa1rkul33"]
 
 [ext_resource type="Script" path="res://scenes/the_portal.gd" id="1_a444q"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_obyk1"]
 [ext_resource type="Texture2D" uid="uid://csahwgw6f3lwd" path="res://assets/sprites/portal.png" id="3_c71x1"]
 [ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="4_61xxw"]
+[ext_resource type="Script" path="res://scenes/iron_display_panel.gd" id="4_e3ml6"]
 [ext_resource type="Script" path="res://scenes/the_portal_interaction.gd" id="5_8v4pk"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_yjomj"]
@@ -57,6 +58,21 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03cf8"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 2.0
+
 [node name="ThePortal" type="StaticBody2D"]
 collision_layer = 8
 collision_mask = 7
@@ -73,19 +89,25 @@ offset = Vector2(0, -6)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -3, 7, 0, 0, 3, -7, 0)
 
-[node name="IronDisplay" type="Label" parent="."]
+[node name="IronDisplayPanel" type="PanelContainer" parent="."]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -47.0
-offset_right = 20.0
-offset_bottom = -24.0
+offset_left = -13.0
+offset_top = -35.0
+offset_right = 13.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 0
-size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_03cf8")
+script = ExtResource("4_e3ml6")
+positions = [Vector2(-13, -35), Vector2(-13, -58), Vector2(-13, -58), Vector2(-13, -74), Vector2(-13, -74)]
+
+[node name="IronDisplay" type="Label" parent="IronDisplayPanel"]
+layout_mode = 2
+size_flags_vertical = 1
 text = "0 / 0"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -135,6 +157,7 @@ script = ExtResource("5_8v4pk")
 wait_time = 0.3
 one_shot = true
 
+[connection signal="iron_changed" from="." to="IronDisplayPanel" method="on_iron_changed"]
 [connection signal="iron_changed" from="." to="." method="on_energy_changed" unbinds=1]
 [connection signal="player_entered" from="InteractionArea" to="." method="on_player_interaction_area" binds= [true]]
 [connection signal="player_exited" from="InteractionArea" to="." method="on_player_interaction_area" binds= [false]]
