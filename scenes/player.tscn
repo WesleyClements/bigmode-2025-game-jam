@@ -258,4 +258,5 @@ polygon = PackedVector2Array(0, -2, 4, 0, 0, 2, -4, 0)
 
 [connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
 [connection signal="body_entered" from="PickUpArea" to="." method="on_body_entered_pickup_area"]
-[connection signal="area_entered" from="InteractionArea" to="." method="on_area_enter_interaction_area"]
+[connection signal="area_entered" from="InteractionArea" to="." method="on_area_enter_interaction_area" binds= [true]]
+[connection signal="area_exited" from="InteractionArea" to="." method="on_area_enter_interaction_area" binds= [false]]

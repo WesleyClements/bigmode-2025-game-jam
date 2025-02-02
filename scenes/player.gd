@@ -75,6 +75,7 @@ var iron_count := 0.0:
 		MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)
 
 var interaction: Node = null
+var interactions:={}
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
@@ -279,10 +280,19 @@ func on_body_entered_pickup_area(body: Node2D) -> void:
 		ItemType.IRON:
 			iron_count += body.get_amount()
 
-func on_area_enter_interaction_area(area: Area2D) -> void:
+func on_area_enter_interaction_area(area: Area2D, entered: bool) -> void:
 	assert(area.has_method(&"get_interaction"))
-	interaction = area.get_interaction()
-	assert(interaction.has_method(&"interact"))
+	if entered:
+		var new_interaction :Node= area.get_interaction()
+		assert(new_interaction.has_method(&"interact"))
+		interaction = new_interaction
+		interactions[area] = new_interaction
+	else:
+		interactions.erase(area)
+		if interactions.is_empty():
+			interaction = null
+		else:
+			interaction = interactions.values().back()
 
 func on_mining_timer_timeout() -> void:
 	assert(state == State.MINING)
