@@ -177,6 +177,9 @@ func on_spawn_entity_request(tile_pos: Vector2i, entity_type: EntityType) -> voi
 func reset_cell_damage(coords: Vector2i) -> void:
 	cell_damage.erase(coords)
 	_cell_damage_timers.erase(coords)
+	if get_cell_source_id(coords) == TilesetAtlas.TERRAIN:
+		var atlas_coords := get_cell_atlas_coords(coords)
+		set_cell(coords, TilesetAtlas.TERRAIN, Vector2(atlas_coords.x, 0), 0)
 
 func on_child_entered_tree(child: Node) -> void:
 	await child.ready
