@@ -94,6 +94,14 @@ func set_cell_damage(coords: Vector2i, damage: float) -> void:
 	if current_damage == damage:
 		return
 	cell_damage[coords] = damage
+
+	if get_cell_source_id(coords) == TilesetAtlas.TERRAIN:
+		var atlas_coords := get_cell_atlas_coords(coords)
+		const FRACTURE_VARIANT_COUNT := 4.0
+		var offset: int = floor(FRACTURE_VARIANT_COUNT * damage / get_cell_mining_energy_cost(coords))
+		assert(offset >= 0 and offset < FRACTURE_VARIANT_COUNT)
+		set_cell(coords, TilesetAtlas.TERRAIN, Vector2i(atlas_coords.x, offset), 0)
+
 	if _cell_damage_timers.has(coords):
 		var current_timer := _cell_damage_timers[coords] as SceneTreeTimer
 		current_timer.timeout.disconnect(reset_cell_damage)
