@@ -4,10 +4,14 @@ const Player = preload("res://scenes/player.gd")
 const ThePortal = preload("res://scenes/the_portal.gd")
 
 @export var initial_deposit_amount: float = 1.0
-@export var deposit_rate: float = 12.0
+@export var deposit_rate: float = 6.0
+@export var deposit_rate_acceleration: float = 3.0
+@export var deposit_rate_jerk: float = 1.0
 
 var frames_since_interaction := 0
 var continuously_depositing := false
+var continuous_deposit_rate: float
+var continuous_deposit_rate_acceleration: float
 
 @onready var portal: ThePortal = owner
 @onready var continuous_interaction_timer: Timer = $ContinuousInteractionTimer
@@ -16,6 +20,8 @@ func _physics_process(_delta: float) -> void:
 	frames_since_interaction += 1
 	if frames_since_interaction > 1:
 		continuously_depositing = false
+		continuous_deposit_rate = deposit_rate
+		continuous_deposit_rate_acceleration = deposit_rate_acceleration
 
 func interact(node: Node, _just_pressed: bool) -> void:
 	assert(node is Player)
@@ -31,7 +37,10 @@ func interact(node: Node, _just_pressed: bool) -> void:
 		print("starting timer")
 		continuous_interaction_timer.start()
 	elif continuously_depositing:
-		var transfer_amount := minf(player.iron_count, deposit_rate * get_physics_process_delta_time())
+		var delta := get_physics_process_delta_time()
+		var transfer_amount := minf(player.iron_count, continuous_deposit_rate * delta)
+		continuous_deposit_rate += continuous_deposit_rate_acceleration * delta
+		continuous_deposit_rate_acceleration += deposit_rate_jerk * delta
 		player.iron_count -= transfer_amount
 		portal.iron += transfer_amount
 
