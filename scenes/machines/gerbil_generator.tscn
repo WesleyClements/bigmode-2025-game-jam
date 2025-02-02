@@ -220,7 +220,6 @@ _data = {
 }
 
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
-y_sort_enabled = true
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_7hibj")

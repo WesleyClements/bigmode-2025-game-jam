@@ -34,7 +34,7 @@ var powered: bool = false:
 		if powered == value:
 			return
 		reset_laser_head()
-		cool_down_timer.stop()
+		cool_down_timer.paused = true
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
@@ -43,6 +43,7 @@ var powered: bool = false:
 		else:
 			await animation_player.animation_finished
 			powered = true
+			cool_down_timer.paused = false
 			cool_down_timer.start()
 
 var state := State.IDLE:
@@ -222,7 +223,6 @@ func on_cooldown_timer_timeout() -> void:
 	assert(state == State.IDLE)
 	assert(source != null)
 	assert(generator != null)
-	print("Mining laser cooldown timer timeout")
 	var tile_origin := world_map.local_to_map(get_global_position())
 	var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
 	if potential_mining_targets.size() == 0:
