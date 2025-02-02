@@ -20,6 +20,7 @@ config/icon="res://assets/icon.svg"
 
 MessageBuss="*res://autoloads/MessageBuss.gd"
 WorldMap="*res://autoloads/WorldMap.tscn"
+VictoryHandler="*res://autoloads/victory_handler.tscn"
 
 [display]
 
@@ -122,3 +123,4 @@ common/physics_ticks_per_second=120
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.227451, 0.313726, 0.419608, 1)

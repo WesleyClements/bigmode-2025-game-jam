@@ -1,4 +1,4 @@
-extends MarginContainer
+extends Container
 
 
 var active_camera: Camera2D

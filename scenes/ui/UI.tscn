@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://cdhfd37vrxpuw"]
 
-[ext_resource type="Script" path="res://scenes/ui/ui_wrapper.gd" id="1_k4oql"]
+[ext_resource type="Script" path="res://scripts/ui_wrapper.gd" id="1_k4oql"]
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
 [ext_resource type="Script" path="res://scenes/ui/item_count_display.gd" id="2_88wpw"]
 [ext_resource type="PackedScene" uid="uid://cluwtjy0x1ngw" path="res://scenes/ui/build_menu_slot.tscn" id="3_0fm2q"]

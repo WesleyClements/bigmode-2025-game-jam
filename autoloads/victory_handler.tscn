@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7l0qpxrvp07g"]
+
+[ext_resource type="Script" path="res://autoloads/victory_handler.gd" id="1_hh4kh"]
+[ext_resource type="PackedScene" uid="uid://cwyo4sravdowm" path="res://scenes/ui/you_win_scene.tscn" id="2_25prw"]
+
+[node name="VictoryHandler" type="Node"]
+script = ExtResource("1_hh4kh")
+you_win_scene = ExtResource("2_25prw")
