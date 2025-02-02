@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://c6msa23sg50i1"]
 
-[ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_ohuye"]
+[ext_resource type="Texture2D" uid="uid://bk5o6wq8qwlec" path="res://assets/sprites/power_pole_full.png" id="1_k1jxg"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_i6evg"]
 [ext_resource type="Script" path="res://scripts/tile_area_outline.gd" id="3_ylt7r"]
 
@@ -14,7 +14,7 @@ fill_to = Vector2(0.5, 0)
 
 [node name="PowerPolePreview" type="Sprite2D"]
 y_sort_enabled = true
-texture = ExtResource("1_ohuye")
+texture = ExtResource("1_k1jxg")
 offset = Vector2(0, -14)
 
 [node name="Shadow" type="Sprite2D" parent="."]

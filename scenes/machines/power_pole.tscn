@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c4cd34odmmos7"]
+[gd_scene load_steps=14 format=3 uid="uid://c4cd34odmmos7"]
 
 [ext_resource type="Script" path="res://scenes/machines/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
@@ -15,6 +15,70 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_e2qx3"]
+atlas = ExtResource("1_xfd3o")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g3qbj"]
+atlas = ExtResource("1_xfd3o")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_k0cd2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e2qx3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g3qbj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_y5a7m"]
+resource_name = "power_on"
+length = 0.01
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"frame", 1],
+"method": &"set"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_r6m1m"]
+resource_name = "power_off"
+length = 0.01
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"frame", 0],
+"method": &"set"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_chok4"]
+_data = {
+"power_off": SubResource("Animation_r6m1m"),
+"power_on": SubResource("Animation_y5a7m")
+}
+
 [node name="PowerPole" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
 collision_mask = 0
@@ -28,8 +92,8 @@ position = Vector2(0, -24)
 [node name="Shadow" type="Sprite2D" parent="."]
 texture = SubResource("GradientTexture2D_exbia")
 
-[node name="Body" type="Sprite2D" parent="."]
-texture = ExtResource("1_xfd3o")
+[node name="Body" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_k0cd2")
 offset = Vector2(0, -14)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
@@ -42,3 +106,8 @@ z_index = 100
 visible = false
 root_node = NodePath("..")
 tile_radius = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_chok4")
+}

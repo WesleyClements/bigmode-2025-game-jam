@@ -28,6 +28,7 @@ var powered := false:
 		if powered == value:
 			return
 		powered = value
+		animation_player.play(&"power_on" if value else &"power_off")
 		powered_changed.emit(value)
 
 var source: Node
@@ -41,6 +42,7 @@ var force_show_outline: bool = false
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var wires: Node2D = $Wires
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func _enter_tree() -> void:
 	search_for_machines.call_deferred()

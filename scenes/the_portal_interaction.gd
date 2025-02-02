@@ -34,7 +34,6 @@ func interact(node: Node, _just_pressed: bool) -> void:
 		var transfer_amount := minf(player.iron_count, initial_deposit_amount)
 		player.iron_count -= transfer_amount
 		portal.iron += transfer_amount
-		print("starting timer")
 		continuous_interaction_timer.start()
 	elif continuously_depositing:
 		var delta := get_physics_process_delta_time()

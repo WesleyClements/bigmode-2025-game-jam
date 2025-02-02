@@ -4,8 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
 [ext_resource type="Script" path="res://scenes/ui/item_count_display.gd" id="2_88wpw"]
 [ext_resource type="PackedScene" uid="uid://cluwtjy0x1ngw" path="res://scenes/ui/build_menu_slot.tscn" id="3_0fm2q"]
-[ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="4_sadhj"]
 [ext_resource type="Texture2D" uid="uid://c15jrwiuhcjb2" path="res://assets/sprites/mining_laser_full.png" id="5_6xwpk"]
+[ext_resource type="Texture2D" uid="uid://bk5o6wq8qwlec" path="res://assets/sprites/power_pole_full.png" id="5_fk05m"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 
@@ -104,7 +104,7 @@ alignment = 1
 [node name="PowerPoleBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
 layout_mode = 2
 entity_type = 1
-texture = ExtResource("4_sadhj")
+texture = ExtResource("5_fk05m")
 hot_key_name = "1"
 
 [node name="MiningLaserBuildMenuSlot" parent="UIWrapper/UI/BottomRow/BottomCenter/BuildMenu" instance=ExtResource("3_0fm2q")]
