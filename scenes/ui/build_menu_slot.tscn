@@ -1,126 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://cluwtjy0x1ngw"]
+[gd_scene load_steps=5 format=3 uid="uid://cluwtjy0x1ngw"]
 
 [ext_resource type="Script" path="res://scenes/ui/build_menu_slot.gd" id="1_fru0y"]
-[ext_resource type="Shader" path="res://shaders/grey_scale.gdshader" id="2_02wo3"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_mvclf"]
-
-[sub_resource type="Animation" id="Animation_ybsbf"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Icon:material")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [null]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("..:theme_override_styles/panel")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [null]
-}
-
-[sub_resource type="Animation" id="Animation_d3f4g"]
-resource_name = "unselect"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("..:theme_override_styles/panel")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [null]
-}
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_dahxs"]
-shader = ExtResource("2_02wo3")
-
-[sub_resource type="Animation" id="Animation_3wa6i"]
-resource_name = "grey_out"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Icon:material")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [SubResource("ShaderMaterial_dahxs")]
-}
-
-[sub_resource type="Animation" id="Animation_ekimx"]
-resource_name = "un_grey"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Icon:material")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [null]
-}
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bvmme"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 5
-
-[sub_resource type="Animation" id="Animation_frslv"]
-resource_name = "select"
-length = 0.01
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("..:theme_override_styles/panel")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [SubResource("StyleBoxFlat_bvmme")]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_2syin"]
-_data = {
-"RESET": SubResource("Animation_ybsbf"),
-"deselect": SubResource("Animation_d3f4g"),
-"disable": SubResource("Animation_3wa6i"),
-"enable": SubResource("Animation_ekimx"),
-"select": SubResource("Animation_frslv")
-}
+[ext_resource type="Material" uid="uid://c4cnyxxri27sl" path="res://resources/grey_scale.ShaderMaterial.tres" id="3_dpg0g"]
+[ext_resource type="AnimationLibrary" uid="uid://hr8qhcemieds" path="res://scenes/ui/build_menu_slot.AnimationLibrary.tres" id="4_1s6dv"]
 
 [node name="Panel" type="Panel"]
 custom_minimum_size = Vector2(32, 32)
@@ -140,6 +23,7 @@ grow_vertical = 2
 size_flags_vertical = 8
 
 [node name="Icon" type="TextureRect" parent="Margin"]
+material = ExtResource("3_dpg0g")
 layout_mode = 2
 
 [node name="HotKeyName" type="Label" parent="."]
@@ -151,8 +35,12 @@ size_flags_vertical = 3
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("../Margin")
+[node name="EnableAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_2syin")
+"": ExtResource("4_1s6dv")
+}
+
+[node name="SelectionAnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": ExtResource("4_1s6dv")
 }

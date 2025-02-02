@@ -24,26 +24,30 @@ const EntityType = MessageBuss.EntityType
 		if enabled == value:
 			return
 		enabled = value
-		if animation_player != null:
-			animation_player.play("enable" if value else "disable")
+		if enable_animation_player != null:
+			enable_animation_player.play(&"enable" if enabled else &"disable")
 @export var selected: bool = false:
 	set(value):
 		if selected == value:
 			return
 		selected = value
-		if animation_player != null:
-			animation_player.play("select" if value else "deselect")
+		if selection_animation_player != null:
+			selection_animation_player.play(&"select" if selected else &"deselect")
 
 @onready var icon: TextureRect = $Margin/Icon
 @onready var hot_key_display: Label = $HotKeyName
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var enable_animation_player: AnimationPlayer = $EnableAnimationPlayer
+@onready var selection_animation_player: AnimationPlayer = $SelectionAnimationPlayer
 
 func _ready() -> void:
-	MessageBuss.item_count_updated.connect(on_item_count_updated)
-	MessageBuss.set_selected_entity_type.connect(on_set_selected_entity_type)
 	icon.texture = texture
 	hot_key_display.text = hot_key_name
+
+	if Engine.is_editor_hint():
+		return
 	enabled = false
+	MessageBuss.item_count_updated.connect(on_item_count_updated)
+	MessageBuss.set_selected_entity_type.connect(on_set_selected_entity_type)
 
 func on_item_count_updated(type: ItemType, count: int) -> void:
 	if type != ItemType.IRON:

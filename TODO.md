@@ -10,4 +10,4 @@
 - make out of power symbol for machines not powered
 - add hover animation to dropped items
 - add velocity to items as the spawn
-- fix build menu color not resetting
+- add breaking variations to block
