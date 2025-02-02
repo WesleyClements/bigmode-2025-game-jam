@@ -1,10 +1,14 @@
-[gd_scene load_steps=20 format=3 uid="uid://cj8ksno35aduj"]
+[gd_scene load_steps=24 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_hp7f3"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
 [ext_resource type="Texture2D" uid="uid://by700onp21lqn" path="res://assets/sprites/player_beaming.png" id="5_vt3jp"]
+[ext_resource type="AudioStream" uid="uid://wavwj6cpx5v4" path="res://assets/sfx/walk_1.wav" id="6_8u8kc"]
+[ext_resource type="Script" path="res://scripts/random_audio_stream_player_2d.gd" id="7_4pov0"]
+[ext_resource type="AudioStream" uid="uid://byu0oh7w2y445" path="res://assets/sfx/walk_2.wav" id="8_tnww5"]
+[ext_resource type="AudioStream" uid="uid://b7higjmpnso2i" path="res://assets/sfx/walk_3.wav" id="9_s4vuq"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h40h1"]
 gradient = ExtResource("2_itq32")
@@ -159,6 +163,23 @@ tracks/2/keys = {
 "update": 0,
 "values": [Vector2(1, 0.9), Vector2(1, 1), Vector2(1, 0.9), Vector2(1, 1)]
 }
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("WalkingSounds")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"play_random_audio_stream"
+}, {
+"args": [],
+"method": &"play_random_audio_stream"
+}]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4vcqf"]
 _data = {
@@ -255,6 +276,27 @@ collision_mask = 32
 position = Vector2(-0.1, -0.2)
 scale = Vector2(0.994792, 1.02083)
 polygon = PackedVector2Array(0, -2, 4, 0, 0, 2, -4, 0)
+
+[node name="WalkingSounds" type="Node2D" parent="."]
+script = ExtResource("7_4pov0")
+
+[node name="Walking1" type="AudioStreamPlayer2D" parent="WalkingSounds"]
+stream = ExtResource("6_8u8kc")
+max_polyphony = 2
+bus = &"sfx"
+script = ExtResource("7_4pov0")
+
+[node name="Walking2" type="AudioStreamPlayer2D" parent="WalkingSounds"]
+stream = ExtResource("8_tnww5")
+max_polyphony = 2
+bus = &"sfx"
+script = ExtResource("7_4pov0")
+
+[node name="Walking3" type="AudioStreamPlayer2D" parent="WalkingSounds"]
+stream = ExtResource("9_s4vuq")
+max_polyphony = 2
+bus = &"sfx"
+script = ExtResource("7_4pov0")
 
 [connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
 [connection signal="body_entered" from="PickUpArea" to="." method="on_body_entered_pickup_area"]

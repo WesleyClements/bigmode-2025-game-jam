@@ -38,6 +38,9 @@ position = Vector2(16, 16)
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(4, 4)
 
+[node name="AudioListener2D" type="AudioListener2D" parent="World/Player"]
+current = true
+
 [node name="Floors" type="TileMapLayer" parent="World"]
 z_index = -100
 tile_set = ExtResource("4_c6igf")
