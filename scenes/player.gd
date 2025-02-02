@@ -194,13 +194,13 @@ func _physics_process(delta: float) -> void:
 					visuals.scale.x = signf(to_target.x)
 
 			State.BUILDING:
-				if is_within_interaction_range(tile):
+				if is_within_interaction_range(tile) and can_build_on_tile(tile):
 					var cost := entity_registry.get_entity_build_cost(selected_building)
 					if iron_count >= cost:
 						iron_count -= cost
 						MessageBuss.request_spawn_entity.emit(tile, selected_building)
-					state = State.IDLE
-					selected_building = EntityType.NONE
+				state = State.IDLE
+				selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
 		mining_timer.stop()
@@ -238,6 +238,9 @@ func is_within_interaction_range(tile: Vector2i) -> bool:
 	var offset := tile_pos - player_pos
 	offset /= Vector2(world_map.tile_set.tile_size)
 	return offset.length() <= interaction_range
+
+func can_build_on_tile(tile: Vector2i) -> bool:
+	return world_map.get_cell_source_id(tile) == -1
 
 func can_mine_tile(tile: Vector2i) -> bool:
 	match world_map.get_cell_source_id(tile):
