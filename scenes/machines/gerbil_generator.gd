@@ -181,7 +181,7 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 	disconnect_machine(node)
 
 func on_fuel_changed() -> void:
-	fuel_display.text = "F : %s" % [ceilf(fuel)]
+	fuel_display.text = "%s" % [ceilf(fuel)]
 
 func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered
