@@ -17,7 +17,7 @@ signal hover_entered()
 signal hover_exited()
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
-@export var mineable_tileset_atlas_coords: Array[Vector2i] = [Vector2i(1, 0), Vector2i(1, 0)]
+@export var mineable_tileset_atlas_coords: Array[Vector2i] = [Vector2i(1, 0), Vector2i(2, 0)]
 @export var mining_power: float = 2.0
 @export var fuel_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -10)
