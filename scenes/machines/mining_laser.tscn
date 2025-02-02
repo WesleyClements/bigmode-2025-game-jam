@@ -144,12 +144,7 @@ one_shot = true
 
 [node name="MiningTimer" type="Timer" parent="."]
 process_callback = 0
-one_shot = true
-
-[node name="ConsumptionTimer" type="Timer" parent="."]
-process_callback = 0
-wait_time = 0.1
+wait_time = 0.05
 
 [connection signal="timeout" from="CoolDownTimer" to="." method="on_cooldown_timer_timeout"]
 [connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
-[connection signal="timeout" from="ConsumptionTimer" to="." method="on_consumption_timer_timeout"]

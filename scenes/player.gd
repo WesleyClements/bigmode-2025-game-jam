@@ -162,19 +162,13 @@ func _physics_process(delta: float) -> void:
 				if is_within_interaction_range(tile) and can_mine_tile(tile):
 					state = State.MINING
 					target_tile = tile
-					var energy_cost := world_map.get_cell_mining_energy_cost(tile)
-					mining_timer.wait_time = energy_cost / mining_power
 					mining_timer.start()
 			State.MINING:
-				# if target_tile != tile:
-				# 	if is_within_interaction_range(tile) and can_mine_tile(tile):
-				# 		mining_timer.stop()
-				# 		target_tile = tile
-				# 		var energy_cost := world_map.get_cell_energy_cost(tile)
-				# 		mining_timer.wait_time = energy_cost / mining_power
-				# 		mining_timer.start()
-				# 	else:
-				# 		state = State.IDLE
+				if target_tile != tile:
+					if is_within_interaction_range(tile) and can_mine_tile(tile):
+						target_tile = tile
+					else:
+						state = State.IDLE
 				if not is_within_interaction_range(target_tile):
 					state = State.IDLE
 					mining_timer.stop()
@@ -280,5 +274,12 @@ func on_area_enter_interaction_area(area: Area2D) -> void:
 
 func on_mining_timer_timeout() -> void:
 	assert(state == State.MINING)
-	MessageBuss.request_set_world_tile.emit(target_tile, BlockType.NONE, 0)
-	state = State.IDLE
+	var energy_cost := world_map.get_cell_mining_energy_cost(target_tile)
+	var current_damage := world_map.get_cell_damage(target_tile)
+	var damage := mining_power * mining_timer.wait_time
+	if current_damage + damage >= energy_cost:
+		world_map.reset_cell_damage(target_tile)
+		MessageBuss.request_set_world_tile.emit(target_tile, BlockType.NONE, 0)
+		state = State.IDLE
+	else:
+		world_map.set_cell_damage(target_tile, current_damage + damage)

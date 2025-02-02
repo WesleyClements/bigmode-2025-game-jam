@@ -8,7 +8,6 @@ const GerbilGenerator = preload("res://scenes/machines/gerbil_generator.gd")
 
 enum State {
 	IDLE,
-	SEARCHING,
 	MINING
 }
 
@@ -19,6 +18,7 @@ signal hover_exited()
 
 @export var minable_tileset_atlas_ids: PackedInt32Array = [0]
 @export var mineable_tileset_atlas_coords: Array[Vector2i] = [Vector2i(1, 0), Vector2i(1, 0)]
+@export var mining_power: float = 2.0
 @export var fuel_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -10)
 @export var beam_color := Color(1, 0, 0.953125)
@@ -42,18 +42,28 @@ var powered: bool = false:
 		else:
 			await animation_player.animation_finished
 			powered = true
+			cool_down_timer.start()
 
 var state := State.IDLE:
 	set(value):
 		if state == value:
 			return
+		match state:
+			State.MINING:
+				mining_timer.stop()
+			_:
+				pass
 		state = value
-		if state == State.IDLE:
-			cool_down_timer.stop()
-			mining_timer.stop()
-			consumption_timer.stop()
+		match state:
+			State.IDLE:
+				cool_down_timer.start()
+			State.MINING:
+				mining_timer.start()
+				queue_redraw()
+			_:
+				pass
 
-var mining_target_tile: Vector2i
+var target_tile_offset: Vector2i
 var laser_target: Vector2
 
 var force_show_outline: bool = false
@@ -66,7 +76,6 @@ var force_show_outline: bool = false
 @onready var fire_point: Marker2D = $Laser/LaserHead/FirePoint
 @onready var cool_down_timer: Timer = $CoolDownTimer
 @onready var mining_timer: Timer = $MiningTimer
-@onready var consumption_timer: Timer = $ConsumptionTimer
 
 func _exit_tree() -> void:
 	for pole in attached_poles:
@@ -96,52 +105,6 @@ func _ready():
 
 	MessageBuss.build_mode_entered.connect(on_build_mode_changed.bind(true))
 	MessageBuss.build_mode_exited.connect(on_build_mode_changed.bind(false))
-
-func _physics_process(_delta: float) -> void:
-	if not powered:
-		return
-	match state:
-		State.IDLE when cool_down_timer.is_stopped():
-			cool_down_timer.start()
-			queue_redraw()
-		State.SEARCHING when cool_down_timer.is_stopped():
-			var tile_origin := world_map.local_to_map(get_global_position())
-			var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
-			if potential_mining_targets.size() == 0:
-				reset_laser_head()
-				cool_down_timer.start()
-				return
-			mining_target_tile = potential_mining_targets[randi_range(0, potential_mining_targets.size() - 1)]
-			if mining_target_tile.x < -mining_target_tile.y:
-				laser_head.position.y = -1.0
-				const INV_SQRT_2 := 0.70710678
-				const UP = Vector2(-INV_SQRT_2, -INV_SQRT_2)
-				var dot = UP.dot(Vector2(mining_target_tile).normalized())
-				laser_head.scale = Vector2(
-					lerpf(1.0, 0.7, dot),
-					lerpf(1.0, 0.8, dot)
-				)
-			else:
-				laser_head.position.y = 0.0
-				laser_head.scale = Vector2.ONE
-
-			var target_center := world_map.map_to_local(tile_origin + mining_target_tile)
-
-			var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
-			var target_face_offset: Vector2
-			if absf(mining_target_tile.x) < absf(mining_target_tile.y):
-				quarter_tile_size = Vector2(quarter_tile_size.x, -quarter_tile_size.y)
-				target_face_offset = quarter_tile_size if mining_target_tile.y > 0 else -quarter_tile_size
-			else:
-				target_face_offset = quarter_tile_size if mining_target_tile.x < 0 else -quarter_tile_size
-
-			laser_target = world_map.to_global(target_center + target_face_offset + target_offset)
-			laser_head.look_at(laser_target)
-			state = State.MINING
-		State.MINING when mining_timer.is_stopped():
-			queue_redraw()
-			mining_timer.start()
-			consumption_timer.start()
 			
 
 func get_attachment_point() -> Marker2D:
@@ -255,32 +218,66 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 
 func on_cooldown_timer_timeout() -> void:
 	assert(powered)
-	assert(state == State.IDLE or state == State.SEARCHING)
+	assert(state == State.IDLE)
 	assert(source != null)
 	assert(generator != null)
-	state = State.SEARCHING
+	print("Mining laser cooldown timer timeout")
+	var tile_origin := world_map.local_to_map(get_global_position())
+	var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
+	if potential_mining_targets.size() == 0:
+		reset_laser_head()
+		cool_down_timer.start()
+		return
+	target_tile_offset = potential_mining_targets[randi_range(0, potential_mining_targets.size() - 1)]
+	if target_tile_offset.x < -target_tile_offset.y:
+		laser_head.position.y = -1.0
+		const INV_SQRT_2 := 0.70710678
+		const UP = Vector2(-INV_SQRT_2, -INV_SQRT_2)
+		var dot = UP.dot(Vector2(target_tile_offset).normalized())
+		laser_head.scale = Vector2(
+			lerpf(1.0, 0.7, dot),
+			lerpf(1.0, 0.8, dot)
+		)
+	else:
+		laser_head.position.y = 0.0
+		laser_head.scale = Vector2.ONE
+
+	var target_center := world_map.map_to_local(tile_origin + target_tile_offset)
+
+	var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
+	var target_face_offset: Vector2
+	if absf(target_tile_offset.x) < absf(target_tile_offset.y):
+		quarter_tile_size = Vector2(quarter_tile_size.x, -quarter_tile_size.y)
+		target_face_offset = quarter_tile_size if target_tile_offset.y > 0 else -quarter_tile_size
+	else:
+		target_face_offset = quarter_tile_size if target_tile_offset.x < 0 else -quarter_tile_size
+
+	laser_target = world_map.to_global(target_center + target_face_offset + target_offset)
+	laser_head.look_at(laser_target)
+
+	state = State.MINING
 
 func on_mining_timer_timeout() -> void:
 	assert(powered)
 	assert(state == State.MINING)
 	assert(source != null)
 	assert(generator != null)
-	var remaining_energy := fuel_consumption_rate * fmod(mining_timer.wait_time, consumption_timer.wait_time)
-	if not is_zero_approx(remaining_energy):
-		generator.consume_fuel(remaining_energy)
 
 	var tile_origin := world_map.local_to_map(get_global_position())
-	MessageBuss.request_set_world_tile.emit(tile_origin + mining_target_tile, MessageBuss.BlockType.NONE, 0)
+	var target_tile := tile_origin + target_tile_offset
+	
+	generator.consume_fuel(fuel_consumption_rate * mining_timer.wait_time)
 
-	queue_redraw()
-	state = State.IDLE
-
-func on_consumption_timer_timeout() -> void:
-	assert(powered)
-	assert(state == State.MINING)
-	assert(source != null)
-	assert(generator != null)
-	generator.consume_fuel(fuel_consumption_rate * consumption_timer.wait_time)
+	var energy_cost := world_map.get_cell_mining_energy_cost(target_tile)
+	var current_damage := world_map.get_cell_damage(target_tile)
+	var damage := mining_power * mining_timer.wait_time
+	if current_damage + damage >= energy_cost:
+		world_map.reset_cell_damage(target_tile)
+		MessageBuss.request_set_world_tile.emit(target_tile, MessageBuss.BlockType.NONE, 0)
+		queue_redraw()
+		state = State.IDLE
+	else:
+		world_map.set_cell_damage(target_tile, current_damage + damage)
 
 func on_hover_changed(is_hovered: bool) -> void:
 	if force_show_outline:

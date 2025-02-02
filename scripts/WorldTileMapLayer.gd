@@ -18,9 +18,13 @@ const BlockCoords = {
 @export var item_registry: ItemRegistry
 @export var entity_registry: EntityRegistry
 @export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
+@export var tile_damage_reset_time: float = 1.0
 
 var scene_coords := {}
-var hovered_tile: Vector2i = Vector2i(-1, -1)
+var cell_damage := {}
+
+var _cell_damage_timers := {}
+
 
 func _enter_tree() -> void:
 	child_entered_tree.connect(on_child_entered_tree)
@@ -35,13 +39,6 @@ func _ready() -> void:
 	MessageBuss.request_set_world_tile.connect(on_set_world_tile_request)
 	MessageBuss.world_tile_changing.connect(on_world_tile_changing)
 	MessageBuss.request_spawn_entity.connect(on_spawn_entity_request)
-
-func _process(_delta: float) -> void:
-	var mouse_pos := get_global_mouse_position()
-	var tile_pos := mouse_to_map(mouse_pos)
-	if tile_pos != hovered_tile:
-		hovered_tile = tile_pos
-		queue_redraw()
 
 func get_cell_scene(cell_pos: Vector2i) -> Node2D:
 	return scene_coords.get(cell_pos)
@@ -89,6 +86,21 @@ func get_cell_mining_energy_cost(coords: Vector2i) -> float:
 		return entity_registry.get_entity_mining_energy_cost(entity_type)
 	return -1.0
 
+func get_cell_damage(coords: Vector2i) -> float:
+	return cell_damage.get(coords, 0.0)
+
+func set_cell_damage(coords: Vector2i, damage: float) -> void:
+	var current_damage := cell_damage.get(coords, 0.0) as float
+	if current_damage == damage:
+		return
+	cell_damage[coords] = damage
+	if _cell_damage_timers.has(coords):
+		var current_timer := _cell_damage_timers[coords] as SceneTreeTimer
+		current_timer.timeout.disconnect(reset_cell_damage)
+	var timer := get_tree().create_timer(tile_damage_reset_time)
+	timer.timeout.connect(reset_cell_damage.bind(coords))
+	_cell_damage_timers[coords] = timer
+	
 func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i = Vector2i(-1, -1), alternative_tile: int = 0) -> void:
 	if source_id == -1:
 		erase_cell(coords)
@@ -153,6 +165,10 @@ func on_spawn_entity_request(tile_pos: Vector2i, entity_type: EntityType) -> voi
 		Vector2(0, 0),
 		entity_type
 	)
+
+func reset_cell_damage(coords: Vector2i) -> void:
+	cell_damage.erase(coords)
+	_cell_damage_timers.erase(coords)
 
 func on_child_entered_tree(child: Node) -> void:
 	await child.ready

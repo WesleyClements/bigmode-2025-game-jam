@@ -237,8 +237,8 @@ parameters/conditions/is_idle = false
 parameters/conditions/is_moving = false
 
 [node name="MiningTimer" type="Timer" parent="."]
-wait_time = 0.5
-one_shot = true
+process_callback = 0
+wait_time = 0.05
 
 [node name="PickUpArea" type="Area2D" parent="."]
 collision_layer = 0
