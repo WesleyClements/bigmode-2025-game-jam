@@ -17,7 +17,7 @@ y_sort_enabled = true
 
 [node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAADAPz/AQAAAAAAAwD//wAAAQAAAAAAAgA=")
+tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgA=")
 tile_set = ExtResource("2_dcctc")
 navigation_enabled = false
 script = ExtResource("2_sh2ir")
