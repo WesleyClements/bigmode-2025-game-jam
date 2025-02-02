@@ -7,7 +7,7 @@ varying vec3 pos;
 
 void fragment() {
 	
-	float height = SPECULAR_SHININESS.r * 2.0 - 1.0;
+	float height = max(SPECULAR_SHININESS.r * 2.0 - 1.0, 0.0);
 	float depth = sqrt(height);
 	float t = (1.0 - depth_offset) * (1.0  - depth);
 	COLOR.r += (depth_color.r-COLOR.r) *t * depth_color.a;
