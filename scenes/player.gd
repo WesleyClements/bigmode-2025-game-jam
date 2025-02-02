@@ -20,7 +20,7 @@ enum State {
 @export var mining_power: float = 1.0
 @export var laser_color: Color = Color(1, 0, 0.953125)
 @export var laser_width: float = 1.5
-@export var mining_target_offset := Vector2(0, -6)
+@export var mining_target_offset := Vector2(0, -8)
 @export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
 
 var world_map: WorldTileMapLayer
