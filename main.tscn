@@ -17,7 +17,7 @@ y_sort_enabled = true
 
 [node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgD+/wEAAQAAAAAABQA=")
+tile_map_data = PackedByteArray("AAD//wAAAQAAAAAABQAAAP//AQAAAAAAAgA=")
 tile_set = ExtResource("2_dcctc")
 navigation_enabled = false
 script = ExtResource("2_sh2ir")
@@ -33,7 +33,7 @@ width = 2.0
 default_color = Color(1, 1, 1, 0.717647)
 
 [node name="Player" parent="World" instance=ExtResource("2_l8qed")]
-position = Vector2(0, 16)
+position = Vector2(16, 16)
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
 zoom = Vector2(4, 4)
@@ -48,6 +48,3 @@ script = ExtResource("4_iydee")
 floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
-
-[connection signal="fuel_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_fuel_changed" unbinds=1]
-[connection signal="iron_changed" from="World/Walls/ThePortal" to="World/Walls/ThePortal" method="on_energy_changed" unbinds=1]

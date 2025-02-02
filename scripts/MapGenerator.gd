@@ -139,12 +139,13 @@ static func add_prefabs(map: Array[int], width: int, height: int, center: Vector
 	add_homebase(map, width, height, center)
 
 static func add_homebase(map: Array[int], width: int, _height: int, center: Vector2) -> void:
-	const STRUCTURE_RADIUS := 2
+	const STRUCTURE_RADIUS := 1
+	const RANGE_UPPER_BOUND := STRUCTURE_RADIUS + 3
 	var center_int := Vector2i(center)
-	for j: int in range(-STRUCTURE_RADIUS, STRUCTURE_RADIUS + 1):
+	for j: int in range(-STRUCTURE_RADIUS, RANGE_UPPER_BOUND):
 		var y := center_int.y + j
 		var yi := y * width
-		for i: int in range(-STRUCTURE_RADIUS, STRUCTURE_RADIUS + 1):
+		for i: int in range(-STRUCTURE_RADIUS, RANGE_UPPER_BOUND):
 			var x := center_int.x + i
 			map[x + yi] = TileMaterial.EMPTY
 
