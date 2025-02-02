@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=12 format=3 uid="uid://db4yk56aryubd"]
+[gd_resource type="TileSet" load_steps=13 format=3 uid="uid://db4yk56aryubd"]
 
 [ext_resource type="Material" uid="uid://bqksu8mj8082m" path="res://resources/terrain.ShaderMaterial.tres" id="1_b3ny6"]
 [ext_resource type="Texture2D" uid="uid://box0je0hx3isj" path="res://assets/sprites/blocks.png" id="2_j3cor"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://o8maovqp3uv1" path="res://scenes/machines/gerbil_generator.tscn" id="6_r7x2t"]
 [ext_resource type="PackedScene" uid="uid://d0ppwepihs2sf" path="res://scenes/machines/mining_laser.tscn" id="7_gyegj"]
 [ext_resource type="PackedScene" uid="uid://bnifhivtytb76" path="res://scenes/weasel_den.tscn" id="8_r48ve"]
+[ext_resource type="PackedScene" uid="uid://bhdcqa1rkul33" path="res://scenes/the_portal.tscn" id="9_tlig3"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_e4lrc"]
 diffuse_texture = ExtResource("2_j3cor")
@@ -55,6 +56,7 @@ scenes/1/scene = ExtResource("5_ryek6")
 scenes/2/scene = ExtResource("6_r7x2t")
 scenes/3/scene = ExtResource("7_gyegj")
 scenes/4/scene = ExtResource("8_r48ve")
+scenes/5/scene = ExtResource("9_tlig3")
 
 [resource]
 tile_shape = 1

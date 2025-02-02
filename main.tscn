@@ -17,7 +17,7 @@ y_sort_enabled = true
 
 [node name="Walls" type="TileMapLayer" parent="World" groups=["terrain"]]
 y_sort_enabled = true
-tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgA=")
+tile_map_data = PackedByteArray("AAD//wAAAQAAAAAAAgD+/wEAAQAAAAAABQA=")
 tile_set = ExtResource("2_dcctc")
 navigation_enabled = false
 script = ExtResource("2_sh2ir")
@@ -49,4 +49,5 @@ floor_tileset_coords = Vector2i(0, 2)
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
 
-[connection signal="energy_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_energy_changed" unbinds=1]
+[connection signal="fuel_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_fuel_changed" unbinds=1]
+[connection signal="iron_changed" from="World/Walls/ThePortal" to="World/Walls/ThePortal" method="on_energy_changed" unbinds=1]

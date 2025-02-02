@@ -4,7 +4,9 @@ const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
 
 signal powered_changed(powered: bool)
-signal energy_changed(energy: float)
+
+signal fuel_changed(value: float)
+
 signal hover_entered()
 signal hover_exited()
 
@@ -12,9 +14,6 @@ signal hover_exited()
 @export var powered_wire_template: PackedScene
 
 @export var pole_connection_limit: int = 4
-
-@export var generation_rate: float = 1.0
-@export var fuel_consumption_rate: float = 1.0
 
 var attachments: Dictionary = {}
 
@@ -25,7 +24,7 @@ var fuel: float = 0.0:
 			return
 		var was_powered := fuel > 0.0
 		fuel = 0.0 if is_zero_approx(value) else value
-		energy_changed.emit(fuel)
+		fuel_changed.emit(fuel)
 
 		if not was_powered and fuel > 0.0:
 			powered_changed.emit(true)
@@ -61,6 +60,8 @@ func _exit_tree() -> void:
 	world_map.child_exiting_tree.disconnect(on_world_map_child_update)
 
 func _ready() -> void:
+	fuel_changed.emit(fuel)
+
 	world_map.child_entered_tree.connect(on_world_map_child_update.bind(true))
 	world_map.child_exiting_tree.connect(on_world_map_child_update.bind(false))
 
@@ -176,8 +177,8 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 		return
 	disconnect_machine(node)
 
-func on_energy_changed() -> void:
-	fuel_display.text = "F : " + str(ceilf(fuel))
+func on_fuel_changed() -> void:
+	fuel_display.text = "F : %s" % [ceilf(fuel)]
 
 func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered

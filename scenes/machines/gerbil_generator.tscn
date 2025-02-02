@@ -63,6 +63,9 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ButtonPrompt" type="Panel" parent="."]
+visible = false
+z_index = 10
+z_as_relative = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -101,9 +104,9 @@ one_shot = true
 interaction = NodePath("../GerbilGeneratorInteraction")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="InteractionArea"]
-polygon = PackedVector2Array(0, -16, 32, 0, 0, 16, -32, 0)
+polygon = PackedVector2Array(16, -8, 16, 8, -16, 8, -16, -8)
 
-[connection signal="energy_changed" from="." to="." method="on_energy_changed" unbinds=1]
+[connection signal="fuel_changed" from="." to="." method="on_fuel_changed" unbinds=1]
 [connection signal="timeout" from="GerbilGeneratorInteraction/ContinuousInteractionTimer" to="GerbilGeneratorInteraction" method="on_continuous_interaction_timer_timeout"]
 [connection signal="player_entered" from="InteractionArea" to="." method="on_player_interaction_area" binds= [true]]
 [connection signal="player_exited" from="InteractionArea" to="." method="on_player_interaction_area" binds= [false]]
