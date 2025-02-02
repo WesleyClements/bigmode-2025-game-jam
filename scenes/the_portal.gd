@@ -16,14 +16,19 @@ var attachments: Dictionary = {}
 var iron: float = 0.0:
 	set(value):
 		assert(value >= 0.0)
-		iron = minf(value, target_amount)
+		value = minf(value, target_amount)
+		if iron == value:
+			return
+		iron = value
 		iron_changed.emit(iron)
 		if iron == target_amount:
 			MessageBuss.you_win.emit()
+			animation_player.play(&"Ignite_portal")
 
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var iron_display: Label = $IronDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func _ready() -> void:
 	iron_changed.emit(iron)
