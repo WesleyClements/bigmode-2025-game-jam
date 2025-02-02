@@ -1,9 +1,11 @@
 extends Node
 
+signal start_game()
+signal you_win()
 signal time_since_start_changed(time: float)
 
 @export var you_win_scene: PackedScene
-@export var scene_trans_delay: = 3.0
+@export var scene_trans_delay := 3.0
 
 var time_since_start: float = 0.0:
 	set(value):
@@ -14,7 +16,9 @@ var counting_time: bool = true
 
 
 func _ready():
-	MessageBuss.you_win.connect(on_you_win)
+	get_tree().paused = true
+	start_game.connect(on_start_game)
+	you_win.connect(on_you_win)
 
 func _physics_process(delta: float):
 	if counting_time:
@@ -22,6 +26,11 @@ func _physics_process(delta: float):
 
 func get_time_since_start() -> float:
 	return time_since_start
+
+func on_start_game() -> void:
+	counting_time = true
+	time_since_start = 0.0
+	get_tree().paused = false
 
 
 func on_you_win() -> void:

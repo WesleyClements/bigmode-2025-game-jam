@@ -4,6 +4,7 @@ extends Container
 var active_camera: Camera2D
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_viewport().size_changed.connect(on_viewport_size_changed)
 
 func _physics_process(_delta: float) -> void:

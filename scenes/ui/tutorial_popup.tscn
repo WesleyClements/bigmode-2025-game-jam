@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbxxrh83q41l8"]
+
+[ext_resource type="Script" path="res://scenes/ui/tutorial_popup.gd" id="1_7mv5w"]
+
+[node name="TutorialPopup" type="CenterContainer"]
+process_mode = 3
+script = ExtResource("1_7mv5w")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "You and your gerbil best friend are trapped on this barren rock.
+You must collect enough iron to rebuild the portal and escape.
+Luckily your gerbil friend likes to eat coal as a snack.
+Good Luck"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Button1" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Huh...?"
+
+[node name="Button2" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "I understand (totally doesn't understand)"
+
+[node name="Button3" type="Button" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oh... Ok...
+"

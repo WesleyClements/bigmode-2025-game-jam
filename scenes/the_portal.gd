@@ -22,7 +22,7 @@ var iron: float = 0.0:
 		iron = value
 		iron_changed.emit(iron)
 		if iron == target_amount:
-			MessageBuss.you_win.emit()
+			VictoryHandler.you_win.emit()
 			animation_player.play(&"Ignite_portal")
 
 @onready var world_map: WorldTileMapLayer = get_parent()

@@ -40,6 +40,3 @@ signal build_mode_entered()
 
 @warning_ignore("unused_signal")
 signal build_mode_exited()
-
-@warning_ignore("unused_signal")
-signal you_win()
