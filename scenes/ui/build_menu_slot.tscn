@@ -1,12 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://cluwtjy0x1ngw"]
+[gd_scene load_steps=6 format=3 uid="uid://cluwtjy0x1ngw"]
 
 [ext_resource type="Script" path="res://scenes/ui/build_menu_slot.gd" id="1_fru0y"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_mvclf"]
 [ext_resource type="Material" uid="uid://c4cnyxxri27sl" path="res://resources/grey_scale.ShaderMaterial.tres" id="3_dpg0g"]
 [ext_resource type="AnimationLibrary" uid="uid://hr8qhcemieds" path="res://scenes/ui/build_menu_slot.AnimationLibrary.tres" id="4_1s6dv"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_icts8"]
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
 [node name="Panel" type="Panel"]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(40, 40)
 offset_right = 32.0
 offset_bottom = 32.0
 script = ExtResource("1_fru0y")
@@ -21,17 +25,22 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 8
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
 [node name="Icon" type="TextureRect" parent="Margin"]
+unique_name_in_owner = true
 material = ExtResource("3_dpg0g")
 layout_mode = 2
 
-[node name="HotKeyName" type="Label" parent="."]
+[node name="HotKeyName" type="Label" parent="Margin"]
+unique_name_in_owner = true
 layout_mode = 2
-offset_right = 32.0
-offset_bottom = 32.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+label_settings = SubResource("LabelSettings_icts8")
 horizontal_alignment = 1
 vertical_alignment = 2
 

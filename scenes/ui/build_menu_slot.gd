@@ -34,8 +34,8 @@ const EntityType = MessageBuss.EntityType
 		if selection_animation_player != null:
 			selection_animation_player.play(&"select" if selected else &"deselect")
 
-@onready var icon: TextureRect = $Margin/Icon
-@onready var hot_key_display: Label = $HotKeyName
+@onready var icon: TextureRect = %Icon
+@onready var hot_key_display: Label = %HotKeyName
 @onready var enable_animation_player: AnimationPlayer = $EnableAnimationPlayer
 @onready var selection_animation_player: AnimationPlayer = $SelectionAnimationPlayer
 
