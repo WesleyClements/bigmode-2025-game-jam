@@ -41,9 +41,7 @@ var state: State = State.IDLE:
 				body_sprite.frame = 1 # TODO no magic numbers
 			State.BUILDING:
 				MessageBuss.build_mode_entered.emit()
-				building_preview = entity_registry.get_entity_preview_scene(selected_building).instantiate()
-				add_child(building_preview)
-				update_building_preview()
+				
 
 
 var selected_building: EntityType:
@@ -51,7 +49,17 @@ var selected_building: EntityType:
 		if value == selected_building:
 			return
 		selected_building = value
-		MessageBuss.set_selected_entity_type.emit(selected_building)
+		if building_preview != null:
+			remove_child(building_preview)
+			building_preview.queue_free()
+			building_preview = null
+		if selected_building == EntityType.NONE:
+			return
+		else:
+			building_preview = entity_registry.get_entity_preview_scene(selected_building).instantiate()
+			add_child(building_preview)
+			update_building_preview()
+		MessageBuss.set_selected_entity_type.emit(selected_building, true)
 
 var building_preview: Node2D = null
 
@@ -149,13 +157,20 @@ func _physics_process(delta: float) -> void:
 
 	var speed := max_speed
 
-	if Input.is_action_just_pressed(&"build_power_pole") and iron_count >= entity_registry.get_entity_build_cost(EntityType.POWER_POLE):
-		selected_building = EntityType.POWER_POLE
-		state = State.BUILDING
-	elif Input.is_action_just_pressed(&"build_laser") and iron_count >= entity_registry.get_entity_build_cost(EntityType.LASER):
-		selected_building = EntityType.LASER
-		state = State.BUILDING
-	elif Input.is_action_pressed(&"tile_map_interaction"):
+	if Input.is_action_just_pressed(&"build_power_pole"):
+		if  iron_count < entity_registry.get_entity_build_cost(EntityType.POWER_POLE):
+			MessageBuss.set_selected_entity_type.emit(EntityType.POWER_POLE, false)
+		else:
+			state = State.BUILDING
+			selected_building = EntityType.POWER_POLE
+	if Input.is_action_just_pressed(&"build_laser"):
+		if  iron_count < entity_registry.get_entity_build_cost(EntityType.LASER):
+			MessageBuss.set_selected_entity_type.emit(EntityType.LASER, false)
+		else:
+			state = State.BUILDING
+			selected_building = EntityType.LASER
+
+	if Input.is_action_pressed(&"tile_map_interaction"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
 			State.IDLE:
@@ -183,11 +198,8 @@ func _physics_process(delta: float) -> void:
 					if iron_count >= cost:
 						iron_count -= cost
 						MessageBuss.request_spawn_entity.emit(tile, selected_building)
-					selected_building = EntityType.NONE
-					remove_child(building_preview)
-					building_preview.queue_free()
-					building_preview = null
 					state = State.IDLE
+					selected_building = EntityType.NONE
 	elif state == State.MINING:
 		state = State.IDLE
 		mining_timer.stop()

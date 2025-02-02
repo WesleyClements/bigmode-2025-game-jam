@@ -56,5 +56,8 @@ func on_item_count_updated(type: ItemType, count: int) -> void:
 	enabled = count >= cost
 
 @warning_ignore("shadowed_variable")
-func on_set_selected_entity_type(entity_type: EntityType) -> void:
-	selected = entity_type == self.entity_type
+func on_set_selected_entity_type(entity_type: EntityType, successful: bool) -> void:
+	if successful:
+		selected = entity_type == self.entity_type
+	elif entity_type == self.entity_type:
+		selection_animation_player.play(&"insufficient")
