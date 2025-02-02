@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://bbxxrh83q41l8"]
+[gd_scene load_steps=3 format=3 uid="uid://bbxxrh83q41l8"]
 
 [ext_resource type="Script" path="res://scenes/ui/tutorial_popup.gd" id="1_7mv5w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q27o0"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.21, 0.21, 0.21, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
 
 [node name="TutorialPopup" type="CenterContainer"]
 process_mode = 3
@@ -8,6 +28,7 @@ script = ExtResource("1_7mv5w")
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q27o0")
 
 [node name="MarginContainer" type="MarginContainer" parent="Panel"]
 layout_mode = 2

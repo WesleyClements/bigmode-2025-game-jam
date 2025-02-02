@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://127jpolr1pnh"]
 
 [ext_resource type="Script" path="res://scripts/pickup.gd" id="1_25c74"]
-[ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="2_4ja5g"]
+[ext_resource type="Texture2D" uid="uid://b7s6xxkkdv5f" path="res://assets/sprites/iron.png" id="2_yi71c"]
 
 [node name="IronDrop" type="RigidBody2D" groups=["pickup"]]
 collision_layer = 16
@@ -10,9 +10,8 @@ script = ExtResource("1_25c74")
 item_type = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-self_modulate = Color(0.93, 0.5425, 0, 1)
-texture = ExtResource("2_4ja5g")
-offset = Vector2(0, -6)
+texture = ExtResource("2_yi71c")
+offset = Vector2(0, -4)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -3, 6, 0, 0, 3, -6, 0)
