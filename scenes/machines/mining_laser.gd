@@ -34,6 +34,7 @@ var powered: bool = false:
 		if powered == value:
 			return
 		reset_laser_head()
+		cool_down_timer.stop()
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
