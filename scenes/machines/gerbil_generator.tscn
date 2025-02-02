@@ -1,11 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://o8maovqp3uv1"]
+[gd_scene load_steps=24 format=3 uid="uid://o8maovqp3uv1"]
 
 [ext_resource type="Script" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_5qgbl"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="2_vlges"]
+[ext_resource type="Texture2D" uid="uid://dne53u6qq8grl" path="res://assets/sprites/gerbil_wheel.png" id="5_m1sbh"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
+[ext_resource type="Texture2D" uid="uid://bhjc7aqa1ajew" path="res://assets/sprites/gerbil_wheel_base.png" id="6_phlxx"]
 [ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="7_ceurq"]
 [ext_resource type="Script" path="res://scenes/machines/gerbil_generator_interaction.gd" id="8_ftyqi"]
 
@@ -17,6 +19,148 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_4lovo"]
+atlas = ExtResource("5_m1sbh")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qpiov"]
+atlas = ExtResource("5_m1sbh")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rv0mv"]
+atlas = ExtResource("5_m1sbh")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p5qan"]
+atlas = ExtResource("5_m1sbh")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sxx1x"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4lovo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qpiov")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rv0mv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p5qan")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m2cw1"]
+atlas = ExtResource("1_wlojk")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ad48j"]
+atlas = ExtResource("1_wlojk")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h6v15"]
+atlas = ExtResource("1_wlojk")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3tjji"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m2cw1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ad48j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h6v15")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 3.0
+}]
+
+[sub_resource type="Animation" id="Animation_vsc2u"]
+resource_name = "run"
+length = 0.8
+step = 0.2
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visuals/Wheel")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"default"],
+"method": &"play"
+}]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Visuals/Gerbil")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"walk"],
+"method": &"play"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_01m23"]
+resource_name = "idle"
+length = 0.01
+step = 0.2
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Visuals/Wheel")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"frame_progress", 0.0],
+"method": &"set"
+}]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Visuals/Gerbil")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [&"default"],
+"method": &"play"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3nw8j"]
+_data = {
+"idle": SubResource("Animation_01m23"),
+"run": SubResource("Animation_vsc2u")
+}
+
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
 collision_mask = 7
@@ -24,11 +168,23 @@ script = ExtResource("1_7hibj")
 wire_template = ExtResource("2_5qgbl")
 powered_wire_template = ExtResource("2_vlges")
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_fm04w")
 
-[node name="Body" type="Sprite2D" parent="."]
-texture = ExtResource("1_wlojk")
+[node name="Wheel" type="AnimatedSprite2D" parent="Visuals"]
+sprite_frames = SubResource("SpriteFrames_sxx1x")
+offset = Vector2(0, -13)
+
+[node name="Base" type="Sprite2D" parent="Visuals"]
+texture = ExtResource("6_phlxx")
+offset = Vector2(0, -13)
+
+[node name="Gerbil" type="AnimatedSprite2D" parent="Visuals"]
+sprite_frames = SubResource("SpriteFrames_3tjji")
+animation = &"walk"
+frame_progress = 0.155049
 offset = Vector2(0, -13)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
@@ -105,6 +261,12 @@ interaction = NodePath("../GerbilGeneratorInteraction")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="InteractionArea"]
 polygon = PackedVector2Array(16, -8, 16, 8, -16, 8, -16, -8)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_3nw8j")
+}
+autoplay = "idle"
 
 [connection signal="fuel_changed" from="." to="." method="on_fuel_changed" unbinds=1]
 [connection signal="timeout" from="GerbilGeneratorInteraction/ContinuousInteractionTimer" to="GerbilGeneratorInteraction" method="on_continuous_interaction_timer_timeout"]

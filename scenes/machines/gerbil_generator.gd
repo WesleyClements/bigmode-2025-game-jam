@@ -27,9 +27,11 @@ var fuel: float = 0.0:
 		fuel_changed.emit(fuel)
 
 		if not was_powered and fuel > 0.0:
+			animation_player.play(&"run")
 			powered_changed.emit(true)
 			update_wires.call_deferred()
 		elif was_powered and fuel == 0.0:
+			animation_player.play(&"idle")
 			powered_changed.emit(false)
 			update_wires.call_deferred()
 
@@ -42,6 +44,7 @@ var force_show_outline: bool = false
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var fuel_display: Label = $FuelDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func _enter_tree() -> void:
 	search_for_machines.call_deferred()
