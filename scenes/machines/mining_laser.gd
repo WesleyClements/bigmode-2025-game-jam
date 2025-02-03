@@ -35,6 +35,7 @@ var powered: bool = false:
 			return
 		reset_laser_head()
 		cool_down_timer.paused = true
+		cool_down_timer.stop()
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
@@ -164,7 +165,6 @@ func on_power_pole_connected(pole: Node) -> void:
 	if attached_poles.has(pole):
 		return
 	attached_poles.append(pole)
-	pole.powered_changed.connect(on_power_pole_powered_changed.bind(pole))
 	if not pole.get_powered():
 		return
 	if source != null:
@@ -180,6 +180,7 @@ func on_power_pole_connected(pole: Node) -> void:
 		var result := find_source(pole)
 		generator = result[0]
 		separation_from_source = result[1]
+	pole.powered_changed.connect(on_power_pole_powered_changed.bind(pole))
 
 
 func on_power_pole_disconnected(pole: Node) -> void:
