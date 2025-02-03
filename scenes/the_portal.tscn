@@ -157,8 +157,9 @@ script = ExtResource("5_8v4pk")
 wait_time = 0.3
 one_shot = true
 
-[connection signal="iron_changed" from="." to="IronDisplayPanel" method="on_iron_changed"]
-[connection signal="iron_changed" from="." to="." method="on_energy_changed" unbinds=1]
+[connection signal="build_progress_changed" from="." to="." method="on_build_progress_changed"]
+[connection signal="build_progress_changed" from="." to="IronDisplayPanel" method="on_build_progress_changed"]
+[connection signal="iron_changed" from="." to="." method="on_iron_changed" unbinds=1]
 [connection signal="player_entered" from="InteractionArea" to="." method="on_player_interaction_area" binds= [true]]
 [connection signal="player_exited" from="InteractionArea" to="." method="on_player_interaction_area" binds= [false]]
 [connection signal="timeout" from="ThePortalInteraction/ContinuousInteractionTimer" to="ThePortalInteraction" method="on_continuous_interaction_timer_timeout"]
