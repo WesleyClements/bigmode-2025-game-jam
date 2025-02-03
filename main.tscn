@@ -51,3 +51,5 @@ script = ExtResource("4_iydee")
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
 
 [connection signal="iron_changed" from="World/Walls/ThePortal" to="World/Walls/ThePortal/IronDisplayPanel" method="on_iron_changed"]
+[connection signal="iron_changed" from="World/Walls/ThePortal" to="World/Walls/ThePortal" method="on_energy_changed" unbinds=1]
+[connection signal="fuel_changed" from="World/Walls/GerbilGenerator" to="World/Walls/GerbilGenerator" method="on_fuel_changed" unbinds=1]

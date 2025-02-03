@@ -23,8 +23,11 @@ func get_amount() -> int:
 
 func set_target(_target: Vector2):
 	if target != Vector2.ZERO:
-		return
-	target = _target
+		# Good and clear code
+		if global_position.distance_to(_target) < global_position.distance_to(target):
+			target = _target
+	else:
+		target = _target
 
 func collect():
 	queue_free()
