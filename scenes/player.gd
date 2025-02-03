@@ -282,7 +282,7 @@ func on_body_entered_move_towards_area(body: Node2D) -> void:
 	if not body.is_in_group(&"pickup"):
 		return
 	assert(body.has_method(&"set_target"))
-	body.set_target(global_position)
+	body.set_target(self)
 
 func on_area_enter_interaction_area(area: Area2D, entered: bool) -> void:
 	assert(area.has_method(&"get_interaction"))
