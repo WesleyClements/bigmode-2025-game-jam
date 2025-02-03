@@ -42,6 +42,7 @@ var powered: bool = false:
 			state = State.IDLE
 			queue_redraw()
 		else:
+			print("Waiting for animation to finish")
 			await animation_player.animation_finished
 			powered = true
 			cool_down_timer.paused = false
@@ -204,7 +205,9 @@ func on_power_pole_disconnected(pole: Node) -> void:
 func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 	if not attached_poles.has(pole):
 		return
-	assert(source != null or value)
+	if source == null and not value:
+		push_warning("on_power_pole_powered_changed: no source and no value")
+		return
 	if source == null and value:
 		assert(generator == null)
 		var result := find_source(pole)
@@ -225,10 +228,18 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 			powered = false
 
 func on_cooldown_timer_timeout() -> void:
-	assert(powered)
-	assert(state == State.IDLE)
-	assert(source != null)
-	assert(generator != null)
+	if not powered:
+		push_warning("on_cooldown_timer_timeout: not powered")
+		return
+	if state != State.IDLE:
+		push_warning("on_cooldown_timer_timeout: not idle")
+		return
+	if source == null:
+		push_warning("on_cooldown_timer_timeout: no source")
+		return
+	if generator == null:
+		push_warning("on_cooldown_timer_timeout: no generator")
+		return
 	var tile_origin := world_map.local_to_map(get_global_position())
 	var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
 	if potential_mining_targets.size() == 0:
