@@ -24,6 +24,10 @@ android.debug.x86_64 = "res://addons/map_generation/bin/libmap_generator.android
 android.release.x86_64 = "res://addons/map_generation/bin/libmap_generator.android.template_release.x86_64.so"
 android.debug.arm64 = "res://addons/map_generation/bin/libmap_generator.android.template_debug.arm64.so"
 android.release.arm64 = "res://addons/map_generation/bin/libmap_generator.android.template_release.arm64.so"
+web.debug = "res://addons/map_generation/bin/libmap_generator.web.template_debug.wasm32.wasm"
+web.debug.nothreads = "res://addons/map_generation/bin/libmap_generator.web.template_debug.wasm32.nothreads.wasm"
+web.release = "res://addons/map_generation/bin/libmap_generator.web.template_release.wasm32.wasm"
+web.release.nothreads = "res://addons/map_generation/bin/libmap_generator.web.template_release.wasm32.nothreads.wasm"
 
 [dependencies]
 ios.debug = {
