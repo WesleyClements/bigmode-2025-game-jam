@@ -277,28 +277,35 @@ position = Vector2(-0.1, -0.2)
 scale = Vector2(0.994792, 1.02083)
 polygon = PackedVector2Array(0, -2, 4, 0, 0, 2, -4, 0)
 
+[node name="MoveTowardsArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="MoveTowardsArea"]
+position = Vector2(-0.1, -0.2)
+scale = Vector2(0.994792, 1.02083)
+polygon = PackedVector2Array(0, -40, 80, 0, 0, 40, -80, 0)
+
 [node name="WalkingSounds" type="Node2D" parent="."]
 script = ExtResource("7_4pov0")
 
 [node name="Walking1" type="AudioStreamPlayer2D" parent="WalkingSounds"]
 stream = ExtResource("6_8u8kc")
 max_polyphony = 2
-bus = &"sfx"
 script = ExtResource("7_4pov0")
 
 [node name="Walking2" type="AudioStreamPlayer2D" parent="WalkingSounds"]
 stream = ExtResource("8_tnww5")
 max_polyphony = 2
-bus = &"sfx"
 script = ExtResource("7_4pov0")
 
 [node name="Walking3" type="AudioStreamPlayer2D" parent="WalkingSounds"]
 stream = ExtResource("9_s4vuq")
 max_polyphony = 2
-bus = &"sfx"
 script = ExtResource("7_4pov0")
 
 [connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
 [connection signal="body_entered" from="PickUpArea" to="." method="on_body_entered_pickup_area"]
 [connection signal="area_entered" from="InteractionArea" to="." method="on_area_enter_interaction_area" binds= [true]]
 [connection signal="area_exited" from="InteractionArea" to="." method="on_area_enter_interaction_area" binds= [false]]
+[connection signal="body_entered" from="MoveTowardsArea" to="." method="on_body_entered_move_towards_area"]

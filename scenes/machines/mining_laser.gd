@@ -288,3 +288,10 @@ func on_hover_changed(is_hovered: bool) -> void:
 func on_build_mode_changed(build_mode: bool) -> void:
 	force_show_outline = build_mode
 	tile_map_detection_area.visible = build_mode
+
+
+func on_body_entered_move_towards_area(body:Node2D) -> void:
+	if not body.is_in_group(&"pickup"):
+		return
+	assert(body.has_method(&"set_target"))
+	body.set_target(global_position)

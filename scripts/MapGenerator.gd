@@ -14,7 +14,7 @@ static var noise := FastNoiseLite.new()
 
 static var noise_with_octaves := FastNoiseLite.new()
 
-static func generate(width: int, height: int, initial_scale := 0.081, simulation_steps := 4, death_limit := 3, birth_limit := 6, ore_scale := 0.481) -> Array[int]:
+static func generate(width: int, height: int, initial_scale := 0.081, simulation_steps := 4, death_limit := 3, birth_limit := 6, ore_scale := 0.181) -> Array[int]:
 	noise.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
 	noise.fractal_type = FastNoiseLite.FractalType.FRACTAL_NONE
 	noise.frequency = 1
@@ -174,7 +174,7 @@ static func place_ore(map: Array[int], width: int, height: int, ore_type: int, o
 				y * ore_scale,
 				ore_type * 99.9 # TODO: Magic number
 			)
-			const MIN_NOISE_VALUE := 0.72
+			const MIN_NOISE_VALUE := 0.66
 			if result < MIN_NOISE_VALUE:
 				continue
 			map[index] = ore_type

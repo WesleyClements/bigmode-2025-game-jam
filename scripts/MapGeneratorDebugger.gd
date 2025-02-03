@@ -7,7 +7,7 @@ var height: int = 333
 # The lower the number, the bigger the features
 var initial_scale = 0.081
 # High number for ore so we get lots of little pockets (big number = small features)
-var ore_scale = 0.281
+var ore_scale = 0.181
 
 # Similar to conway's game of life, but with different parameters
 # Populated tiles with fewer neighbours than the death_limit will die

@@ -5,6 +5,7 @@
 
 [node name="Coal" type="RigidBody2D" groups=["pickup"]]
 collision_layer = 16
+collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_c75b8")
 
