@@ -129,10 +129,15 @@ func find_source(pole: Node) -> Array:
 	assert(pole.has_method(&"get_source"))
 	var separation := 1
 	var node := pole
-	while node != null and node != node.get_source():
+	const MAX_ITERATIONS := 100
+	var i := 0
+	while node != null and node != node.get_source() and i < MAX_ITERATIONS:
 		node = node.get_source()
 		separation += 1
-	assert(node == null or node is GerbilGenerator)
+		i += 1
+	if node == null or i == MAX_ITERATIONS:
+		return [null, MAX_INT]
+	assert(node is GerbilGenerator)
 	return [node, separation]
 
 func update_source() -> void:
@@ -144,7 +149,7 @@ func update_source() -> void:
 		if not attached_pole.get_powered():
 			continue
 		var result := find_source(attached_pole)
-		if result[1] > separation_from_source:
+		if result[1] >= separation_from_source:
 			continue
 		source = attached_pole
 		generator = result[0]
@@ -164,7 +169,7 @@ func on_power_pole_connected(pole: Node) -> void:
 		return
 	if source != null:
 		var result := find_source(pole)
-		if result[1] > separation_from_source:
+		if result[1] >= separation_from_source:
 			return
 		source = pole
 		generator = result[0]
@@ -208,7 +213,7 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 		powered = true
 	elif source != null and value:
 		var result := find_source(pole)
-		if result[1] > separation_from_source:
+		if result[1] >= separation_from_source:
 			return
 		source = pole
 		generator = result[0]
@@ -290,7 +295,7 @@ func on_build_mode_changed(build_mode: bool) -> void:
 	tile_map_detection_area.visible = build_mode
 
 
-func on_body_entered_move_towards_area(body:Node2D) -> void:
+func on_body_entered_move_towards_area(body: Node2D) -> void:
 	if not body.is_in_group(&"pickup"):
 		return
 	assert(body.has_method(&"set_target"))

@@ -20,10 +20,12 @@ var iron: float = 0.0:
 		if iron == value:
 			return
 		iron = value
+		if is_equal_approx(iron, target_amount):
+			iron = target_amount
 		var frame_count := portal_sprite.sprite_frames.get_frame_count(&"default")
 		portal_sprite.frame = floorf((frame_count - 1) * iron / target_amount) as int
 		iron_changed.emit(iron)
-		if int(iron) == int(target_amount-1):
+		if iron == target_amount: # so many magic numbers
 			VictoryHandler.you_win.emit()
 			portal_sprite.frame = frame_count - 1
 

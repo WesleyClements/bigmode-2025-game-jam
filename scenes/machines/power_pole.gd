@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+const MAX_INT := 9223372036854775807
+
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 const TileMapDetectionArea = preload("res://scenes/tile_map_detection_area.gd")
 const PowerPole = preload("res://scenes/machines/power_pole.gd")
@@ -32,6 +34,7 @@ var powered := false:
 		powered_changed.emit(value)
 
 var source: Node
+var separation_from_source := MAX_INT
 var pole_connections := {}
 var machine_attachments := {}
 
@@ -99,6 +102,24 @@ func validate_connection(node: Node) -> bool:
 	if not tile_map_detection_area.is_within_detection_distance(node.global_position):
 			return false
 	return true
+
+
+func find_separation_from_source(pole: Node) -> int:
+	assert(not pole == null)
+	assert(pole.is_in_group(&"machines"))
+	assert(pole.has_method(&"get_source"))
+	var separation := 1
+	var node := pole
+	const MAX_ITERATIONS := 100
+	var i := 0
+	while node != null and node != self and node != node.get_source() and i < MAX_ITERATIONS:
+		node = node.get_source()
+		separation += 1
+		i += 1
+	if node == null or node == self or i == MAX_ITERATIONS:
+		return MAX_INT
+	assert(node is GerbilGenerator)
+	return separation
 
 func search_for_machines() -> void:
 	var machines := []
@@ -240,16 +261,18 @@ func update_wires() -> void:
 
 func update_source() -> void:
 	source = null
+	separation_from_source = MAX_INT
 	for pole in pole_connections.keys():
 		assert(not pole == null)
 		assert(pole.has_method(&"get_powered"))
 		assert(pole.has_method(&"get_source"))
 		if not pole.get_powered():
 			continue
-		if pole.get_source() == self:
+		var separation := find_separation_from_source(pole)
+		if separation >= separation_from_source:
 			continue
 		source = pole
-		break
+		separation_from_source = separation
 
 func on_connected_pole_powered_changed(value: bool, updated_pole: Node) -> void:
 	if not pole_connections.has(updated_pole):
