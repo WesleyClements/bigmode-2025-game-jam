@@ -31,6 +31,9 @@ func set_target(value: Node2D):
 	if value.is_in_group(&"player"):
 		target = value
 		return
+	if target == null:
+		target = value
+		return
 	if global_position.distance_to(value.global_position) < global_position.distance_to(target.global_position):
 			target = value
 
