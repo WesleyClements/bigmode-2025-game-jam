@@ -149,7 +149,8 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 				var drop_amount := randi_range(drop_config.min, drop_config.max)
 				var scene_template := item_registry.get_entity_scene(item_type)
 				assert(scene_template != null)
-				for scene: Node2D in range(drop_amount).map(scene_template.instantiate):
+				for _i: int in range(drop_amount):
+					var scene := scene_template.instantiate()
 					add_child(scene)
 					var offset_x := clampf(randfn(0.0, 0.5), -1.0, 1.0) * half_tile_size.x
 					var y_max := half_tile_size.y - absf(offset_x) / 2.0
