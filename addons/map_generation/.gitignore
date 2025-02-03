@@ -7,5 +7,7 @@ msvc_capture.log
 
 *.obj
 *.os
+*.o
 
 ~*.dll
+~*.TMP
