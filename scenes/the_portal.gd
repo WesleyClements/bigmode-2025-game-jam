@@ -23,7 +23,7 @@ var iron: float = 0.0:
 		var frame_count := portal_sprite.sprite_frames.get_frame_count(&"default")
 		portal_sprite.frame = floorf((frame_count - 1) * iron / target_amount) as int
 		iron_changed.emit(iron)
-		if iron == target_amount:
+		if int(iron) == int(target_amount-1):
 			VictoryHandler.you_win.emit()
 			portal_sprite.frame = frame_count - 1
 

@@ -219,6 +219,8 @@ collision_layer = 2
 collision_mask = 7
 script = ExtResource("1_fexe0")
 entity_registry = ExtResource("2_hp7f3")
+max_speed = 90.0
+interaction_range = 3.5
 
 [node name="Visuals" type="Node2D" parent="."]
 
