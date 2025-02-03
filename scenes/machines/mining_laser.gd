@@ -203,7 +203,7 @@ func on_power_pole_disconnected(pole: Node) -> void:
 func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 	if not attached_poles.has(pole):
 		return
-	assert(powered or value)
+	assert(source != null or value)
 	if source == null and value:
 		assert(generator == null)
 		var result := find_source(pole)
