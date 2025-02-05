@@ -264,6 +264,7 @@ process_callback = 0
 wait_time = 0.05
 
 [node name="PickUpArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 16
 
@@ -271,6 +272,7 @@ collision_mask = 16
 polygon = PackedVector2Array(0, -6, 12, 0, 0, 6, -12, 0)
 
 [node name="InteractionArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 32
 
@@ -280,6 +282,7 @@ scale = Vector2(0.994792, 1.02083)
 polygon = PackedVector2Array(0, -2, 4, 0, 0, 2, -4, 0)
 
 [node name="MoveTowardsArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 16
 

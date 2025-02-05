@@ -34,19 +34,13 @@ var powered: bool = false:
 		if powered == value:
 			return
 		reset_laser_head()
-		cool_down_timer.paused = true
-		cool_down_timer.stop()
 		animation_player.play(&"power_up" if value else &"power_down")
 		if not value:
 			powered = false
 			state = State.IDLE
 			queue_redraw()
 		else:
-			print("Waiting for animation to finish")
-			await animation_player.animation_finished
 			powered = true
-			cool_down_timer.paused = false
-			cool_down_timer.start()
 
 var state := State.IDLE:
 	set(value):
@@ -55,12 +49,11 @@ var state := State.IDLE:
 		match state:
 			State.MINING:
 				mining_timer.stop()
-			_:
-				pass
+				queue_redraw()
+			State.IDLE:
+				cool_down_timer.stop()
 		state = value
 		match state:
-			State.IDLE:
-				cool_down_timer.start()
 			State.MINING:
 				mining_timer.start()
 				queue_redraw()
@@ -203,43 +196,37 @@ func on_power_pole_disconnected(pole: Node) -> void:
 		powered = false
 
 func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
+	assert(pole != null)
 	if not attached_poles.has(pole):
 		return
-	if source == null and not value:
-		push_warning("on_power_pole_powered_changed: no source and no value")
-		return
-	if source == null and value:
+	assert(source != null or value)
+	if not powered and value:
+		assert(source == null)
 		assert(generator == null)
 		var result := find_source(pole)
 		source = pole
 		generator = result[0]
 		separation_from_source = result[1]
 		powered = true
-	elif source != null and value:
+	elif powered and value:
+		assert(source != null)
 		var result := find_source(pole)
 		if result[1] >= separation_from_source:
 			return
 		source = pole
 		generator = result[0]
 		separation_from_source = result[1]
-	elif source != null and not value and pole == source:
+	elif powered and not value and pole == source:
+		assert(source != null)
 		update_source()
 		if source == null:
 			powered = false
 
 func on_cooldown_timer_timeout() -> void:
-	if not powered:
-		push_warning("on_cooldown_timer_timeout: not powered")
-		return
-	if state != State.IDLE:
-		push_warning("on_cooldown_timer_timeout: not idle")
-		return
-	if source == null:
-		push_warning("on_cooldown_timer_timeout: no source")
-		return
-	if generator == null:
-		push_warning("on_cooldown_timer_timeout: no generator")
-		return
+	assert(powered)
+	assert(state == State.IDLE)
+	assert(source != null)
+	assert(generator != null)
 	var tile_origin := world_map.local_to_map(get_global_position())
 	var potential_mining_targets := tile_map_detection_area.find_closest_tiles(is_valid_mining_target.bind(tile_origin))
 	if potential_mining_targets.size() == 0:
@@ -292,8 +279,8 @@ func on_mining_timer_timeout() -> void:
 	if current_damage + damage >= energy_cost:
 		world_map.reset_cell_damage(target_tile)
 		MessageBuss.request_set_world_tile.emit(target_tile, MessageBuss.BlockType.NONE, 0)
-		queue_redraw()
 		state = State.IDLE
+		cool_down_timer.start()
 	else:
 		world_map.set_cell_damage(target_tile, current_damage + damage)
 

@@ -87,6 +87,7 @@ sprite_frames = SubResource("SpriteFrames_iok8r")
 offset = Vector2(0, -6)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
 polygon = PackedVector2Array(0, -3, 7, 0, 0, 3, -7, 0)
 
 [node name="IronDisplayPanel" type="PanelContainer" parent="."]

@@ -36,9 +36,11 @@ default_color = Color(1, 1, 1, 0.717647)
 position = Vector2(16, 16)
 
 [node name="Camera2D" type="Camera2D" parent="World/Player"]
+visible = false
 zoom = Vector2(4, 4)
 
 [node name="AudioListener2D" type="AudioListener2D" parent="World/Player"]
+visible = false
 current = true
 
 [node name="Floors" type="TileMapLayer" parent="World"]
