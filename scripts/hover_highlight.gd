@@ -51,7 +51,7 @@ func _physics_process(_delta: float) -> void:
 	for player: Player in players:
 		if not player.is_within_interaction_range(tile):
 			continue
-		if not player.is_in_los(tile):
+		if not player.is_in_los(tile) and world_map.get_cell_source_id(tile) != -1:
 			continue
 		outline.default_color = outline_color
 
