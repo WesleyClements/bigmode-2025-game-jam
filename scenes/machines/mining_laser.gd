@@ -49,19 +49,22 @@ var state := State.IDLE:
 		match state:
 			State.MINING:
 				mining_timer.stop()
+				mining_particles.visible = false
+				mining_particles.emitting = false
 				queue_redraw()
-			State.IDLE:
-				cool_down_timer.stop()
 		state = value
 		match state:
 			State.MINING:
 				mining_timer.start()
+				mining_particles.emitting = true
+				mining_particles.visible = true
 				queue_redraw()
-			_:
-				pass
 
 var target_tile_offset: Vector2i
-var laser_target: Vector2
+var laser_target: Vector2:
+	set(value):
+		laser_target = value
+		mining_particles.position = to_local(value)
 
 var force_show_outline: bool = false
 
@@ -73,6 +76,7 @@ var force_show_outline: bool = false
 @onready var fire_point: Marker2D = $Laser/LaserHead/FirePoint
 @onready var cool_down_timer: Timer = $CoolDownTimer
 @onready var mining_timer: Timer = $MiningTimer
+@onready var mining_particles: GPUParticles2D = $MiningParticles
 
 func _exit_tree() -> void:
 	for pole in attached_poles:
