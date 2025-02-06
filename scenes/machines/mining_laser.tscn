@@ -23,8 +23,8 @@ emission_shape_scale = Vector3(1, 0.4, 1)
 emission_shape = 6
 emission_ring_axis = Vector3(0, 0, 1)
 emission_ring_height = 1.0
-emission_ring_radius = 10.0
-emission_ring_inner_radius = 6.0
+emission_ring_radius = 14.0
+emission_ring_inner_radius = 10.0
 angle_min = -180.0
 angle_max = 180.0
 radial_velocity_min = -2.23517e-05
@@ -117,7 +117,7 @@ length = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("SpawnParticles:emitting")
+tracks/0/path = NodePath("Main/SpawnParticles:emitting")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -140,6 +140,7 @@ mining_power = 1.0
 fuel_consumption_rate = 0.1
 
 [node name="Main" type="CanvasGroup" parent="."]
+y_sort_enabled = true
 
 [node name="Shadow" type="Sprite2D" parent="Main"]
 texture = SubResource("GradientTexture2D_87k35")
@@ -147,6 +148,16 @@ texture = SubResource("GradientTexture2D_87k35")
 [node name="Base" type="Sprite2D" parent="Main"]
 texture = ExtResource("1_q225h")
 offset = Vector2(0, -14)
+
+[node name="SpawnParticles" type="GPUParticles2D" parent="Main"]
+position = Vector2(0, -1)
+emitting = false
+amount = 64
+process_material = SubResource("ParticleProcessMaterial_w3qhg")
+lifetime = 0.1
+one_shot = true
+explosiveness = 0.1
+visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
 
 [node name="Laser" type="CanvasGroup" parent="."]
 y_sort_enabled = true
@@ -175,16 +186,6 @@ emitting = false
 amount = 16
 process_material = ExtResource("7_g3kp0")
 lifetime = 0.3
-
-[node name="SpawnParticles" type="GPUParticles2D" parent="."]
-position = Vector2(0, -1)
-emitting = false
-amount = 64
-process_material = SubResource("ParticleProcessMaterial_w3qhg")
-lifetime = 0.1
-one_shot = true
-explosiveness = 0.1
-visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)

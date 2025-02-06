@@ -96,13 +96,13 @@ _data = {
 "power_on": SubResource("Animation_y5a7m")
 }
 
-[sub_resource type="Animation" id="Animation_tw0i7"]
+[sub_resource type="Animation" id="Animation_e6imy"]
 resource_name = "spawn"
 length = 0.1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("SpawnParticles:emitting")
+tracks/0/path = NodePath("Visuals/SpawnParticles:emitting")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -112,9 +112,9 @@ tracks/0/keys = {
 "values": [true]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_ld8gt"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jho05"]
 _data = {
-"spawn": SubResource("Animation_tw0i7")
+"spawn": SubResource("Animation_e6imy")
 }
 
 [node name="PowerPole" type="StaticBody2D" groups=["machines"]]
@@ -128,6 +128,7 @@ powered_wire_template = ExtResource("3_q7ibn")
 position = Vector2(0, -24)
 
 [node name="Visuals" type="CanvasGroup" parent="."]
+y_sort_enabled = true
 
 [node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_exbia")
@@ -136,7 +137,7 @@ texture = SubResource("GradientTexture2D_exbia")
 sprite_frames = SubResource("SpriteFrames_k0cd2")
 offset = Vector2(0, -14)
 
-[node name="SpawnParticles" type="GPUParticles2D" parent="."]
+[node name="SpawnParticles" type="GPUParticles2D" parent="Visuals"]
 position = Vector2(0, -1)
 emitting = false
 amount = 64
@@ -153,7 +154,7 @@ libraries = {
 
 [node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_ld8gt")
+"": SubResource("AnimationLibrary_jho05")
 }
 autoplay = "spawn"
 
