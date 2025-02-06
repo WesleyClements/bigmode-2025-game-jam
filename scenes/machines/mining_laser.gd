@@ -151,6 +151,7 @@ func update_source() -> void:
 		separation_from_source = result[1]
 
 func on_power_pole_connected(pole: Node) -> void:
+	print("on_power_pole_connected")
 	assert(not pole == null)
 	assert(pole.is_in_group(&"machines"))
 	assert(pole.has_method(&"get_powered"))
@@ -159,21 +160,20 @@ func on_power_pole_connected(pole: Node) -> void:
 	if attached_poles.has(pole):
 		return
 	attached_poles.append(pole)
-	if not pole.get_powered():
-		return
-	if source != null:
-		var result := find_source(pole)
-		if result[1] >= separation_from_source:
-			return
-		source = pole
-		generator = result[0]
-		separation_from_source = result[1]
-	else:
-		source = pole
-		powered = true
-		var result := find_source(pole)
-		generator = result[0]
-		separation_from_source = result[1]
+	if pole.get_powered():
+		if source != null:
+			var result := find_source(pole)
+			if result[1] >= separation_from_source:
+				return
+			source = pole
+			generator = result[0]
+			separation_from_source = result[1]
+		else:
+			source = pole
+			powered = true
+			var result := find_source(pole)
+			generator = result[0]
+			separation_from_source = result[1]
 	pole.powered_changed.connect(on_power_pole_powered_changed.bind(pole))
 
 
