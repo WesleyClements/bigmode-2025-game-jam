@@ -333,4 +333,4 @@ jobs:
       - name: Deploy
         if: ${{ env.BUTLER_API_KEY != '' }}
         run: |
-          echo './butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt'
+          ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
