@@ -151,7 +151,6 @@ func update_source() -> void:
 		separation_from_source = result[1]
 
 func on_power_pole_connected(pole: Node) -> void:
-	print("on_power_pole_connected")
 	assert(not pole == null)
 	assert(pole.is_in_group(&"machines"))
 	assert(pole.has_method(&"get_powered"))
@@ -161,7 +160,7 @@ func on_power_pole_connected(pole: Node) -> void:
 		return
 	attached_poles.append(pole)
 	if pole.get_powered():
-		if source != null:
+		if powered:
 			var result := find_source(pole)
 			if result[1] >= separation_from_source:
 				return
@@ -186,7 +185,7 @@ func on_power_pole_disconnected(pole: Node) -> void:
 		return
 	attached_poles.remove_at(index)
 	pole.powered_changed.disconnect(on_power_pole_powered_changed)
-	if source == null:
+	if not powered:
 		return
 	if pole != source:
 		return
@@ -199,7 +198,7 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 	assert(pole != null)
 	if not attached_poles.has(pole):
 		return
-	assert(source != null or value)
+	assert(powered or value)
 	if not powered and value:
 		assert(source == null)
 		assert(generator == null)
@@ -238,6 +237,7 @@ func on_cooldown_timer_timeout() -> void:
 		reset_laser_head()
 		cool_down_timer.start()
 		return
+
 	target_tile_offset = potential_mining_targets[randi_range(0, potential_mining_targets.size() - 1)]
 	if target_tile_offset.x < -target_tile_offset.y:
 		laser_head.position.y = -1.0
