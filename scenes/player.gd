@@ -81,6 +81,8 @@ var iron_count := 0.0:
 var interaction: Node = null
 var interactions:={}
 
+var collision_point:Vector2
+
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
 @onready var body_sprite: AnimatedSprite2D = $Visuals/Body
@@ -94,55 +96,54 @@ func _ready() -> void:
 		if node is WorldTileMapLayer:
 			world_map = node
 			break
-	
 
 func _process(_delta: float) -> void:
 	if state != State.MINING:
 		return
 	var spawn_point := to_local(laser_spawn_point.global_position)
-	var target := to_local(world_map.to_global(world_map.map_to_local(target_tile)))
-	var offset := (target - spawn_point)
-	const SLOPE_THRESHOLD = 0.5
-	if not is_zero_approx(offset.x) and absf(offset.y) / absf(offset.x) > SLOPE_THRESHOLD:
-		const STEEP_SLOPE_OFFSET = Vector2(0.5, 0.5)
-		spawn_point.x += signf(offset.x) * STEEP_SLOPE_OFFSET.x
-		spawn_point.y += -signf(offset.y) * STEEP_SLOPE_OFFSET.y
+	# var target := to_local(world_map.to_global(world_map.map_to_local(target_tile)))
+	# var offset := (target - spawn_point)
+	# const SLOPE_THRESHOLD = 0.5
+	# if not is_zero_approx(offset.x) and absf(offset.y) / absf(offset.x) > SLOPE_THRESHOLD:
+	# 	const STEEP_SLOPE_OFFSET = Vector2(0.5, 0.5)
+	# 	spawn_point.x += signf(offset.x) * STEEP_SLOPE_OFFSET.x
+	# 	spawn_point.y += -signf(offset.y) * STEEP_SLOPE_OFFSET.y
 
-	var tile_offset := world_map.local_to_map(world_map.to_local(global_position)) - target_tile
-	var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
-	var target_face_offset: Vector2
-	if tile_offset.x <= 0 and tile_offset.y <= 0:
-		target_face_offset = Vector2(
-			quarter_tile_size.x if absf(tile_offset.x) < absf(tile_offset.y) else -quarter_tile_size.x,
-			-quarter_tile_size.y
-		)
-	else:
-		var half_tile_size := Vector2(world_map.tile_set.tile_size) / 2.0
-		var t := clampf(
-			remap(
-				(-target).angle_to(Vector2.DOWN),
-				-PI / 3.0,
-				PI / 3.0,
-				0.0, 
-				1.0
-			),
-			0.0,
-			1.0
-		)
-		var x_offset:float = Tween.interpolate_value(
-			-quarter_tile_size.x,
-			half_tile_size.x,
-			t,
-			1.0,
-			Tween.TRANS_LINEAR,
-			Tween.EASE_IN_OUT
-		)
-		target_face_offset = Vector2(
-			x_offset,
-			half_tile_size.y - absf(x_offset) / 2.0
-		)
+	# var tile_offset := world_map.local_to_map(world_map.to_local(global_position)) - target_tile
+	# var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
+	# var target_face_offset: Vector2
+	# if tile_offset.x <= 0 and tile_offset.y <= 0:
+	# 	target_face_offset = Vector2(
+	# 		quarter_tile_size.x if absf(tile_offset.x) < absf(tile_offset.y) else -quarter_tile_size.x,
+	# 		-quarter_tile_size.y
+	# 	)
+	# else:
+	# 	var half_tile_size := Vector2(world_map.tile_set.tile_size) / 2.0
+	# 	var t := clampf(
+	# 		remap(
+	# 			(-target).angle_to(Vector2.DOWN),
+	# 			-PI / 3.0,
+	# 			PI / 3.0,
+	# 			0.0, 
+	# 			1.0
+	# 		),
+	# 		0.0,
+	# 		1.0
+	# 	)
+	# 	var x_offset:float = Tween.interpolate_value(
+	# 		-quarter_tile_size.x,
+	# 		half_tile_size.x,
+	# 		t,
+	# 		1.0,
+	# 		Tween.TRANS_LINEAR,
+	# 		Tween.EASE_IN_OUT
+	# 	)
+	# 	target_face_offset = Vector2(
+	# 		x_offset,
+	# 		half_tile_size.y - absf(x_offset) / 2.0
+	# 	)
 
-	var target_pos := target + target_face_offset + mining_target_offset
+	var target_pos := to_local(collision_point) + mining_target_offset
 	laser_beam.points = [spawn_point, target_pos]
 	laser_particles.position = target_pos
 
@@ -175,13 +176,13 @@ func _physics_process(delta: float) -> void:
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
 			State.IDLE:
-				if is_within_interaction_range(tile) and can_mine_tile(tile):
+				if is_within_interaction_range(tile) and can_mine_tile(tile) and is_in_los(tile):
 					state = State.MINING
 					target_tile = tile
 					mining_timer.start()
 			State.MINING:
 				if target_tile != tile:
-					if is_within_interaction_range(tile) and can_mine_tile(tile):
+					if is_within_interaction_range(tile) and can_mine_tile(tile) and is_in_los(tile):
 						target_tile = tile
 					else:
 						state = State.IDLE
@@ -253,7 +254,43 @@ func can_mine_tile(tile: Vector2i) -> bool:
 		_:
 			assert(false, "Unknown source id")
 	return false
+
+func is_in_los(tile: Vector2i) -> bool:
+	var tile_pos := world_map.to_global(world_map.map_to_local(tile))
+	if test_ray_cast_to_terrain(tile, tile_pos, tile_pos):
+		return true
 	
+	var tile_offset := world_map.local_to_map(world_map.to_local(global_position)) - tile
+	if tile_offset.x == 0 or tile_offset.y == 0:
+		return false
+
+	var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
+	if tile_offset.x > 0:
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, quarter_tile_size.y)):
+			return true
+	else:
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, -quarter_tile_size.y)):
+			return true
+	if tile_offset.y > 0:
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, quarter_tile_size.y)):
+			return true
+	else:
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, -quarter_tile_size.y)):
+			return true
+	return false
+
+func test_ray_cast_to_terrain(tile: Vector2i, tile_pos: Vector2, target: Vector2) -> bool:
+	const TERRAIN_MASK = 0b1
+	var space_state := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(global_position, target, TERRAIN_MASK) # TODO no magic numbers
+	var result := space_state.intersect_ray(query)
+	if not result:
+		return true
+	var nudge := (tile_pos - Vector2(result.position)).normalized()
+	if world_map.local_to_map(world_map.to_local(result.position + nudge)) != tile:
+		return false
+	collision_point = result.position
+	return true
 
 func update_building_preview() -> void:
 	assert(state == State.BUILDING)
