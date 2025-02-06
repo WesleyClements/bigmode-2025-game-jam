@@ -8,3 +8,4 @@
 diffuse_texture = ExtResource("1_wjind")
 normal_texture = ExtResource("2_li0rp")
 specular_texture = ExtResource("3_pihhf")
+texture_filter = 1

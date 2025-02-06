@@ -4,5 +4,6 @@
 
 [resource]
 shader = ExtResource("1_8bkv5")
+shader_parameter/height_scale = 32.0
 shader_parameter/depth_color = Color(0, 0.0195313, 0.0390625, 1)
-shader_parameter/depth_offset = 0.4
+shader_parameter/depth_offset = 0.6
