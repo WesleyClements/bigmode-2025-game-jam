@@ -2,3 +2,5 @@
 
 !godot-cpp/**/*
 !map_generation/**/*
+
+!setup.*.sh
