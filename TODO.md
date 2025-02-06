@@ -1,8 +1,7 @@
 - Make player slide along walls smoothly
-- fix laser beam rendering under laser base
 - refine selecting entities with mouse
 - make lasers (player/mining laser) respect los
 - make out of power symbol for machines not powered
-- add hover animation to dropped items
-- add velocity to items as the spawn
-- add breaking variations to block
+- fix power network getting messed up sometimes
+- add velocity to items as they spawn
+- add more breaking variations to block

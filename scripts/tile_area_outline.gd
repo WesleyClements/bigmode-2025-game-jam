@@ -28,6 +28,7 @@ func _ready():
 	]
 	if Engine.is_editor_hint():
 		_editor_points = outline_points
+		_editor_points.append(outline_points[0])
 		queue_redraw()
 	else:
 		points = outline_points
