@@ -16,6 +16,10 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://assets/icon.svg"
 
+[audio]
+
+buses/default_bus_layout="res://resources/default.BusLayout.tres"
+
 [autoload]
 
 MessageBuss="*res://autoloads/MessageBuss.gd"

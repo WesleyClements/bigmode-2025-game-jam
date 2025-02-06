@@ -90,6 +90,7 @@ var collision_point:Vector2
 @onready var laser_spawn_point: Node2D = %LaserSpawnPoint
 @onready var laser_beam: Line2D = $LaserBeam
 @onready var laser_particles: GPUParticles2D = $LaserParticles
+@onready var item_pickup_sound: AudioStreamPlayer2D = $ItemPickupSound
 
 func _ready() -> void:
 	for node in get_tree().get_nodes_in_group(&"terrain"):
@@ -320,6 +321,7 @@ func on_body_entered_pickup_area(body: Node2D) -> void:
 			coal_count += body.get_amount()
 		ItemType.IRON:
 			iron_count += body.get_amount()
+	item_pickup_sound.play()
 
 func on_body_entered_move_towards_area(body: Node2D) -> void:
 	if not body.is_in_group(&"pickup"):

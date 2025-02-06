@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://cj8ksno35aduj"]
+[gd_scene load_steps=26 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/random_audio_stream_player_2d.gd" id="7_4pov0"]
 [ext_resource type="AudioStream" uid="uid://byu0oh7w2y445" path="res://assets/sfx/walk_2.wav" id="8_tnww5"]
 [ext_resource type="AudioStream" uid="uid://b7higjmpnso2i" path="res://assets/sfx/walk_3.wav" id="9_s4vuq"]
+[ext_resource type="AudioStream" uid="uid://bn57xkw5t8l8x" path="res://assets/sfx/slurp_1.wav" id="11_ej8yj"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h40h1"]
 gradient = ExtResource("2_itq32")
@@ -320,6 +321,11 @@ script = ExtResource("7_4pov0")
 stream = ExtResource("9_s4vuq")
 max_polyphony = 2
 script = ExtResource("7_4pov0")
+
+[node name="ItemPickupSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("11_ej8yj")
+max_polyphony = 10
+bus = &"sfx"
 
 [connection signal="timeout" from="MiningTimer" to="." method="on_mining_timer_timeout"]
 [connection signal="body_entered" from="PickUpArea" to="." method="on_body_entered_pickup_area"]
