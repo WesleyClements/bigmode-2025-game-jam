@@ -19,6 +19,7 @@ const BlockCoords = {
 @export var entity_registry: EntityRegistry
 @export var tileset_atlas_id: TilesetAtlas = TilesetAtlas.TERRAIN
 @export var tile_damage_reset_time: float = 1.0
+@export var tile_damage_variant_count := 4.0
 
 var scene_coords := {}
 var cell_damage := {}
@@ -97,9 +98,8 @@ func set_cell_damage(coords: Vector2i, damage: float) -> void:
 
 	if get_cell_source_id(coords) == TilesetAtlas.TERRAIN:
 		var atlas_coords := get_cell_atlas_coords(coords)
-		const FRACTURE_VARIANT_COUNT := 4.0
-		var offset: int = floor(FRACTURE_VARIANT_COUNT * damage / get_cell_mining_energy_cost(coords))
-		assert(offset >= 0 and offset < FRACTURE_VARIANT_COUNT)
+		var offset: int = floor(tile_damage_variant_count * damage / get_cell_mining_energy_cost(coords))
+		assert(offset >= 0 and offset < tile_damage_variant_count)
 		set_cell(coords, TilesetAtlas.TERRAIN, Vector2i(atlas_coords.x, offset), 0)
 
 	if _cell_damage_timers.has(coords):

@@ -20,6 +20,7 @@ enum State {
 @export var mining_power: float = 1.0
 @export var mining_target_offset := Vector2(0, -8)
 @export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
+@export_flags_2d_physics var los_collision_mask: int = 0b1
 
 var world_map: WorldTileMapLayer
 var previous
@@ -45,8 +46,6 @@ var state: State = State.IDLE:
 				laser_particles.visible = true
 			State.BUILDING:
 				MessageBuss.build_mode_entered.emit()
-				
-
 
 var selected_building: EntityType:
 	set(value):
@@ -281,10 +280,9 @@ func is_in_los(tile: Vector2i, space_state:=get_world_2d().direct_space_state) -
 	return false
 
 func test_ray_cast_to_terrain(tile: Vector2i, tile_pos: Vector2, target: Vector2, space_state: PhysicsDirectSpaceState2D) -> bool:
-	const TERRAIN_MASK = 0b1
 	if not space_state:
 		return false
-	var query := PhysicsRayQueryParameters2D.create(global_position, target, TERRAIN_MASK) # TODO no magic numbers
+	var query := PhysicsRayQueryParameters2D.create(global_position, target, los_collision_mask)
 	var result := space_state.intersect_ray(query)
 	if not result:
 		return true
