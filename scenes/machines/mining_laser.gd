@@ -38,6 +38,7 @@ var powered: bool = false:
 		if not value:
 			powered = false
 			state = State.IDLE
+			cool_down_timer.stop()
 			queue_redraw()
 		else:
 			powered = true
