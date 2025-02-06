@@ -152,14 +152,13 @@ func search_for_machines() -> void:
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
-	assert(machine.has_method(&"get_attachment_point"))
 	if machine_attachments.has(machine) or pole_connections.has(machine):
 		return false
 
-	if not machine.has_method(&"connect_machine"):
-		machine_attachments[machine] = machine.get_attachment_point()
-		if machine.has_signal(&"power_pole_connected"):
-			machine.emit_signal(&"power_pole_connected", self)
+	if not machine.has_method(&"get_attachment_point"):
+		machine_attachments[machine] = null
+		assert(machine.has_signal(&"power_pole_connected"))
+		machine.emit_signal(&"power_pole_connected", self)
 		update_wires.call_deferred()
 		return true
 	
@@ -250,14 +249,6 @@ func update_wires() -> void:
 		var line := template.instantiate()
 		wires.add_child(line)
 		line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
-	
-	# for other_attachment_point: Marker2D in machine_attachments.values():
-	# 	var wire_direction := (other_attachment_point.global_position - attachment_point.global_position).normalized()
-	# 	var offset := WIRE_OFFSET_LENGTH * wire_direction
-	# 	var line := template.instantiate()
-	# 	wires.add_child(line)
-	# 	line.points = [line.to_local(attachment_point.global_position) + offset, line.to_local(other_attachment_point.global_position) - offset]
-		# TODO sort points from bottom left to top right
 
 func update_source() -> void:
 	source = null

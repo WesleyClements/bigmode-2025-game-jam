@@ -123,15 +123,17 @@ func search_for_machines() -> void:
 func connect_machine(machine: Node) -> bool:
 	assert(not machine == null)
 	assert(machine.is_in_group(&"machines"))
-	assert(machine.has_method(&"get_attachment_point"))
 	if attachments.has(machine):
 		return true
 
-	attachments[machine] = machine.get_attachment_point()
-	if machine.has_signal(&"power_pole_connected"):
-		machine.emit_signal(&"power_pole_connected", self)
-	if machine.has_method(&"connect_machine"):
+	if machine.has_method(&"get_attachment_point"):
+		attachments[machine] = machine.get_attachment_point()
+		assert(machine.has_method(&"connect_machine"))
 		machine.connect_machine(self)
+	else:
+		assert(machine.has_signal(&"power_pole_connected"))
+		attachments[machine] = null
+		machine.emit_signal(&"power_pole_connected", self)
 	update_wires.call_deferred()
 	return true
 	
@@ -159,9 +161,9 @@ func update_wires() -> void:
 	var template := powered_wire_template if get_powered() else wire_template
 	for machine in attachments.keys():
 		assert(not machine == null)
-		if machine.has_signal(&"power_pole_disconnected"):
-			continue
 		var other_attachment_point: Marker2D = attachments.get(machine)
+		if other_attachment_point == null:
+			continue
 		var offset := 1.5 * (other_attachment_point.global_position - attachment_point.global_position).normalized()
 		var line := template.instantiate()
 		wires.add_child(line)

@@ -128,8 +128,6 @@ position = Vector2(13, 0)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)
 
-[node name="AttachmentPoint" type="Marker2D" parent="."]
-
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("6_j2lfr")]
 visible = false
 default_color = Color(1, 0, 0.952941, 0.501961)

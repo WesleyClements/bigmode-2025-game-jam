@@ -72,7 +72,6 @@ var force_show_outline: bool = false
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
-@onready var attachment_point: Marker2D = $AttachmentPoint
 @onready var laser_head: Node2D = $Laser/LaserHead
 @onready var fire_point: Marker2D = $Laser/LaserHead/FirePoint
 @onready var cool_down_timer: Timer = $CoolDownTimer
@@ -107,10 +106,6 @@ func _ready():
 
 	MessageBuss.build_mode_entered.connect(on_build_mode_changed.bind(true))
 	MessageBuss.build_mode_exited.connect(on_build_mode_changed.bind(false))
-			
-
-func get_attachment_point() -> Marker2D:
-	return attachment_point
 
 func reset_laser_head() -> void:
 	laser_head.rotation = 0.0
