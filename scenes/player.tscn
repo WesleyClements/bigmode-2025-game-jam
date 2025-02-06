@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://cj8ksno35aduj"]
+[gd_scene load_steps=25 format=3 uid="uid://cj8ksno35aduj"]
 
 [ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
@@ -6,6 +6,7 @@
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
 [ext_resource type="Texture2D" uid="uid://by700onp21lqn" path="res://assets/sprites/player_beaming.png" id="5_vt3jp"]
 [ext_resource type="AudioStream" uid="uid://wavwj6cpx5v4" path="res://assets/sfx/walk_1.wav" id="6_8u8kc"]
+[ext_resource type="Material" uid="uid://d36i8ou3b3qft" path="res://resources/laser.ParticleProcessMaterial.tres" id="6_mh0a2"]
 [ext_resource type="Script" path="res://scripts/random_audio_stream_player_2d.gd" id="7_4pov0"]
 [ext_resource type="AudioStream" uid="uid://byu0oh7w2y445" path="res://assets/sfx/walk_2.wav" id="8_tnww5"]
 [ext_resource type="AudioStream" uid="uid://b7higjmpnso2i" path="res://assets/sfx/walk_3.wav" id="9_s4vuq"]
@@ -244,6 +245,16 @@ visible = false
 light_mask = 5
 shadow_enabled = true
 texture = SubResource("GradientTexture2D_3jq3d")
+
+[node name="LaserBeam" type="Line2D" parent="."]
+width = 1.5
+default_color = Color(1, 0, 0.952941, 1)
+
+[node name="LaserParticles" type="GPUParticles2D" parent="."]
+visible = false
+emitting = false
+process_material = ExtResource("6_mh0a2")
+lifetime = 0.3
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)

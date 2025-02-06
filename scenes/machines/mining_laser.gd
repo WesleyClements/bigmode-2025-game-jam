@@ -21,8 +21,6 @@ signal hover_exited()
 @export var mining_power: float = 2.0
 @export var fuel_consumption_rate := 1.0
 @export var target_offset := Vector2(0, -10)
-@export var beam_color := Color(1, 0, 0.953125)
-@export var beam_width := 2.0
 
 var source: Node
 var generator: GerbilGenerator

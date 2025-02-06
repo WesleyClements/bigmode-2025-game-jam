@@ -18,8 +18,6 @@ enum State {
 @export var slow_down_time: float = 0.1
 @export var interaction_range: float = 2.5
 @export var mining_power: float = 1.0
-@export var laser_color: Color = Color(1, 0, 0.953125)
-@export var laser_width: float = 1.5
 @export var mining_target_offset := Vector2(0, -8)
 @export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
 
@@ -33,12 +31,18 @@ var state: State = State.IDLE:
 			State.MINING:
 				body_sprite.frame = 0 # TODO no magic numbers
 				mining_timer.stop()
+				laser_beam.visible = false
+				laser_particles.visible = false
+				laser_particles.emitting = false
 			State.BUILDING:
 				MessageBuss.build_mode_exited.emit()
 		state = value
 		match state:
 			State.MINING:
 				body_sprite.frame = 1 # TODO no magic numbers
+				laser_beam.visible = true
+				laser_particles.emitting = true
+				laser_particles.visible = true
 			State.BUILDING:
 				MessageBuss.build_mode_entered.emit()
 				
@@ -82,14 +86,17 @@ var interactions:={}
 @onready var body_sprite: AnimatedSprite2D = $Visuals/Body
 @onready var mining_timer: Timer = $MiningTimer
 @onready var laser_spawn_point: Node2D = %LaserSpawnPoint
+@onready var laser_beam: Line2D = $LaserBeam
+@onready var laser_particles: GPUParticles2D = $LaserParticles
 
 func _ready() -> void:
 	for node in get_tree().get_nodes_in_group(&"terrain"):
 		if node is WorldTileMapLayer:
 			world_map = node
 			break
+	
 
-func _draw():
+func _process(_delta: float) -> void:
 	if state != State.MINING:
 		return
 	var spawn_point := to_local(laser_spawn_point.global_position)
@@ -135,17 +142,15 @@ func _draw():
 			half_tile_size.y - absf(x_offset) / 2.0
 		)
 
-	draw_line(
-		spawn_point,
-		target + target_face_offset + mining_target_offset,
-		laser_color,
-		laser_width
-	)
-
-func _process(_delta: float) -> void:
-	queue_redraw()
+	var target_pos := target + target_face_offset + mining_target_offset
+	laser_beam.points = [spawn_point, target_pos]
+	laser_particles.position = target_pos
 
 func _physics_process(delta: float) -> void:
+	if Input.is_action_pressed(&"cheat"):
+		iron_count += 100
+		coal_count += 100
+
 	var movement_direction = Vector2(
 		Input.get_axis(&"move_left", &"move_right"),
 		Input.get_axis(&"move_up", &"move_down")
