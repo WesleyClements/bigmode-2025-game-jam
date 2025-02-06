@@ -26,6 +26,8 @@ var cell_damage := {}
 
 var _cell_damage_timers := {}
 
+@onready var machine_placement_sound: AudioStreamPlayer2D = $MachinePlacementSound
+
 
 func _enter_tree() -> void:
 	child_entered_tree.connect(on_child_entered_tree)
@@ -166,12 +168,14 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 		_:
 			assert(false, "Unknown block type")
 
-func on_spawn_entity_request(tile_pos: Vector2i, entity_type: EntityType) -> void:
-	if get_cell_source_id(tile_pos) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile_pos) == entity_type:
+func on_spawn_entity_request(tile: Vector2i, entity_type: EntityType) -> void:
+	if get_cell_source_id(tile) == TilesetAtlas.ENTITIES and get_cell_alternative_tile(tile) == entity_type:
 		return
-	MessageBuss.entity_spawning.emit(tile_pos, entity_type)
+	MessageBuss.entity_spawning.emit(tile, entity_type)
+	machine_placement_sound.position = map_to_local(tile)
+	machine_placement_sound.play()
 	update_cell(
-		tile_pos,
+		tile,
 		TilesetAtlas.ENTITIES,
 		Vector2(0, 0),
 		entity_type

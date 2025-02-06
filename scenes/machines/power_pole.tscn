@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c4cd34odmmos7"]
+[gd_scene load_steps=17 format=3 uid="uid://c4cd34odmmos7"]
 
 [ext_resource type="Script" path="res://scenes/machines/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
@@ -36,6 +36,23 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_4k6d5"]
+lifetime_randomness = 0.2
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(1, 0.4, 1)
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 10.0
+emission_ring_inner_radius = 6.0
+angle_min = -180.0
+angle_max = 180.0
+radial_velocity_min = -2.23517e-05
+radial_velocity_max = 30.0
+scale_min = 0.5
+scale_max = 1.5
+color = Color(0.8517, 0.837, 0.9, 1)
 
 [sub_resource type="Animation" id="Animation_r6m1m"]
 resource_name = "power_off"
@@ -79,6 +96,27 @@ _data = {
 "power_on": SubResource("Animation_y5a7m")
 }
 
+[sub_resource type="Animation" id="Animation_tw0i7"]
+resource_name = "spawn"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpawnParticles:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ld8gt"]
+_data = {
+"spawn": SubResource("Animation_tw0i7")
+}
+
 [node name="PowerPole" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
 collision_mask = 0
@@ -98,6 +136,27 @@ texture = SubResource("GradientTexture2D_exbia")
 sprite_frames = SubResource("SpriteFrames_k0cd2")
 offset = Vector2(0, -14)
 
+[node name="SpawnParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -1)
+emitting = false
+amount = 64
+process_material = SubResource("ParticleProcessMaterial_4k6d5")
+lifetime = 0.1
+one_shot = true
+explosiveness = 0.1
+visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_chok4")
+}
+
+[node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ld8gt")
+}
+autoplay = "spawn"
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
 
@@ -107,8 +166,3 @@ z_index = 100
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("6_n6t5w")]
 visible = false
 root_node = NodePath("..")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_chok4")
-}

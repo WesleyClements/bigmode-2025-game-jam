@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d0ppwepihs2sf"]
+[gd_scene load_steps=16 format=3 uid="uid://d0ppwepihs2sf"]
 
 [ext_resource type="Script" path="res://scenes/machines/mining_laser.gd" id="1_0nmhe"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_fvpbp"]
@@ -15,6 +15,23 @@ height = 8
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_w3qhg"]
+lifetime_randomness = 0.2
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(1, 0.4, 1)
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 10.0
+emission_ring_inner_radius = 6.0
+angle_min = -180.0
+angle_max = 180.0
+radial_velocity_min = -2.23517e-05
+radial_velocity_max = 30.0
+scale_min = 0.5
+scale_max = 1.5
+color = Color(0.8517, 0.837, 0.9, 1)
 
 [sub_resource type="Animation" id="Animation_xrhuw"]
 length = 0.001
@@ -94,6 +111,27 @@ _data = {
 "power_up": SubResource("Animation_siemf")
 }
 
+[sub_resource type="Animation" id="Animation_tw0i7"]
+resource_name = "spawn"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpawnParticles:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ld8gt"]
+_data = {
+"spawn": SubResource("Animation_tw0i7")
+}
+
 [node name="MiningLaser" type="StaticBody2D" groups=["machines"]]
 collision_layer = 8
 collision_mask = 0
@@ -138,6 +176,16 @@ amount = 16
 process_material = ExtResource("7_g3kp0")
 lifetime = 0.3
 
+[node name="SpawnParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -1)
+emitting = false
+amount = 64
+process_material = SubResource("ParticleProcessMaterial_w3qhg")
+lifetime = 0.1
+one_shot = true
+explosiveness = 0.1
+visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)
 
@@ -151,6 +199,12 @@ tile_radius = 5
 libraries = {
 "": SubResource("AnimationLibrary_ws28p")
 }
+
+[node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_ld8gt")
+}
+autoplay = "spawn"
 
 [node name="CoolDownTimer" type="Timer" parent="."]
 process_callback = 0

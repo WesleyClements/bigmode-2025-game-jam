@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://p5awsdsi1kea"]
+[gd_scene load_steps=11 format=3 uid="uid://p5awsdsi1kea"]
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
 [ext_resource type="Script" path="res://scripts/hover_highlight.gd" id="4_lmn7l"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/ui/UI.tscn" id="5_p1ybt"]
+[ext_resource type="AudioStream" uid="uid://bylnhsvoifqya" path="res://assets/sfx/ tower_placement.wav" id="6_8kox2"]
 
 [node name="Main" type="Node"]
 
@@ -31,6 +32,11 @@ script = ExtResource("4_lmn7l")
 closed = true
 width = 2.0
 default_color = Color(1, 1, 1, 0.717647)
+
+[node name="MachinePlacementSound" type="AudioStreamPlayer2D" parent="World/Walls"]
+stream = ExtResource("6_8kox2")
+max_polyphony = 2
+bus = &"sfx"
 
 [node name="Player" parent="World" instance=ExtResource("2_l8qed")]
 position = Vector2(16, 16)
