@@ -112,8 +112,10 @@ func set_cell_damage(coords: Vector2i, damage: float) -> void:
 func update_cell(coords: Vector2i, source_id: int = -1, atlas_coords: Vector2i = Vector2i(-1, -1), alternative_tile: int = 0) -> void:
 	if source_id == -1:
 		erase_cell(coords)
+		reset_cell_damage(coords)
 	else:
 		set_cell(coords, source_id, atlas_coords, alternative_tile)
+		reset_cell_damage(coords)
 	# assert(WorldMap.a_star_grid_2d.is_in_boundsv(coords))
 	# WorldMap.a_star_grid_2d.set_point_solid(coords, source_id != -1)
 	
