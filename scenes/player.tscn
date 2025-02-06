@@ -253,8 +253,9 @@ default_color = Color(1, 0, 0.952941, 1)
 [node name="LaserParticles" type="GPUParticles2D" parent="."]
 visible = false
 emitting = false
+amount = 16
 process_material = ExtResource("6_mh0a2")
-lifetime = 0.3
+lifetime = 0.15
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
