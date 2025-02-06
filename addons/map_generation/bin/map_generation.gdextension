@@ -1,6 +1,6 @@
 [configuration]
 
-entry_symbol = "example_library_init"
+entry_symbol = "map_generation_library_init"
 compatibility_minimum = "4.3"
 reloadable = true
 
