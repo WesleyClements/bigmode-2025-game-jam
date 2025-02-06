@@ -30,3 +30,4 @@ width = 2.0
 default_color = Color(1, 0, 0.952941, 0.501961)
 script = ExtResource("2_kxsuu")
 root_node = NodePath("..")
+tile_radius = 5

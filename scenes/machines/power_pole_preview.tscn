@@ -30,4 +30,3 @@ width = 2.0
 default_color = Color(1, 1, 0, 0.501961)
 script = ExtResource("3_ylt7r")
 root_node = NodePath("..")
-tile_radius = 3
