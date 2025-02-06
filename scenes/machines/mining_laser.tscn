@@ -127,6 +127,17 @@ offset = Vector2(0, 11)
 [node name="FirePoint" type="Marker2D" parent="Laser/LaserHead"]
 position = Vector2(13, 0)
 
+[node name="LaserBeam" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(1, 0, 0.952941, 1)
+
+[node name="LaserParticles" type="GPUParticles2D" parent="."]
+visible = false
+emitting = false
+amount = 16
+process_material = ExtResource("7_g3kp0")
+lifetime = 0.3
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)
 
@@ -157,13 +168,6 @@ collision_mask = 16
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="MoveTowardsArea"]
 polygon = PackedVector2Array(0, -80, 160, 0, 0, 80, -160, 0)
-
-[node name="MiningParticles" type="GPUParticles2D" parent="."]
-visible = false
-emitting = false
-amount = 16
-process_material = ExtResource("7_g3kp0")
-lifetime = 0.3
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="on_animation_finished"]
 [connection signal="timeout" from="CoolDownTimer" to="." method="on_cooldown_timer_timeout"]

@@ -50,22 +50,18 @@ var state := State.IDLE:
 		match state:
 			State.MINING:
 				mining_timer.stop()
-				mining_particles.visible = false
-				mining_particles.emitting = false
-				queue_redraw()
+				laser_beam.visible = false
+				laser_particles.visible = false
+				laser_particles.emitting = false
 		state = value
 		match state:
 			State.MINING:
 				mining_timer.start()
-				mining_particles.emitting = true
-				mining_particles.visible = true
-				queue_redraw()
+				laser_beam.visible = true
+				laser_particles.emitting = true
+				laser_particles.visible = true
 
 var target_tile_offset: Vector2i
-var laser_target: Vector2:
-	set(value):
-		laser_target = value
-		mining_particles.position = to_local(value)
 
 var force_show_outline: bool = false
 
@@ -74,9 +70,10 @@ var force_show_outline: bool = false
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var laser_head: Node2D = $Laser/LaserHead
 @onready var fire_point: Marker2D = $Laser/LaserHead/FirePoint
+@onready var laser_beam: Node2D = $LaserBeam
+@onready var laser_particles: GPUParticles2D = $LaserParticles
 @onready var cool_down_timer: Timer = $CoolDownTimer
 @onready var mining_timer: Timer = $MiningTimer
-@onready var mining_particles: GPUParticles2D = $MiningParticles
 
 func _exit_tree() -> void:
 	for pole in attached_poles:
@@ -86,15 +83,6 @@ func _exit_tree() -> void:
 	attached_poles.clear()
 	power_pole_connected.disconnect(on_power_pole_connected)
 	power_pole_disconnected.disconnect(on_power_pole_disconnected)
-
-func _draw() -> void:
-	if not powered:
-		return
-	if not state == State.MINING:
-		return
-	var source_position := to_local(fire_point.get_global_position())
-	var target_position := to_local(laser_target)
-	draw_line(source_position, target_position, beam_color, beam_width)
 
 
 func _ready():
@@ -262,8 +250,10 @@ func on_cooldown_timer_timeout() -> void:
 	else:
 		target_face_offset = quarter_tile_size if target_tile_offset.x < 0 else -quarter_tile_size
 
-	laser_target = world_map.to_global(target_center + target_face_offset + target_offset)
+	var laser_target := world_map.to_global(target_center + target_face_offset + target_offset)
 	laser_head.look_at(laser_target)
+	laser_beam.points = [to_local(fire_point.get_global_position()), to_local(laser_target)]
+	laser_particles.position = to_local(laser_target)
 
 	state = State.MINING
 
