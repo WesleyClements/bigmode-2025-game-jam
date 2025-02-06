@@ -43,7 +43,7 @@ length = 0.01
 tracks/0/type = "method"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body")
+tracks/0/path = NodePath("Visuals/Body")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -61,7 +61,7 @@ length = 0.01
 tracks/0/type = "method"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body")
+tracks/0/path = NodePath("Visuals/Body")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -89,17 +89,19 @@ powered_wire_template = ExtResource("3_q7ibn")
 [node name="AttachmentPoint" type="Marker2D" parent="."]
 position = Vector2(0, -24)
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Visuals" type="CanvasGroup" parent="."]
+
+[node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_exbia")
 
-[node name="Body" type="AnimatedSprite2D" parent="."]
+[node name="Body" type="AnimatedSprite2D" parent="Visuals"]
 sprite_frames = SubResource("SpriteFrames_k0cd2")
 offset = Vector2(0, -14)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
 
-[node name="Wires" type="Node2D" parent="."]
+[node name="Wires" type="CanvasGroup" parent="."]
 z_index = 100
 
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("6_n6t5w")]

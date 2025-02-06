@@ -226,7 +226,7 @@ script = ExtResource("1_7hibj")
 wire_template = ExtResource("2_5qgbl")
 powered_wire_template = ExtResource("2_vlges")
 
-[node name="Visuals" type="Node2D" parent="."]
+[node name="Visuals" type="CanvasGroup" parent="."]
 y_sort_enabled = true
 
 [node name="WheelShadow" type="Sprite2D" parent="Visuals"]
@@ -259,7 +259,7 @@ polygon = PackedVector2Array(0, -3, 7, 0, 0, 3, -7, 0)
 [node name="AttachmentPoint" type="Marker2D" parent="."]
 position = Vector2(-11, -19)
 
-[node name="Wires" type="Node2D" parent="."]
+[node name="Wires" type="CanvasGroup" parent="."]
 z_index = 100
 y_sort_enabled = true
 

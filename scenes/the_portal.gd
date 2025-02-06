@@ -32,7 +32,7 @@ var iron: float = 0.0:
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var iron_display: Label = $IronDisplayPanel/IronDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
-@onready var portal_sprite: AnimatedSprite2D = $Portal
+@onready var portal_sprite: AnimatedSprite2D = $Visuals/Portal
 
 func _ready() -> void:
 	portal_sprite.frame = 0

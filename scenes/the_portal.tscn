@@ -78,10 +78,12 @@ collision_layer = 8
 collision_mask = 7
 script = ExtResource("1_a444q")
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Visuals" type="CanvasGroup" parent="."]
+
+[node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_yjomj")
 
-[node name="Portal" type="AnimatedSprite2D" parent="."]
+[node name="Portal" type="AnimatedSprite2D" parent="Visuals"]
 position = Vector2(0, -24)
 sprite_frames = SubResource("SpriteFrames_iok8r")
 offset = Vector2(0, -6)

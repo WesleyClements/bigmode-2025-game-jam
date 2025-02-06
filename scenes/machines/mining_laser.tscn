@@ -101,14 +101,16 @@ script = ExtResource("1_0nmhe")
 mining_power = 1.0
 fuel_consumption_rate = 0.1
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Main" type="CanvasGroup" parent="."]
+
+[node name="Shadow" type="Sprite2D" parent="Main"]
 texture = SubResource("GradientTexture2D_87k35")
 
-[node name="Base" type="Sprite2D" parent="."]
+[node name="Base" type="Sprite2D" parent="Main"]
 texture = ExtResource("1_q225h")
 offset = Vector2(0, -14)
 
-[node name="Laser" type="Node2D" parent="."]
+[node name="Laser" type="CanvasGroup" parent="."]
 y_sort_enabled = true
 position = Vector2(0, -25.5)
 

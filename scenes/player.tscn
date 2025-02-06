@@ -222,7 +222,7 @@ entity_registry = ExtResource("2_hp7f3")
 max_speed = 90.0
 interaction_range = 3.5
 
-[node name="Visuals" type="Node2D" parent="."]
+[node name="Visuals" type="CanvasGroup" parent="."]
 
 [node name="Shadow" type="Sprite2D" parent="Visuals"]
 texture = SubResource("GradientTexture2D_h40h1")
