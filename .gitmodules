@@ -1,4 +1,5 @@
-[submodule "addons/map_generation/godot-cpp"]
-	path = addons/map_generation/godot-cpp
+[submodule "addons/godot-cpp"]
+	path = addons/godot-cpp
 	url = https://github.com/godotengine/godot-cpp
 	branch = 4.3
+	ignore = dirty
