@@ -222,6 +222,11 @@ func on_power_pole_powered_changed(value: bool, pole: Node) -> void:
 		if source == null:
 			powered = false
 
+func on_animation_finished(anim_name: StringName) -> void:
+	if anim_name != &"power_up":
+		return
+	cool_down_timer.start()
+
 func on_cooldown_timer_timeout() -> void:
 	assert(powered)
 	assert(state == State.IDLE)
