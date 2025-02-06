@@ -133,11 +133,21 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed(&"tile_map_interaction"):
 		var tile := world_map.mouse_to_map(get_global_mouse_position())
 		match state:
-			State.IDLE:
-				if is_within_interaction_range(tile) and can_mine_tile(tile) and is_in_los(tile):
-					state = State.MINING
-					target_tile = tile
-					mining_timer.start()
+			State.IDLE when Input.is_action_just_pressed(&"tile_map_interaction") \
+				and is_within_interaction_range(tile) \
+				and can_mine_tile(tile) \
+				and is_in_los(tile):
+				state = State.MINING
+				target_tile = tile
+				mining_timer.start()
+			State.IDLE when world_map.get_cell_source_id(tile) != WorldTileMapLayer.TilesetAtlas.ENTITIES \
+				and is_within_interaction_range(tile) \
+				and can_mine_tile(tile) \
+				and is_in_los(tile):
+				state = State.MINING
+				target_tile = tile
+				mining_timer.start()
+
 			State.MINING:
 				if target_tile != tile:
 					if is_within_interaction_range(tile) and can_mine_tile(tile) and is_in_los(tile):
@@ -160,6 +170,7 @@ func _physics_process(delta: float) -> void:
 						MessageBuss.request_spawn_entity.emit(tile, selected_building)
 				state = State.IDLE
 				selected_building = EntityType.NONE
+
 	elif state == State.MINING:
 		state = State.IDLE
 		mining_timer.stop()
