@@ -255,9 +255,9 @@ func can_mine_tile(tile: Vector2i) -> bool:
 			assert(false, "Unknown source id")
 	return false
 
-func is_in_los(tile: Vector2i) -> bool:
+func is_in_los(tile: Vector2i, space_state:=get_world_2d().direct_space_state) -> bool:
 	var tile_pos := world_map.to_global(world_map.map_to_local(tile))
-	if test_ray_cast_to_terrain(tile, tile_pos, tile_pos):
+	if test_ray_cast_to_terrain(tile, tile_pos, tile_pos, space_state):
 		return true
 	
 	var tile_offset := world_map.local_to_map(world_map.to_local(global_position)) - tile
@@ -266,22 +266,23 @@ func is_in_los(tile: Vector2i) -> bool:
 
 	var quarter_tile_size := Vector2(world_map.tile_set.tile_size) / 4.0
 	if tile_offset.x > 0:
-		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, quarter_tile_size.y)):
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, quarter_tile_size.y), space_state):
 			return true
 	else:
-		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, -quarter_tile_size.y)):
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, -quarter_tile_size.y), space_state):
 			return true
 	if tile_offset.y > 0:
-		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, quarter_tile_size.y)):
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(-quarter_tile_size.x, quarter_tile_size.y), space_state):
 			return true
 	else:
-		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, -quarter_tile_size.y)):
+		if test_ray_cast_to_terrain(tile, tile_pos, tile_pos + Vector2(quarter_tile_size.x, -quarter_tile_size.y), space_state):
 			return true
 	return false
 
-func test_ray_cast_to_terrain(tile: Vector2i, tile_pos: Vector2, target: Vector2) -> bool:
+func test_ray_cast_to_terrain(tile: Vector2i, tile_pos: Vector2, target: Vector2, space_state: PhysicsDirectSpaceState2D) -> bool:
 	const TERRAIN_MASK = 0b1
-	var space_state := get_world_2d().direct_space_state
+	if not space_state:
+		return false
 	var query := PhysicsRayQueryParameters2D.create(global_position, target, TERRAIN_MASK) # TODO no magic numbers
 	var result := space_state.intersect_ray(query)
 	if not result:

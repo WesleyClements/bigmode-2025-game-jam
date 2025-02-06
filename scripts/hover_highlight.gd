@@ -39,15 +39,21 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var mouse_pos := get_global_mouse_position()
-	var tile_pos := world_map.mouse_to_map(mouse_pos)
+	var tile := world_map.mouse_to_map(mouse_pos)
 	
-	update_hover_position(tile_pos)
+	update_hover_position(tile)
+
+func _physics_process(_delta: float) -> void:
+	var mouse_pos := get_global_mouse_position()
+	var tile := world_map.mouse_to_map(mouse_pos)
+
 	outline.default_color = too_far_color
 	for player: Player in players:
-		if not player.is_within_interaction_range(tile_pos):
+		if not player.is_within_interaction_range(tile):
+			continue
+		if not player.is_in_los(tile):
 			continue
 		outline.default_color = outline_color
-		break
 
 func update_hover_position(tile_pos: Vector2i) -> void:
 	var is_new := tile_pos != hovered_tile
