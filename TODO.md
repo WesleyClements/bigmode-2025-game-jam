@@ -1,6 +1,6 @@
 - Make player slide along walls smoothly
 - refine selecting entities with mouse
-- make lasers (player/mining laser) respect los
+- make lasers (mining laser) respect los
 - make out of power symbol for machines not powered
 - fix power network getting messed up sometimes
 - add velocity to items as they spawn
