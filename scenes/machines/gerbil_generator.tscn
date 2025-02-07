@@ -130,9 +130,12 @@ tracks/0/path = NodePath("Visuals/Wheel")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.005),
+"transitions": PackedFloat32Array(1, 1),
 "values": [{
+"args": [],
+"method": &"stop"
+}, {
 "args": [&"frame_progress", 0.0],
 "method": &"set"
 }]
