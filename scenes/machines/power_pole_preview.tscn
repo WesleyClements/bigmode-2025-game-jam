@@ -15,7 +15,7 @@ fill_to = Vector2(0.5, 0)
 [node name="PowerPolePreview" type="Sprite2D"]
 y_sort_enabled = true
 texture = ExtResource("1_k1jxg")
-offset = Vector2(0, -14)
+offset = Vector2(0, -16)
 
 [node name="Shadow" type="Sprite2D" parent="."]
 y_sort_enabled = true
