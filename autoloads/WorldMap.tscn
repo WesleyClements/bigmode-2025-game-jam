@@ -1,7 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://83kqivxhrkoo"]
+[gd_scene load_steps=4 format=3 uid="uid://83kqivxhrkoo"]
 
 [ext_resource type="Script" path="res://autoloads/WorldMap.gd" id="1_ee4gx"]
+[ext_resource type="Script" path="res://addons/map_generation/map_generation_config.gd" id="2_fqgk3"]
+
+[sub_resource type="Resource" id="Resource_xynod"]
+script = ExtResource("2_fqgk3")
+width = 333
+height = 333
+terrain_scale = 0.081
+ore_scale = 0.181
+simulation_steps = 4
+death_limit = 5
+birth_limit = 6
 
 [node name="WorldMap" type="Node2D"]
 script = ExtResource("1_ee4gx")
-ore_scale = 0.181
+generation_config = SubResource("Resource_xynod")

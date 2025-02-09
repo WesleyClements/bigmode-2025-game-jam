@@ -5,7 +5,7 @@ const TileMaterial = MapGenerator.TileMaterial
 var width: int = 333
 var height: int = 333
 # The lower the number, the bigger the features
-var initial_scale = 0.081
+var terrain_scale = 0.081
 # High number for ore so we get lots of little pockets (big number = small features)
 var ore_scale = 0.181
 
@@ -20,15 +20,16 @@ var birth_limit = 6
 var map: Array[int]
 
 func _ready() -> void:
-	map = await MapGenerator.generate(
-		width,
-		height,
-		initial_scale,
-		simulation_steps,
-		death_limit,
-		birth_limit,
-		ore_scale
-	)
+	var generation_config = MapGenerationConfig.new()
+	generation_config.width = width
+	generation_config.height = height
+	generation_config.terrain_scale = terrain_scale
+	generation_config.ore_scale = ore_scale
+	generation_config.simulation_steps = simulation_steps
+	generation_config.death_limit = death_limit
+	generation_config.birth_limit = birth_limit
+
+	map = await MapGenerator.generate(generation_config)
 	queue_redraw()
 
 func _draw():

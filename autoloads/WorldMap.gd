@@ -10,20 +10,7 @@ const BlockType = MessageBuss.BlockType
 signal map_generated()
 
 
-@export var width = 333
-@export var height = 333
-# The lower the number, the bigger the features
-@export var initial_scale = 0.081
-# High number for ore so we get lots of little pockets (big number = small features)
-@export var ore_scale = 0.181
-
-# Similar to conway's game of life, but with different parameters
-# Populated tiles with fewer neighbours than the death_limit will die
-# Empty tiles with more neighbours than the birth_limit will spawn in
-# Serves to smooth out the caves after generating them from the height map
-@export var simulation_steps = 4
-@export var death_limit = 5
-@export var birth_limit = 6
+@export var generation_config: MapGenerationConfig
 
 var map_data: Array[int] = []
 var generating = false
@@ -43,23 +30,17 @@ func generate() -> bool:
 	if generating:
 		return false
 	generating = true
-	
-	@warning_ignore("redundant_await")
-	map_data = await MapGenerator.generate(
-		width,
-		height,
-		initial_scale,
-		simulation_steps,
-		death_limit,
-		birth_limit,
-		ore_scale
-	)
+
+
+	map_data = await MapGenerator.generate(generation_config)
 
 	generating = false
 	map_generated.emit.call_deferred()
 	return true
 
 func populate_tile_map(tile_map: WorldTileMapLayer) -> void:
+	var width = generation_config.width
+	var height = generation_config.height
 	var world_center := Vector2i(int(width / 2.0) + 1, int(height / 2.0) + 1)
 	for y: int in range(height):
 		var yi = y * width
@@ -76,6 +57,8 @@ func populate_tile_map(tile_map: WorldTileMapLayer) -> void:
 					MessageBuss.world_tile_changing.emit(coords, BlockType.NONE, 0)
 
 func generate_a_star_grid_2d(tile_map: WorldTileMapLayer) -> void:
+	var width = generation_config.width
+	var height = generation_config.height
 	var world_center := Vector2i(int(width / 2.0) + 1, int(height / 2.0) + 1)
 	a_star_grid_2d.region = tile_map.get_used_rect()
 	a_star_grid_2d.cell_size = tile_map.tile_set.tile_size

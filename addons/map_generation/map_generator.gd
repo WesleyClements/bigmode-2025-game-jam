@@ -14,50 +14,103 @@ static var noise := FastNoiseLite.new()
 
 static var noise_with_octaves := FastNoiseLite.new()
 
-static func generate(width: int, height: int, initial_scale := 0.081, simulation_steps := 4, death_limit := 3, birth_limit := 6, ore_scale := 0.181) -> Array[int]:
-	noise.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
-	noise.fractal_type = FastNoiseLite.FractalType.FRACTAL_NONE
-	noise.frequency = 1
+static var terrain_noise := FastNoiseLite.new()
 
-	noise_with_octaves.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
-	noise_with_octaves.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM
-	noise_with_octaves.fractal_octaves = 8
-	noise_with_octaves.fractal_gain = 0.45
-	noise_with_octaves.frequency = 1
+static var ore_noises : = {
+	TileMaterial.COAL: FastNoiseLite.new(),
+	TileMaterial.IRON: FastNoiseLite.new(),
+}
 
-	var center := Vector2(width / 2.0, height / 2.0)
+static func generate(config: MapGenerationConfig) -> Array[int]:
+	assert(not is_zero_approx(config.terrain_scale))
+	assert(not is_zero_approx(config.ore_scale))
+	var terrain_frequency := 1.0
+	terrain_noise.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
+	terrain_noise.fractal_type = FastNoiseLite.FractalType.FRACTAL_FBM
+	terrain_noise.fractal_octaves = 8
+	terrain_noise.fractal_gain = 0.45
+	terrain_noise.frequency = terrain_frequency
+	terrain_noise.offset = Vector3(0.0, 0.0, 0.5) # TODO: Magic number
+
+	var ore_frequency := 1.0
+	for ore_type in ore_noises.keys():
+		var noise : FastNoiseLite = ore_noises.get(ore_type)
+		assert(noise != null)
+		noise.noise_type = FastNoiseLite.NoiseType.TYPE_PERLIN
+		noise.fractal_type = FastNoiseLite.FractalType.FRACTAL_NONE
+		noise.frequency = ore_frequency
+		noise.offset = Vector3(0.0, 0.0, ore_type * 99.9) # TODO: Magic number
+
+	var center := Vector2(config.width / 2.0, config.height / 2.0)
 
 	var map: Array[int]
 	while true:
-		noise.seed = randi()
-		noise_with_octaves.seed = randi()
-		map = attempt_generate(width, height, center, initial_scale, simulation_steps, death_limit, birth_limit, ore_scale)
-		if map_is_cool(map, width, height, center):
+		map= []
+		map.resize(config.width * config.height)
+
+		await gen_height_map(map, config.width, config.height, config.terrain_scale, center)
+		map = CppMapGenerator.smooth(
+			map,
+			config.width,
+			config.height,
+			config.simulation_steps,
+			config.death_limit,
+			config.birth_limit
+		)
+		fill_open_spaces(map, config.width, config.height)
+		map = CppMapGenerator.smooth(
+			map,
+			config.width,
+			config.height,
+			1,
+			config.death_limit,
+			config.birth_limit
+		)
+
+		# Add predefined structures
+		add_homebase(map, config.width, config.height, center)
+
+		# Add ores
+		await place_ore(map, config.width, config.height, TileMaterial.COAL, config.ore_scale)
+		await place_ore(map, config.width, config.height, TileMaterial.IRON, config.ore_scale)
+		
+		var empty_tile_total = 0
+		const FILL_LIMIT := 400
+		empty_tile_total += directional_flood_fill_counter(
+			map,
+			config.width,
+			config.height,
+			Vector2i(center),
+			Vector2i.UP,
+			FILL_LIMIT
+		)
+		empty_tile_total += directional_flood_fill_counter(
+			map,
+			config.width,
+			config.height,
+			Vector2i(center),
+			Vector2i.RIGHT,
+			FILL_LIMIT
+		)
+		empty_tile_total += directional_flood_fill_counter(
+			map,
+			config.width,
+			config.height,
+			Vector2i(center),
+			Vector2i.DOWN,
+			FILL_LIMIT
+		)
+		empty_tile_total += directional_flood_fill_counter(
+			map,
+			config.width,
+			config.height,
+			Vector2i(center),
+			Vector2i.LEFT,
+			FILL_LIMIT
+		)
+		if empty_tile_total > 1000:
 			break
 	return map
-
-static func attempt_generate(width: int, height: int, center: Vector2, initial_scale: float, simulation_steps: int, death_limit: int, birth_limit: int, ore_scale: float) -> Array[int]:
-	var map: Array[int] = []
-	map.resize(width * height)
-
-	gen_height_map(map, width, height, initial_scale, center)
-	map = CppMapGenerator.smooth(map, width, height, simulation_steps, death_limit, birth_limit)
-	fill_open_spaces(map, width, height)
-	# TODO add more magic numbers, they are very cool and hip
-	map = CppMapGenerator.smooth(map, width, height, 1, death_limit, birth_limit)
-	add_prefabs(map, width, height, center)
-	place_ore(map, width, height, TileMaterial.COAL, ore_scale)
-	place_ore(map, width, height, TileMaterial.IRON, ore_scale)
-
-	return map
-
-static func map_is_cool(map: Array[int], width: int, height: int, center: Vector2) -> bool:
-	var total = 0
-	total += directional_flood_fill_counter(map, width, height, Vector2i(center), Vector2i.UP, 400)
-	total += directional_flood_fill_counter(map, width, height, Vector2i(center), Vector2i.RIGHT, 400)
-	total += directional_flood_fill_counter(map, width, height, Vector2i(center), Vector2i.DOWN, 400)
-	total += directional_flood_fill_counter(map, width, height, Vector2i(center), Vector2i.LEFT, 400)
-	return total > 1000
 
 static func directional_flood_fill_counter(map: Array[int], width: int, height: int, from: Vector2i, direction: Vector2i, limit: int) -> int:	
 	var filled: Array[bool] = []
@@ -100,16 +153,18 @@ static func get_index(from: Vector2i, width: int) -> int:
 static func get_tile(map: Array[int], width: int, from: Vector2i) -> int:
 	return map[get_index(from, width)]
 
-static func gen_height_map(map: Array[int], width: int, height: int, initial_scale: float, center: Vector2) -> void:
+static func gen_height_map(map: Array[int], width: int, height: int, terrain_scale: float, center: Vector2) -> void:
+	terrain_noise.seed = randi()
+
 	var max_dist_from_center := center.length()
 	for y: int in range(height):
 		var yi := y * width
 		for x: int in range(width):
 
-			var result := get_noise_with_octaves(x * initial_scale, y * initial_scale, 0.5)
+			var noise_value := get_normalized_noise(terrain_noise, x * terrain_scale, y * terrain_scale)
 
 			const MAX_NOISE_VALUE := 0.67
-			if result > MAX_NOISE_VALUE:
+			if noise_value > MAX_NOISE_VALUE:
 				continue
 
 			var dist_from_center := (center - Vector2(x, y)).length()
@@ -131,12 +186,9 @@ static func gen_height_map(map: Array[int], width: int, height: int, initial_sca
 			const THRESHOLD_OFFSET := 0.5
 			# Spawn stone when not within the threshold. Makes tunnels.
 			# Threshold decreases farther from center, decreasing the number of tunnels.
-			if absf(result - THRESHOLD_OFFSET) < threshold:
+			if absf(noise_value - THRESHOLD_OFFSET) < threshold:
 				continue
 			map[x + yi] = TileMaterial.STONE
-
-static func add_prefabs(map: Array[int], width: int, height: int, center: Vector2) -> void:
-	add_homebase(map, width, height, center)
 
 static func add_homebase(map: Array[int], width: int, _height: int, center: Vector2) -> void:
 	const STRUCTURE_RADIUS := 1
@@ -163,24 +215,25 @@ static func fill_open_spaces(map: Array[int], width: int, height: int) -> void:
 			map[index] = TileMaterial.STONE
 
 static func place_ore(map: Array[int], width: int, height: int, ore_type: int, ore_scale: float) -> void:
+	var ore_noise: FastNoiseLite = ore_noises.get(ore_type)
+	assert(ore_noise != null)
+	ore_noise.seed = randi()
+
 	for y: int in range(height):
 		var yi := y * width
 		for x: int in range(width):
 			var index = x + yi
 			if map[index] != TileMaterial.STONE:
 				continue
-			var result = get_noise(
+			var noise_value = get_normalized_noise(
+				ore_noise,
 				x * ore_scale,
 				y * ore_scale,
-				ore_type * 99.9 # TODO: Magic number
 			)
 			const MIN_NOISE_VALUE := 0.66
-			if result < MIN_NOISE_VALUE:
+			if noise_value < MIN_NOISE_VALUE:
 				continue
 			map[index] = ore_type
 
-static func get_noise(x: float, y: float, z: float) -> float:
+static func get_normalized_noise(noise: FastNoiseLite, x: float, y: float, z: float = 0.0) -> float:
 	return (noise.get_noise_3d(x, y, z) + 1.0) / 2.0
-
-static func get_noise_with_octaves(x: float, y: float, z: float) -> float:
-	return (noise_with_octaves.get_noise_3d(x, y, z) + 1.0) / 2.0
