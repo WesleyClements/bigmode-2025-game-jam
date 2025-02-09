@@ -20,7 +20,7 @@ var birth_limit = 6
 var map: Array[int]
 
 func _ready() -> void:
-    map = MapGenerator.generate(
+	map = await MapGenerator.generate(
 		width,
 		height,
 		initial_scale,
@@ -29,23 +29,28 @@ func _ready() -> void:
 		birth_limit,
 		ore_scale
 	)
+	queue_redraw()
 
 func _draw():
-    for y: int in range(height):
-        var yi := y * width
-        for x: int in range(width):
-            var mat := map[x + yi]
-            var color: Color
-            match mat:
-                TileMaterial.STONE:
-                    color = Color.DARK_GRAY
-                TileMaterial.COAL:
-                    color = Color.BLACK
-                TileMaterial.IRON:
-                    color = Color.GOLD
-                TileMaterial.OBSIDIAN:
-                    color = Color.PURPLE
-                _:
-                    color = Color.WHITE
+	if map.size() == 0:
+		return
+	for y: int in range(height):
+		var yi := y * width
+		for x: int in range(width):
+			draw_rect(
+				Rect2(x * 2, y * 2, 2.0, 2.0),
+				get_material_color(map[x + yi])
+			)
 
-            draw_rect(Rect2(x * 2, y * 2, 2.0, 2.0), color)
+func get_material_color(mat: int) -> Color:
+	match mat:
+		TileMaterial.STONE:
+			return Color.DARK_GRAY
+		TileMaterial.COAL:
+			return Color.BLACK
+		TileMaterial.IRON:
+			return Color.GOLD
+		TileMaterial.OBSIDIAN:
+			return Color.PURPLE
+		_:
+			return Color.WHITE
