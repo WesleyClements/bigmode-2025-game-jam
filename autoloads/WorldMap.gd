@@ -2,7 +2,7 @@ extends Node2D
 
 const WorldTileMapLayer = preload("res://scripts/WorldTileMapLayer.gd")
 
-const TileMaterial = MapGenerator.TileMaterial
+const CellType = MapGenerator.CellType
 const TilesetAtlas = WorldTileMapLayer.TilesetAtlas
 const BlockCoords = WorldTileMapLayer.BlockCoords
 const BlockType = MessageBuss.BlockType
@@ -12,7 +12,7 @@ signal map_generated()
 
 @export var generation_config: MapGenerationConfig
 
-var map_data: Array[int] = []
+var map_data: Array[CellType] = []
 var generating = false
 
 var _tile_map: WorldTileMapLayer
@@ -47,11 +47,11 @@ func populate_tile_map(tile_map: WorldTileMapLayer) -> void:
 		for x: int in range(width):
 			var coords = Vector2i(x, y) - world_center
 			match map_data[x + yi]:
-				TileMaterial.STONE:
+				CellType.STONE:
 					tile_map.set_cell(coords, TilesetAtlas.TERRAIN, BlockCoords[BlockType.STONE])
-				TileMaterial.COAL:
+				CellType.COAL:
 					tile_map.set_cell(coords, TilesetAtlas.TERRAIN, BlockCoords[BlockType.COAL_ORE])
-				TileMaterial.IRON:
+				CellType.IRON:
 					tile_map.set_cell(coords, TilesetAtlas.TERRAIN, BlockCoords[BlockType.IRON_ORE])
 				_:
 					MessageBuss.world_tile_changing.emit(coords, BlockType.NONE, 0)

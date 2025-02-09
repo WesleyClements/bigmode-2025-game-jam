@@ -1,7 +1,7 @@
 class_name MapGenerator
 extends CppMapGenerator
 
-enum TileMaterial {
+enum CellType {
 	EMPTY = 0,
 	STONE = 1,
 	COAL = 2,
@@ -17,11 +17,11 @@ static var noise_with_octaves := FastNoiseLite.new()
 static var terrain_noise := FastNoiseLite.new()
 
 static var ore_noises : = {
-	TileMaterial.COAL: FastNoiseLite.new(),
-	TileMaterial.IRON: FastNoiseLite.new(),
+	CellType.COAL: FastNoiseLite.new(),
+	CellType.IRON: FastNoiseLite.new(),
 }
 
-static func generate(config: MapGenerationConfig) -> Array[int]:
+static func generate(config: MapGenerationConfig) -> Array[CellType]:
 	assert(not is_zero_approx(config.terrain_scale))
 	assert(not is_zero_approx(config.ore_scale))
 	var terrain_frequency := 1.0
@@ -71,8 +71,8 @@ static func generate(config: MapGenerationConfig) -> Array[int]:
 		add_homebase(map, config.width, config.height, center)
 
 		# Add ores
-		await place_ore(map, config.width, config.height, TileMaterial.COAL, config.ore_scale)
-		await place_ore(map, config.width, config.height, TileMaterial.IRON, config.ore_scale)
+		await place_ore(map, config.width, config.height, CellType.COAL, config.ore_scale)
+		await place_ore(map, config.width, config.height, CellType.IRON, config.ore_scale)
 		
 		var empty_tile_total = 0
 		const FILL_LIMIT := 400
@@ -110,7 +110,7 @@ static func generate(config: MapGenerationConfig) -> Array[int]:
 		)
 		if empty_tile_total > 1000:
 			break
-	return map
+	return map as Array[CellType]
 
 static func directional_flood_fill_counter(map: Array[int], width: int, height: int, from: Vector2i, direction: Vector2i, limit: int) -> int:	
 	var filled: Array[bool] = []
@@ -188,7 +188,7 @@ static func gen_height_map(map: Array[int], width: int, height: int, terrain_sca
 			# Threshold decreases farther from center, decreasing the number of tunnels.
 			if absf(noise_value - THRESHOLD_OFFSET) < threshold:
 				continue
-			map[x + yi] = TileMaterial.STONE
+			map[x + yi] = CellType.STONE
 
 static func add_homebase(map: Array[int], width: int, _height: int, center: Vector2) -> void:
 	const STRUCTURE_RADIUS := 1
@@ -199,7 +199,7 @@ static func add_homebase(map: Array[int], width: int, _height: int, center: Vect
 		var yi := y * width
 		for i: int in range(-STRUCTURE_RADIUS, RANGE_UPPER_BOUND):
 			var x := center_int.x + i
-			map[x + yi] = TileMaterial.EMPTY
+			map[x + yi] = CellType.EMPTY
 
 static func fill_open_spaces(map: Array[int], width: int, height: int) -> void:
 	var old_map = map.duplicate()
@@ -207,12 +207,12 @@ static func fill_open_spaces(map: Array[int], width: int, height: int) -> void:
 		var yi := y * width
 		for x: int in range(width):
 			var index = x + yi
-			if old_map[index] != TileMaterial.EMPTY:
+			if old_map[index] != CellType.EMPTY:
 				continue
 			var neighbors = CppMapGenerator.count_neighbors(old_map, width, height, x, y, 3)
 			if neighbors > 5:
 				continue
-			map[index] = TileMaterial.STONE
+			map[index] = CellType.STONE
 
 static func place_ore(map: Array[int], width: int, height: int, ore_type: int, ore_scale: float) -> void:
 	var ore_noise: FastNoiseLite = ore_noises.get(ore_type)
@@ -223,7 +223,7 @@ static func place_ore(map: Array[int], width: int, height: int, ore_type: int, o
 		var yi := y * width
 		for x: int in range(width):
 			var index = x + yi
-			if map[index] != TileMaterial.STONE:
+			if map[index] != CellType.STONE:
 				continue
 			var noise_value = get_normalized_noise(
 				ore_noise,

@@ -1,6 +1,6 @@
 extends Node2D
 
-const TileMaterial = MapGenerator.TileMaterial
+const CellType = MapGenerator.CellType
 
 var width: int = 333
 var height: int = 333
@@ -17,7 +17,7 @@ var simulation_steps = 5
 var death_limit = 5
 var birth_limit = 6
 
-var map: Array[int]
+var map: Array[CellType]
 
 func _ready() -> void:
 	var generation_config = MapGenerationConfig.new()
@@ -40,18 +40,18 @@ func _draw():
 		for x: int in range(width):
 			draw_rect(
 				Rect2(x * 2, y * 2, 2.0, 2.0),
-				get_material_color(map[x + yi])
+				get_cell_color(map[x + yi])
 			)
 
-func get_material_color(mat: int) -> Color:
-	match mat:
-		TileMaterial.STONE:
+func get_cell_color(type: int) -> Color:
+	match type:
+		CellType.STONE:
 			return Color.DARK_GRAY
-		TileMaterial.COAL:
+		CellType.COAL:
 			return Color.BLACK
-		TileMaterial.IRON:
+		CellType.IRON:
 			return Color.GOLD
-		TileMaterial.OBSIDIAN:
+		CellType.OBSIDIAN:
 			return Color.PURPLE
 		_:
 			return Color.WHITE
