@@ -15,6 +15,9 @@ signal hover_exited()
 
 @export var pole_connection_limit: int = 4
 
+@export var max_fuel_consumption: float = 4.0
+@export var speed_scale_curve: Curve
+
 var attachments: Dictionary = {}
 
 var fuel: float = 0.0:
@@ -22,21 +25,26 @@ var fuel: float = 0.0:
 		value = maxf(value, 0.0)
 		if is_equal_approx(fuel, value):
 			return
-		var was_powered := fuel > 0.0
+		var old_fuel := fuel
 		fuel = 0.0 if is_zero_approx(value) else value
 		fuel_changed.emit(fuel)
 
-		if not was_powered and fuel > 0.0:
-			animation_player.play(&"run")
+		if old_fuel == 0 and fuel > 0.0:
+			animation_player.play(&"power_on")
 			powered_changed.emit(true)
 			update_wires.call_deferred()
-		elif was_powered and fuel == 0.0:
-			animation_player.play(&"idle")
+		elif old_fuel > 0 and fuel == 0.0:
+			animation_player.play(&"power_off")
+			fuel_consumption = 0.0
 			powered_changed.emit(false)
 			update_wires.call_deferred()
 
-var _updated_wires: bool = false
+var fuel_consumption := 0.0
+var _fuel_consumption_accumulator := 0.0
+
 var force_show_outline: bool = false
+
+var _updated_wires: bool = false
 
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var attachment_point: Marker2D = $AttachmentPoint
@@ -45,6 +53,8 @@ var force_show_outline: bool = false
 @onready var fuel_display: Label = $FuelDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var wheel_sprite: AnimatedSprite2D = $Visuals/Wheel
+@onready var gerbil_sprite: AnimatedSprite2D = $Visuals/Gerbil
 
 func _enter_tree() -> void:
 	search_for_machines.call_deferred()
@@ -77,6 +87,32 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	_updated_wires = false
 
+func _physics_process(delta: float) -> void:
+	if not get_powered():
+		return
+	if _fuel_consumption_accumulator > 0.0:
+		_fuel_consumption_accumulator /= delta
+
+	if _fuel_consumption_accumulator < fuel_consumption:
+		const PERCENTAGE_REDUCTION_PER_SECOND = 0.99
+		_fuel_consumption_accumulator = lerpf(
+			fuel_consumption,
+			_fuel_consumption_accumulator,
+			1.0 - pow(1.0 - PERCENTAGE_REDUCTION_PER_SECOND, delta)
+		)
+		if is_zero_approx(_fuel_consumption_accumulator):
+			_fuel_consumption_accumulator = 0.0
+
+	if is_zero_approx(fuel_consumption):
+		animation_player.play(&"run" if _fuel_consumption_accumulator > 0.0 else &"power_on")
+	elif _fuel_consumption_accumulator > 0.0:
+		var gerbil_speed_scale := speed_scale_curve.sample(minf(_fuel_consumption_accumulator / max_fuel_consumption, 1.0))
+		wheel_sprite.speed_scale = gerbil_speed_scale
+		gerbil_sprite.speed_scale = gerbil_speed_scale
+
+	fuel_consumption = _fuel_consumption_accumulator
+	_fuel_consumption_accumulator = 0.0
+
 func get_attachment_point() -> Marker2D:
 	return attachment_point
 
@@ -98,6 +134,8 @@ func validate_connection(node: Node) -> bool:
 	return true
 
 func consume_fuel(value: float) -> void:
+	assert(value >= 0.0)
+	_fuel_consumption_accumulator += value
 	fuel -= value
 	
 
@@ -182,8 +220,9 @@ func on_world_map_child_update(node: Node, is_entering: bool) -> void:
 		return
 	disconnect_machine(node)
 
-func on_fuel_changed() -> void:
-	fuel_display.text = "%s" % [ceilf(fuel)]
+func on_fuel_changed(value: float) -> void:
+	fuel_display.text = "%s" % [ceilf(value)]
+
 
 func on_player_interaction_area(_body: Node, entered: bool) -> void:
 	button_prompt.visible = entered
