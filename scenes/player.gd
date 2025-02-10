@@ -75,13 +75,11 @@ var coal_count := 0.0:
 		assert(value >= 0.0)
 		coal_count = value
 		item_count_updated.emit(ItemType.COAL, coal_count)
-		MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
 var iron_count := 0.0:
 	set(value):
 		assert(value >= 0.0)
 		iron_count = value
 		item_count_updated.emit(ItemType.IRON, iron_count)
-		MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)
 
 var interaction: Node = null
 var interactions:={}

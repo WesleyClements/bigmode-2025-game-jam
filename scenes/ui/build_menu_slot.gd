@@ -46,7 +46,11 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	enabled = false
-	MessageBuss.item_count_updated.connect(on_item_count_updated)
+	var players := get_tree().get_nodes_in_group(&"player")
+	assert(players.size() == 1)
+	var player := players[0]
+	assert(player.has_signal(&"item_count_updated"))
+	player.item_count_updated.connect(on_item_count_updated)
 	MessageBuss.set_selected_entity_type.connect(on_set_selected_entity_type)
 
 func on_item_count_updated(type: ItemType, count: int) -> void:

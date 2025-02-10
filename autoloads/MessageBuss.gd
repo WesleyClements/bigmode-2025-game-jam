@@ -20,9 +20,6 @@ enum ItemType {
 }
 
 @warning_ignore("unused_signal")
-signal item_count_updated(type: ItemType, count: int)
-
-@warning_ignore("unused_signal")
 signal request_set_world_tile(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
 @warning_ignore("unused_signal")
 signal world_tile_changing(tile_pos: Vector2i, block_type: BlockType, block_variant: int)
