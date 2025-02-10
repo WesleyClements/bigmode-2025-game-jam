@@ -1,4 +1,4 @@
-- Make player slide along walls smoothly
+- Fix Player Jittering in Corners
 - refine selecting entities with mouse
 - make lasers (mining laser) respect los
 - make out of power symbol for machines not powered

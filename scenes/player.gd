@@ -186,7 +186,18 @@ func _physics_process(delta: float) -> void:
 	if not is_zero_approx(movement_direction.x) and state != State.MINING:
 		visuals.scale.x = signf(movement_direction.x)
 
-	move_and_slide()
+	var motion := velocity * delta
+	for i:int in range(4):
+		var collision := move_and_collide(motion, false, safe_margin, false)
+		if not collision:
+			break
+		var normal := collision.get_normal()
+		var tangent := Vector2(-normal.y, normal.x) # Rotate 90 degrees
+		var remainder := collision.get_remainder()
+		if remainder.dot(tangent) < 0:
+			tangent = -tangent
+
+		motion = tangent * remainder.length()
 
 
 func get_coal_count() -> float:
