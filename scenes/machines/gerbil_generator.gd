@@ -52,6 +52,7 @@ var _updated_wires: bool = false
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
 @onready var fuel_display: Label = $FuelDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
+@onready var button_prompt_text: Label = $ButtonPrompt/Text
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var wheel_sprite: AnimatedSprite2D = $Visuals/Wheel
 @onready var gerbil_sprite: AnimatedSprite2D = $Visuals/Gerbil
@@ -224,8 +225,22 @@ func on_fuel_changed(value: float) -> void:
 	fuel_display.text = "%s" % [ceilf(value)]
 
 
-func on_player_interaction_area(_body: Node, entered: bool) -> void:
+func on_player_interaction_area(body: Node, entered: bool) -> void:
+	assert(body.has_method(&"get_coal_count"))
+	assert(body.has_signal(&"item_count_updated"))
+	var coal_count: float = body.get_coal_count()
+	button_prompt_text.text = "Press E" if coal_count > 0 else "No Coal"
 	button_prompt.visible = entered
+	if entered:
+		body.item_count_updated.connect(on_item_count_updated)
+	else:
+		body.item_count_updated.disconnect(on_item_count_updated)
+
+func on_item_count_updated(item: MessageBuss.ItemType, count: float) -> void:
+	if item != MessageBuss.ItemType.COAL:
+		return
+	button_prompt_text.text = "Press E" if count > 0 else "No Coal"
+	
 
 func on_hover_changed(is_hovered: bool) -> void:
 	if force_show_outline:

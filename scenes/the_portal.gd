@@ -32,6 +32,7 @@ var iron: float = 0.0:
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var iron_display: Label = $IronDisplayPanel/IronDisplay
 @onready var button_prompt: Panel = $ButtonPrompt
+@onready var button_prompt_text: Label = $ButtonPrompt/Text
 @onready var portal_sprite: AnimatedSprite2D = $Visuals/Portal
 
 func _ready() -> void:
@@ -44,8 +45,21 @@ func _ready() -> void:
 func on_iron_changed() -> void:
 	iron_display.text = "%s / %s" % [ceilf(iron), target_amount]
 
-func on_player_interaction_area(_body: Node, entered: bool) -> void:
+func on_player_interaction_area(body: Node, entered: bool) -> void:
+	assert(body.has_method(&"get_iron_count"))
+	assert(body.has_signal(&"item_count_updated"))
+	var iron_count: float = body.get_iron_count()
+	button_prompt_text.text = "Press E" if iron_count > 0 else "No Iron"
 	button_prompt.visible = entered
+	if entered:
+		body.item_count_updated.connect(on_item_count_updated)
+	else:
+		body.item_count_updated.disconnect(on_item_count_updated)
+
+func on_item_count_updated(item: MessageBuss.ItemType, count: float) -> void:
+	if item != MessageBuss.ItemType.IRON:
+		return
+	button_prompt_text.text = "Press E" if count > 0 else "No Iron"
 
 func on_hover_changed(_is_hovered: bool) -> void:
 	pass

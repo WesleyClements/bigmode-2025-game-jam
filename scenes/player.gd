@@ -12,6 +12,8 @@ enum State {
 	BUILDING,
 }
 
+signal item_count_updated(item_type: ItemType, count: float)
+
 @export var entity_registry: EntityRegistry
 @export var max_speed: float = 70.0
 @export var speed_up_time: float = 0.1
@@ -70,11 +72,15 @@ var target_tile: Vector2i
 
 var coal_count := 0.0:
 	set(value):
+		assert(value >= 0.0)
 		coal_count = value
+		item_count_updated.emit(ItemType.COAL, coal_count)
 		MessageBuss.item_count_updated.emit(ItemType.COAL, coal_count)
 var iron_count := 0.0:
 	set(value):
+		assert(value >= 0.0)
 		iron_count = value
+		item_count_updated.emit(ItemType.IRON, iron_count)
 		MessageBuss.item_count_updated.emit(ItemType.IRON, iron_count)
 
 var interaction: Node = null
@@ -201,6 +207,12 @@ func _physics_process(delta: float) -> void:
 
 func get_tile_size() -> Vector2i:
 	return world_map.tile_set.tile_size
+
+func get_coal_count() -> float:
+	return coal_count
+
+func get_iron_count() -> float:
+	return iron_count
 
 func is_within_interaction_range(tile: Vector2i) -> bool:
 	var tile_pos := world_map.map_to_local(tile)
