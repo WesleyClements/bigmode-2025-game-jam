@@ -30,9 +30,6 @@ signal request_spawn_entity(tile_pos: Vector2i, entity_type: EntityType)
 signal entity_spawning(tile_pos: Vector2i, entity_type: EntityType)
 
 @warning_ignore("unused_signal")
-signal set_selected_entity_type(entity_type: EntityType, successful: bool)
-
-@warning_ignore("unused_signal")
 signal build_mode_entered()
 
 @warning_ignore("unused_signal")

@@ -50,8 +50,9 @@ func _ready() -> void:
 	assert(players.size() == 1)
 	var player := players[0]
 	assert(player.has_signal(&"item_count_updated"))
+	assert(player.has_signal(&"set_selected_entity_type"))
 	player.item_count_updated.connect(on_item_count_updated)
-	MessageBuss.set_selected_entity_type.connect(on_set_selected_entity_type)
+	player.set_selected_entity_type.connect(on_set_selected_entity_type)
 
 func on_item_count_updated(type: ItemType, count: int) -> void:
 	if type != ItemType.IRON:

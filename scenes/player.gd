@@ -13,6 +13,7 @@ enum State {
 }
 
 signal item_count_updated(item_type: ItemType, count: float)
+signal set_selected_entity_type(entity_type: EntityType, successful: bool)
 
 @export var entity_registry: EntityRegistry
 @export var max_speed: float = 70.0
@@ -57,7 +58,7 @@ var selected_building: EntityType:
 			var building_preview_template := entity_registry.get_entity_preview_scene(selected_building)
 			var building_preview = building_preview_template.instantiate()
 			world_map.add_child(building_preview)
-		MessageBuss.set_selected_entity_type.emit(selected_building, true)
+		set_selected_entity_type.emit(selected_building, true)
 
 var target_tile: Vector2i
 
@@ -109,13 +110,13 @@ func _physics_process(delta: float) -> void:
 
 	if Input.is_action_just_pressed(&"build_power_pole"):
 		if  iron_count < entity_registry.get_entity_build_cost(EntityType.POWER_POLE):
-			MessageBuss.set_selected_entity_type.emit(EntityType.POWER_POLE, false)
+			set_selected_entity_type.emit(EntityType.POWER_POLE, false)
 		else:
 			state = State.BUILDING
 			selected_building = EntityType.POWER_POLE
 	if Input.is_action_just_pressed(&"build_laser"):
 		if  iron_count < entity_registry.get_entity_build_cost(EntityType.LASER):
-			MessageBuss.set_selected_entity_type.emit(EntityType.LASER, false)
+			set_selected_entity_type.emit(EntityType.LASER, false)
 		else:
 			state = State.BUILDING
 			selected_building = EntityType.LASER
