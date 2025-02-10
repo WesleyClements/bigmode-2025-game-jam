@@ -55,18 +55,18 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	var b := tile_set.tile_size.y / 2.0 - 6.0 # TODO no magic numbers
 	var is_left := offset.y > b + offset.x / 2.0
 	var is_right := offset.y > b - offset.x / 2.0
-	if is_left and is_right and get_cell_source_id(tile + Vector2i(2, 2)) != -1:
+	if is_left and is_right and get_cell_source_id(tile + Vector2i(2, 2)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(2, 2)
-	if is_left and get_cell_source_id(tile + Vector2i(1, 2)) != -1:
+	if is_left and get_cell_source_id(tile + Vector2i(1, 2)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(1, 2)
-	if is_right and get_cell_source_id(tile + Vector2i(2, 1)) != -1:
+	if is_right and get_cell_source_id(tile + Vector2i(2, 1)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(2, 1)
-	if get_cell_source_id(tile + Vector2i(1, 1)) != -1:
+	if get_cell_source_id(tile + Vector2i(1, 1)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(1, 1)
 	
-	if offset.x > 0.0 and get_cell_source_id(tile + Vector2i(1, 0)) != -1:
+	if offset.x > 0.0 and get_cell_source_id(tile + Vector2i(1, 0)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(1, 0)
-	if offset.x < 0.0 and get_cell_source_id(tile + Vector2i(0, 1)) != -1:
+	if offset.x < 0.0 and get_cell_source_id(tile + Vector2i(0, 1)) == TilesetAtlas.TERRAIN:
 		return tile + Vector2i(0, 1)
 	
 	return tile
