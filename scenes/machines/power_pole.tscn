@@ -167,3 +167,4 @@ z_index = 100
 [node name="TileMapDetectionArea" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("6_n6t5w")]
 visible = false
 root_node = NodePath("..")
+fill = true

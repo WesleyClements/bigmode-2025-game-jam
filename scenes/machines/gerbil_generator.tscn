@@ -328,6 +328,7 @@ y_sort_enabled = true
 visible = false
 default_color = Color(1, 0.615686, 0, 0.501961)
 root_node = NodePath("..")
+fill = true
 
 [node name="FuelDisplay" type="Label" parent="."]
 anchors_preset = 7
