@@ -16,7 +16,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	active_camera = camera
 	scale = camera.get_zoom() / 2.0
-	size = calculate_size(view_port) / scale
+	set_deferred(&"size", calculate_size(view_port) / scale)
 
 func get_project_viewport_size() -> Vector2:
 	return Vector2(
