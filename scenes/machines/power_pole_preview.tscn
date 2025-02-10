@@ -13,18 +13,16 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
-[node name="PowerPolePreview" type="Sprite2D"]
-y_sort_enabled = true
-texture = ExtResource("1_k1jxg")
-offset = Vector2(0, -16)
+[node name="PowerPolePreview" type="Node2D"]
 script = ExtResource("2_ctxgp")
 entity_type = 1
 
 [node name="Shadow" type="Sprite2D" parent="."]
-y_sort_enabled = true
-position = Vector2(0, -1)
 texture = SubResource("GradientTexture2D_exbia")
-offset = Vector2(0, 1)
+
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("1_k1jxg")
+offset = Vector2(0, -16)
 
 [node name="TileAreaOutline" type="Line2D" parent="." node_paths=PackedStringArray("root_node")]
 z_index = -1
