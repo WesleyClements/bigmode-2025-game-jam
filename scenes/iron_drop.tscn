@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://127jpolr1pnh"]
+[gd_scene load_steps=10 format=3 uid="uid://127jpolr1pnh"]
 
 [ext_resource type="Script" path="res://scripts/pickup.gd" id="1_25c74"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_gbtx6"]
@@ -7,6 +7,10 @@
 [sub_resource type="Curve" id="Curve_5we4g"]
 _data = [Vector2(0.3, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="Curve" id="Curve_edtun"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.30303, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 3.98069, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_qqa8n"]
 gradient = ExtResource("2_gbtx6")
@@ -115,6 +119,7 @@ script = ExtResource("1_25c74")
 item_type = 1
 suck_speed = 6.0
 suck_speed_curve = SubResource("Curve_5we4g")
+suck_distance_variance_curve = SubResource("Curve_edtun")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -3, 6, 0, 0, 3, -6, 0)
