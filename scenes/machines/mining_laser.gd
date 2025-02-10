@@ -61,8 +61,6 @@ var state := State.IDLE:
 
 var target_tile_offset: Vector2i
 
-var force_show_outline: bool = false
-
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var world_map: WorldTileMapLayer = get_parent()
 @onready var tile_map_detection_area: TileMapDetectionArea = $TileMapDetectionArea
@@ -89,9 +87,6 @@ func _ready():
 
 	hover_entered.connect(on_hover_changed.bind(true))
 	hover_exited.connect(on_hover_changed.bind(false))
-
-	MessageBuss.build_mode_entered.connect(on_build_mode_changed.bind(true))
-	MessageBuss.build_mode_exited.connect(on_build_mode_changed.bind(false))
 
 func reset_laser_head() -> void:
 	laser_head.rotation = 0.0
@@ -278,13 +273,7 @@ func on_mining_timer_timeout() -> void:
 		world_map.set_cell_damage(target_tile, current_damage + damage)
 
 func on_hover_changed(is_hovered: bool) -> void:
-	if force_show_outline:
-		return
 	tile_map_detection_area.visible = is_hovered
-
-func on_build_mode_changed(build_mode: bool) -> void:
-	force_show_outline = build_mode
-	tile_map_detection_area.visible = build_mode
 
 
 func on_body_entered_move_towards_area(body: Node2D) -> void:
