@@ -37,5 +37,5 @@ func _ready():
 func get_tile_size() -> Vector2:
 	if Engine.is_editor_hint():
 		return Vector2(32, 16) # TODO no magic numbers
-	assert(root_node.get_parent().has_method(&"get_tile_size"))
-	return root_node.get_parent().get_tile_size() # TODO export node that provides tile size
+	assert(root_node.has_method(&"get_tile_size"))
+	return root_node.get_tile_size() # TODO export node that provides tile size

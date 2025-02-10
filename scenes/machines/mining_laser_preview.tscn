@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bre75a4qxd0ds"]
+[gd_scene load_steps=6 format=3 uid="uid://bre75a4qxd0ds"]
 
 [ext_resource type="Texture2D" uid="uid://c15jrwiuhcjb2" path="res://assets/sprites/mining_laser_full.png" id="1_5hv2n"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_0jut7"]
 [ext_resource type="Script" path="res://scripts/tile_area_outline.gd" id="2_kxsuu"]
+[ext_resource type="Script" path="res://scripts/machine_preview.gd" id="2_rcqut"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_wccka"]
 gradient = ExtResource("2_0jut7")
@@ -16,6 +17,8 @@ fill_to = Vector2(0.5, 0)
 y_sort_enabled = true
 texture = ExtResource("1_5hv2n")
 offset = Vector2(0, -16)
+script = ExtResource("2_rcqut")
+entity_type = 3
 
 [node name="Shadow" type="Sprite2D" parent="."]
 y_sort_enabled = true

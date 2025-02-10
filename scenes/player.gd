@@ -24,7 +24,6 @@ signal item_count_updated(item_type: ItemType, count: float)
 @export var minable_entity_types: Array[EntityType] = [EntityType.POWER_POLE, EntityType.LASER]
 @export_flags_2d_physics var los_collision_mask: int = 0b1
 
-var world_map: WorldTileMapLayer
 var previous
 var state: State = State.IDLE:
 	set(value):
@@ -54,19 +53,11 @@ var selected_building: EntityType:
 		if value == selected_building:
 			return
 		selected_building = value
-		if building_preview != null:
-			remove_child(building_preview)
-			building_preview.queue_free()
-			building_preview = null
-		if selected_building == EntityType.NONE:
-			return
-		else:
-			building_preview = entity_registry.get_entity_preview_scene(selected_building).instantiate()
-			add_child(building_preview)
-			update_building_preview()
+		if selected_building != EntityType.NONE:
+			var building_preview_template := entity_registry.get_entity_preview_scene(selected_building)
+			var building_preview = building_preview_template.instantiate()
+			world_map.add_child(building_preview)
 		MessageBuss.set_selected_entity_type.emit(selected_building, true)
-
-var building_preview: Node2D = null
 
 var target_tile: Vector2i
 
@@ -86,6 +77,7 @@ var interactions:={}
 
 var collision_point:Vector2
 
+@onready var world_map: WorldTileMapLayer = get_parent()
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var visuals: Node2D = $Visuals
 @onready var body_sprite: AnimatedSprite2D = $Visuals/Body
@@ -94,12 +86,6 @@ var collision_point:Vector2
 @onready var laser_beam: Line2D = $LaserBeam
 @onready var laser_particles: GPUParticles2D = $LaserParticles
 @onready var item_pickup_sound: AudioStreamPlayer2D = $ItemPickupSound
-
-func _ready() -> void:
-	for node in get_tree().get_nodes_in_group(&"terrain"):
-		if node is WorldTileMapLayer:
-			world_map = node
-			break
 
 func _process(_delta: float) -> void:
 	if state != State.MINING:
@@ -178,8 +164,6 @@ func _physics_process(delta: float) -> void:
 	elif state == State.MINING:
 		state = State.IDLE
 		mining_timer.stop()
-	elif state == State.BUILDING:
-		update_building_preview()
 	
 	if Input.is_action_pressed(&"interact") and interaction != null:
 		interaction.interact(self, Input.is_action_just_pressed(&"interact"))
@@ -203,8 +187,6 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func get_tile_size() -> Vector2i:
-	return world_map.tile_set.tile_size
 
 func get_coal_count() -> float:
 	return coal_count
@@ -271,19 +253,6 @@ func test_ray_cast_to_terrain(tile: Vector2i, tile_pos: Vector2, target: Vector2
 		return false
 	collision_point = result.position
 	return true
-
-func update_building_preview() -> void:
-	assert(state == State.BUILDING)
-	assert(selected_building != EntityType.NONE)
-	if building_preview == null:
-		return
-	
-	var tile := world_map.mouse_to_map(get_global_mouse_position())
-	if not world_map.get_cell_source_id(tile) == -1:
-		building_preview.visible = false
-		return
-	building_preview.visible = true
-	building_preview.global_position = world_map.to_global(world_map.map_to_local(tile))
 
 
 func on_body_entered_pickup_area(body: Node2D) -> void:
