@@ -6,5 +6,7 @@
 
 [resource]
 script = ExtResource("3_u2dbj")
-coal_entity_scene = ExtResource("1_ugbcr")
-iron_entity_scene = ExtResource("2_d0hut")
+entity_scenes = Dictionary[int, PackedScene]({
+0: ExtResource("1_ugbcr"),
+1: ExtResource("2_d0hut")
+})

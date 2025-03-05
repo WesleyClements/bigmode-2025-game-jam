@@ -3,15 +3,9 @@ extends Resource
 
 const ItemType = MessageBuss.ItemType
 
-@export var coal_entity_scene: PackedScene
-@export var iron_entity_scene: PackedScene
+@export var entity_scenes: Dictionary[ItemType, PackedScene] = {}
 
 
 func get_entity_scene(item_type: ItemType) -> PackedScene:
-	match item_type:
-		ItemType.COAL:
-			return coal_entity_scene
-		ItemType.IRON:
-			return iron_entity_scene
-		_:
-			return null
+	assert(entity_scenes.has(item_type), "No scene for item type")
+	return entity_scenes.get(item_type, null)

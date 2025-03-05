@@ -4,61 +4,36 @@ extends Resource
 const EntityType = MessageBuss.EntityType
 const ItemType = MessageBuss.ItemType
 
-@export var power_pole_build_cost: int = 1
-@export var power_pole_mining_energy_cost: float = 0.5
-@export var power_pole_preview_scene: PackedScene
+@export var entity_build_costs: Dictionary[EntityType, float] = {
+	EntityType.POWER_POLE: 1.0,
+	EntityType.LASER: 5.0
+}
 
-@export var laser_build_cost: int = 5
-@export var laser_mining_energy_cost: float = 0.5
-@export var laser_preview_scene: PackedScene
+@export var entity_mining_energy_costs: Dictionary[EntityType, float] = {
+	EntityType.POWER_POLE: 0.5,
+	EntityType.LASER: 0.5
+}
+
+@export var entity_preview_scenes: Dictionary[EntityType, PackedScene] = {}
 
 
 func get_entity_build_cost(entity_cost: EntityType) -> float:
-	match entity_cost:
-		EntityType.POWER_POLE:
-			return power_pole_build_cost
-		EntityType.LASER:
-			return laser_build_cost
-		_:
-			assert(false, "Invalid entity type")
-	return 0.0
+	assert(entity_build_costs.has(entity_cost), "No build cost for entity type")
+	return entity_build_costs.get(entity_cost, 0.0)
 
 func get_entity_mining_energy_cost(entity_cost: EntityType) -> float:
-	match entity_cost:
-		EntityType.POWER_POLE:
-			return power_pole_mining_energy_cost
-		EntityType.LASER:
-			return laser_mining_energy_cost
-		_:
-			assert(false, "Invalid entity type")
-	return 0.0
+	assert(entity_mining_energy_costs.has(entity_cost), "No mining energy cost for entity type")
+	return entity_mining_energy_costs.get(entity_cost, 0.0)
 
 func get_entity_item_drops(entity_type: EntityType) -> Dictionary[StringName, Dictionary]:
-	match entity_type:
-		EntityType.POWER_POLE:
-			return {
-				&"IRON": {
-					&"min": power_pole_build_cost,
-					&"max": power_pole_build_cost
-				}
-			}
-		EntityType.LASER:
-			return {
-				&"IRON": {
-					&"min": laser_build_cost,
-					&"max": laser_build_cost
-				}
-			}
-		_:
-			assert(false, "Invalid entity type")
-	return {}
+	var build_cost := get_entity_build_cost(entity_type)
+	return {
+		&"IRON": {
+			&"min": build_cost,
+			&"max": build_cost
+		}
+	}
 
 func get_entity_preview_scene(entity_type: EntityType) -> PackedScene:
-	match entity_type:
-		EntityType.POWER_POLE:
-			return power_pole_preview_scene
-		EntityType.LASER:
-			return laser_preview_scene
-		_:
-			assert(false, "Invalid entity type")
-	return null
+	assert(entity_preview_scenes.has(entity_type), "No preview scene for entity type")
+	return entity_preview_scenes.get(entity_type, null)
