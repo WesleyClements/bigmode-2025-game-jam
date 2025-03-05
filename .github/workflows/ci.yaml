@@ -146,7 +146,7 @@ jobs:
       EXPORT_PATH: build/web
       EXPORT_NAME: ${{ vars.GODOT_WEB_EXPORT_NAME || 'index.html' }}
     outputs:
-      artifact-name: ${{ env.ARTIFACT_NAME }}
+      artifact-name: ${{ vars.GODOT_WEB_EXPORT_PRESET != '' && env.ARTIFACT_NAME || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -214,7 +214,7 @@ jobs:
       EXPORT_PATH: build/windows
       EXPORT_NAME: ${{ vars.GODOT_WINDOWS_EXPORT_NAME || 'game.exe' }}
     outputs:
-      artifact-name: ${{ env.ARTIFACT_NAME }}
+      artifact-name: ${{ vars.GODOT_WINDOWS_EXPORT_PRESET != '' && env.ARTIFACT_NAME || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -296,7 +296,8 @@ jobs:
       always() &&
       contains(needs.*.result, 'success') &&
       !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
+      !contains(needs.*.result, 'cancelled') &&
+      needs.cache-butler.outputs.butler-cache-key != ''
     runs-on: ubuntu-latest
     env:
       BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
@@ -309,21 +310,18 @@ jobs:
             channel: ${{ vars.ITCH_WINDOWS_CHANNEL || 'windows' }}
         exclude:
           - artifact:
-              - name: ""
+              name: ''
     steps:
       - name: Checkout
-        if: ${{ env.BUTLER_API_KEY != '' }}
         uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH_NAME }}
       - name: Download Artifacts
-        if: ${{ env.BUTLER_API_KEY != '' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact.name }}
           path: build/${{ matrix.artifact.name }}
       - name: Restore Butler Cache
-        if: ${{ env.BUTLER_API_KEY != '' }}
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -331,6 +329,5 @@ jobs:
           key: ${{ needs.cache-butler.outputs.butler-cache-key }}
           fail-on-cache-miss: true
       - name: Deploy
-        if: ${{ env.BUTLER_API_KEY != '' }}
         run: |
           ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
