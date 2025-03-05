@@ -57,3 +57,8 @@ navigation_enabled = false
 script = ExtResource("4_iydee")
 
 [node name="UI" parent="." instance=ExtResource("5_p1ybt")]
+
+[connection signal="build_progress_changed" from="World/Terrain/ThePortal" to="World/Terrain/ThePortal" method="on_build_progress_changed"]
+[connection signal="build_progress_changed" from="World/Terrain/ThePortal" to="World/Terrain/ThePortal/IronDisplayPanel" method="on_build_progress_changed"]
+[connection signal="iron_changed" from="World/Terrain/ThePortal" to="World/Terrain/ThePortal" method="on_iron_changed" unbinds=1]
+[connection signal="fuel_changed" from="World/Terrain/GerbilGenerator" to="World/Terrain/GerbilGenerator" method="on_fuel_changed"]

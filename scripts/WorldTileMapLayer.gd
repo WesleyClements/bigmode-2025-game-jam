@@ -74,7 +74,14 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 func get_cell_item_drops(coords: Vector2i) -> Dictionary[StringName, Dictionary]:
 	var cell_data := get_cell_tile_data(coords)
 	if cell_data != null:
-		return cell_data.get_custom_data(&"item_drops")
+		var item_drops: Dictionary = cell_data.get_custom_data(&"item_drops")
+		assert(item_drops != null)
+		var result: Dictionary[StringName, Dictionary] = {}
+		for item_name: StringName in item_drops.keys():
+			var drop_config: Dictionary = item_drops[item_name]
+			assert(drop_config != null)
+			result[item_name] = drop_config
+		return result
 	if get_cell_source_id(coords) == TilesetAtlas.ENTITIES:
 		var entity_type := get_cell_alternative_tile(coords)
 		return entity_registry.get_entity_item_drops(entity_type)
