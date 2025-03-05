@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bkvwxlaf6o3n0"]
 
-[ext_resource type="Script" path="res://scenes/weasel.gd" id="1_3tarm"]
+[ext_resource type="Script" uid="uid://3c14evfgt8c" path="res://scenes/weasel.gd" id="1_3tarm"]
 [ext_resource type="Texture2D" uid="uid://dm2k68vfecd77" path="res://assets/sprites/weasel.png" id="1_bxyi3"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_xgpge"]
 

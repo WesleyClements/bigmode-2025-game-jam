@@ -18,7 +18,7 @@ signal hover_exited()
 @export var max_fuel_consumption: float = 4.0
 @export var speed_scale_curve: Curve
 
-var attachments: Dictionary = {}
+var attachments: Dictionary[Node, Marker2D] = {}
 
 var fuel: float = 0.0:
 	set(value):

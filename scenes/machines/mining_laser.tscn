@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://d0ppwepihs2sf"]
 
-[ext_resource type="Script" path="res://scenes/machines/mining_laser.gd" id="1_0nmhe"]
+[ext_resource type="Script" uid="uid://c7q73ialrjgx2" path="res://scenes/machines/mining_laser.gd" id="1_0nmhe"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_fvpbp"]
 [ext_resource type="Texture2D" uid="uid://dfnqvnmdlnuuv" path="res://assets/sprites/mining_laser_base.png" id="1_q225h"]
 [ext_resource type="Texture2D" uid="uid://6qwvduq4cf0w" path="res://assets/sprites/mining_laser.png" id="3_e51kj"]
@@ -25,6 +25,7 @@ emission_ring_axis = Vector3(0, 0, 1)
 emission_ring_height = 1.0
 emission_ring_radius = 14.0
 emission_ring_inner_radius = 10.0
+emission_ring_cone_angle = 90.0
 angle_min = -180.0
 angle_max = 180.0
 radial_velocity_min = -2.23517e-05
@@ -106,9 +107,9 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ws28p"]
 _data = {
-"RESET": SubResource("Animation_xrhuw"),
-"power_down": SubResource("Animation_04dio"),
-"power_up": SubResource("Animation_siemf")
+&"RESET": SubResource("Animation_xrhuw"),
+&"power_down": SubResource("Animation_04dio"),
+&"power_up": SubResource("Animation_siemf")
 }
 
 [sub_resource type="Animation" id="Animation_tw0i7"]
@@ -129,7 +130,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ld8gt"]
 _data = {
-"spawn": SubResource("Animation_tw0i7")
+&"spawn": SubResource("Animation_tw0i7")
 }
 
 [node name="MiningLaser" type="StaticBody2D" groups=["machines"]]
@@ -153,11 +154,11 @@ offset = Vector2(0, -14)
 position = Vector2(0, -1)
 emitting = false
 amount = 64
-process_material = SubResource("ParticleProcessMaterial_w3qhg")
 lifetime = 0.1
 one_shot = true
 explosiveness = 0.1
 visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
+process_material = SubResource("ParticleProcessMaterial_w3qhg")
 
 [node name="Laser" type="CanvasGroup" parent="."]
 y_sort_enabled = true
@@ -184,8 +185,8 @@ default_color = Color(1, 0, 0.952941, 1)
 visible = false
 emitting = false
 amount = 16
-process_material = ExtResource("7_g3kp0")
 lifetime = 0.3
+process_material = ExtResource("7_g3kp0")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(0, -4, 8, 0, 0, 4, -8, 0)
@@ -198,12 +199,12 @@ tile_radius = 5
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_ws28p")
+&"": SubResource("AnimationLibrary_ws28p")
 }
 
 [node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_ld8gt")
+&"": SubResource("AnimationLibrary_ld8gt")
 }
 autoplay = "spawn"
 

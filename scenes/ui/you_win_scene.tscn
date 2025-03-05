@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cwyo4sravdowm"]
 
-[ext_resource type="Script" path="res://scenes/ui/you_win_scene.gd" id="1_k4ym1"]
+[ext_resource type="Script" uid="uid://eohvfem8tqw6" path="res://scenes/ui/you_win_scene.gd" id="1_k4ym1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_uu3l3"]
 font_size = 96

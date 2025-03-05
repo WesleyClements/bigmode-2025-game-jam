@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bnifhivtytb76"]
 
-[ext_resource type="Script" path="res://scenes/weasel_den.gd" id="1_d81xs"]
+[ext_resource type="Script" uid="uid://dn7s8u4lgd88b" path="res://scenes/weasel_den.gd" id="1_d81xs"]
 [ext_resource type="Texture2D" uid="uid://cn6ebn300pr1e" path="res://assets/sprites/weasel_den.png" id="1_wdqhy"]
 [ext_resource type="PackedScene" uid="uid://bkvwxlaf6o3n0" path="res://scenes/weasel.tscn" id="2_kbbp2"]
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="3_vwkeo"]

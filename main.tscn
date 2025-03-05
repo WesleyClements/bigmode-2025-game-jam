@@ -2,12 +2,12 @@
 
 [ext_resource type="TileSet" uid="uid://db4yk56aryubd" path="res://resources/world.TileSet.tres" id="2_dcctc"]
 [ext_resource type="PackedScene" uid="uid://cj8ksno35aduj" path="res://scenes/player.tscn" id="2_l8qed"]
-[ext_resource type="Script" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
+[ext_resource type="Script" uid="uid://chv17htdfwmfk" path="res://scripts/WorldTileMapLayer.gd" id="2_sh2ir"]
 [ext_resource type="Resource" uid="uid://coud2jncat4dk" path="res://resources/default.ItemRegistry.tres" id="3_iqjcs"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="4_1x7m5"]
 [ext_resource type="TileSet" uid="uid://1c8jqy2iqanc" path="res://resources/floors.TileSet.tres" id="4_c6igf"]
-[ext_resource type="Script" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
-[ext_resource type="Script" path="res://scripts/hover_highlight.gd" id="4_lmn7l"]
+[ext_resource type="Script" uid="uid://dg0smopjaxeal" path="res://scripts/FloorTileMapLayer.gd" id="4_iydee"]
+[ext_resource type="Script" uid="uid://buulldmeikose" path="res://scripts/hover_highlight.gd" id="4_lmn7l"]
 [ext_resource type="PackedScene" uid="uid://cdhfd37vrxpuw" path="res://scenes/ui/UI.tscn" id="5_p1ybt"]
 [ext_resource type="AudioStream" uid="uid://bylnhsvoifqya" path="res://assets/sfx/ tower_placement.wav" id="6_8kox2"]
 

@@ -71,7 +71,7 @@ func mouse_to_map(mouse_pos: Vector2) -> Vector2i:
 	
 	return tile
 
-func get_cell_item_drops(coords: Vector2i) -> Dictionary:
+func get_cell_item_drops(coords: Vector2i) -> Dictionary[StringName, Dictionary]:
 	var cell_data := get_cell_tile_data(coords)
 	if cell_data != null:
 		return cell_data.get_custom_data(&"item_drops")
@@ -145,7 +145,7 @@ func on_world_tile_changing(tile_pos: Vector2i, block_type: BlockType, _block_va
 
 			var half_tile_size := Vector2(tile_set.tile_size) / 2.0
 			for item_name: StringName in item_drops.keys():
-				var drop_config: Dictionary = item_drops[item_name]
+				var drop_config := item_drops[item_name]
 				assert(drop_config != null)
 				assert(drop_config.min != null)
 				assert(drop_config.max != null)

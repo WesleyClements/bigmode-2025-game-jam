@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://dqcmb4di314pm"]
 
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_6e5lc"]
-[ext_resource type="Script" path="res://scripts/pickup.gd" id="1_c75b8"]
+[ext_resource type="Script" uid="uid://bhgvpsa5kwk3m" path="res://scripts/pickup.gd" id="1_c75b8"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_50vdt"]
 
 [sub_resource type="Curve" id="Curve_5we4g"]
@@ -107,8 +107,8 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_nr58m"]
 _data = {
-"RESET": SubResource("Animation_milwl"),
-"hover": SubResource("Animation_w0847")
+&"RESET": SubResource("Animation_milwl"),
+&"hover": SubResource("Animation_w0847")
 }
 
 [node name="Coal" type="RigidBody2D" groups=["pickup"]]
@@ -134,6 +134,6 @@ offset = Vector2(0, -6)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_nr58m")
+&"": SubResource("AnimationLibrary_nr58m")
 }
 autoplay = "hover"

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ccjbkmd2fo5a6"]
 
-[ext_resource type="Script" path="res://scenes/tile_map_detection_area.gd" id="1_kntdl"]
+[ext_resource type="Script" uid="uid://dq3pmspxfpvc2" path="res://scenes/tile_map_detection_area.gd" id="1_kntdl"]
 
 [node name="TileMapDetectionArea" type="Line2D"]
 z_index = -1

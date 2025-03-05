@@ -1,5 +1,5 @@
 # Variables:
-#   GODOT_VERSION: The version of Godot Engine to use. Default: 4.3
+#   GODOT_VERSION: The version of Godot Engine to use. Default: 4.4
 #   GODOT_WEB_EXPORT_PRESET: The export preset to use for web exports. Will not export if empty.
 #   GODOT_WEB_EXPORT_NAME: The name of the exported file for web exports. Default: index.html
 #   GODOT_WINDOWS_EXPORT_PRESET: The export preset to use for windows exports. Will not export if empty.
@@ -18,7 +18,7 @@ on:
     branches: [main]
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  GODOT_VERSION: ${{ vars.GODOT_VERSION || '4.3' }}
+  GODOT_VERSION: ${{ vars.GODOT_VERSION || '4.4' }}
 jobs:
   cache-engine:
     name: Cache Godot Engine

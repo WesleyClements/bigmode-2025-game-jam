@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://127jpolr1pnh"]
 
-[ext_resource type="Script" path="res://scripts/pickup.gd" id="1_25c74"]
+[ext_resource type="Script" uid="uid://bhgvpsa5kwk3m" path="res://scripts/pickup.gd" id="1_25c74"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_gbtx6"]
 [ext_resource type="Texture2D" uid="uid://b7s6xxkkdv5f" path="res://assets/sprites/iron.png" id="2_yi71c"]
 
@@ -107,8 +107,8 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_c3wcj"]
 _data = {
-"RESET": SubResource("Animation_milwl"),
-"hover": SubResource("Animation_w0847")
+&"RESET": SubResource("Animation_milwl"),
+&"hover": SubResource("Animation_w0847")
 }
 
 [node name="IronDrop" type="RigidBody2D" groups=["pickup"]]
@@ -135,6 +135,6 @@ offset = Vector2(0, -4)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_c3wcj")
+&"": SubResource("AnimationLibrary_c3wcj")
 }
 autoplay = "hover"

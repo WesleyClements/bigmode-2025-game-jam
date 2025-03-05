@@ -12,8 +12,6 @@ signal hover_exited()
 
 @export var target_amount: float = 100.0
 
-var attachments: Dictionary = {}
-
 var iron: float = 0.0:
 	set(value):
 		assert(value >= 0.0)

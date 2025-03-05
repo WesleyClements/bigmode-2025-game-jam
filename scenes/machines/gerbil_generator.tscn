@@ -1,6 +1,6 @@
 [gd_scene load_steps=30 format=3 uid="uid://o8maovqp3uv1"]
 
-[ext_resource type="Script" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
+[ext_resource type="Script" uid="uid://bdaumxt1he6q5" path="res://scenes/machines/gerbil_generator.gd" id="1_7hibj"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_uxvx2"]
 [ext_resource type="Texture2D" uid="uid://qvri81sgno7o" path="res://assets/sprites/gerbil.png" id="1_wlojk"]
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_5qgbl"]
@@ -9,11 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://ccjbkmd2fo5a6" path="res://scenes/tile_map_detection_area.tscn" id="5_qnl68"]
 [ext_resource type="Texture2D" uid="uid://bhjc7aqa1ajew" path="res://assets/sprites/gerbil_wheel_base.png" id="6_phlxx"]
 [ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="7_ceurq"]
-[ext_resource type="Script" path="res://scenes/machines/gerbil_generator_interaction.gd" id="8_ftyqi"]
+[ext_resource type="Script" uid="uid://dc1fa8vq7i4rv" path="res://scenes/machines/gerbil_generator_interaction.gd" id="8_ftyqi"]
 
 [sub_resource type="Curve" id="Curve_kba0i"]
-min_value = 1.0
-max_value = 4.0
+_limits = [0.99, 4.0, 0.0, 1.0]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.99999, 4), 7.09308, 7.09308, 0, 0, Vector2(1, 5.34125), 0.0, 0.0, 0, 0]
 point_count = 3
 
@@ -274,9 +273,9 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_3nw8j"]
 _data = {
-"power_off": SubResource("Animation_01m23"),
-"power_on": SubResource("Animation_rlxo1"),
-"run": SubResource("Animation_vsc2u")
+&"power_off": SubResource("Animation_01m23"),
+&"power_on": SubResource("Animation_rlxo1"),
+&"run": SubResource("Animation_vsc2u")
 }
 
 [node name="GerbilGenerator" type="StaticBody2D" groups=["machines"]]
@@ -395,7 +394,7 @@ polygon = PackedVector2Array(16, -8, 16, 8, -16, 8, -16, -8)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_3nw8j")
+&"": SubResource("AnimationLibrary_3nw8j")
 }
 autoplay = "power_off"
 

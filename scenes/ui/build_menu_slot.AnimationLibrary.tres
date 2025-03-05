@@ -137,10 +137,10 @@ tracks/0/keys = {
 
 [resource]
 _data = {
-"RESET": SubResource("Animation_ybsbf"),
-"deselect": SubResource("Animation_d3f4g"),
-"disable": SubResource("Animation_3wa6i"),
-"enable": SubResource("Animation_ekimx"),
-"insufficient": SubResource("Animation_rpt0d"),
-"select": SubResource("Animation_frslv")
+&"RESET": SubResource("Animation_ybsbf"),
+&"deselect": SubResource("Animation_d3f4g"),
+&"disable": SubResource("Animation_3wa6i"),
+&"enable": SubResource("Animation_ekimx"),
+&"insufficient": SubResource("Animation_rpt0d"),
+&"select": SubResource("Animation_frslv")
 }

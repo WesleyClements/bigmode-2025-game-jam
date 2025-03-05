@@ -1,8 +1,8 @@
 [gd_scene load_steps=10 format=3 uid="uid://cdhfd37vrxpuw"]
 
-[ext_resource type="Script" path="res://scripts/ui_wrapper.gd" id="1_k4oql"]
+[ext_resource type="Script" uid="uid://b6t8k7pu5gc6t" path="res://scripts/ui_wrapper.gd" id="1_k4oql"]
 [ext_resource type="Texture2D" uid="uid://dh3jwi3512l68" path="res://assets/sprites/coal.png" id="1_s6p1f"]
-[ext_resource type="Script" path="res://scenes/ui/item_count_display.gd" id="2_88wpw"]
+[ext_resource type="Script" uid="uid://188tbhsli3pw" path="res://scenes/ui/item_count_display.gd" id="2_88wpw"]
 [ext_resource type="PackedScene" uid="uid://cluwtjy0x1ngw" path="res://scenes/ui/build_menu_slot.tscn" id="3_0fm2q"]
 [ext_resource type="Texture2D" uid="uid://b7s6xxkkdv5f" path="res://assets/sprites/iron.png" id="4_x0bdu"]
 [ext_resource type="Texture2D" uid="uid://c15jrwiuhcjb2" path="res://assets/sprites/mining_laser_full.png" id="5_6xwpk"]

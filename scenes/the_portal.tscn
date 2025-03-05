@@ -1,11 +1,11 @@
 [gd_scene load_steps=15 format=3 uid="uid://bhdcqa1rkul33"]
 
-[ext_resource type="Script" path="res://scenes/the_portal.gd" id="1_a444q"]
+[ext_resource type="Script" uid="uid://cqhg6t04ic2s2" path="res://scenes/the_portal.gd" id="1_a444q"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="1_obyk1"]
 [ext_resource type="Texture2D" uid="uid://csahwgw6f3lwd" path="res://assets/sprites/portal.png" id="3_c71x1"]
 [ext_resource type="PackedScene" uid="uid://bpdpfxoa47l3c" path="res://scenes/interaction_area.tscn" id="4_61xxw"]
-[ext_resource type="Script" path="res://scenes/iron_display_panel.gd" id="4_e3ml6"]
-[ext_resource type="Script" path="res://scenes/the_portal_interaction.gd" id="5_8v4pk"]
+[ext_resource type="Script" uid="uid://ble4yh81feg5u" path="res://scenes/iron_display_panel.gd" id="4_e3ml6"]
+[ext_resource type="Script" uid="uid://kde3o3thcb8k" path="res://scenes/the_portal_interaction.gd" id="5_8v4pk"]
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_yjomj"]
 gradient = ExtResource("1_obyk1")

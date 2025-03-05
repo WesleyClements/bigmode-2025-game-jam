@@ -33,7 +33,7 @@ func get_entity_mining_energy_cost(entity_cost: EntityType) -> float:
 			assert(false, "Invalid entity type")
 	return 0.0
 
-func get_entity_item_drops(entity_type: EntityType) -> Dictionary:
+func get_entity_item_drops(entity_type: EntityType) -> Dictionary[StringName, Dictionary]:
 	match entity_type:
 		EntityType.POWER_POLE:
 			return {

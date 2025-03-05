@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://c4cd34odmmos7"]
 
-[ext_resource type="Script" path="res://scenes/machines/power_pole.gd" id="1_213qv"]
+[ext_resource type="Script" uid="uid://d21lygikfbg08" path="res://scenes/machines/power_pole.gd" id="1_213qv"]
 [ext_resource type="Texture2D" uid="uid://bc84nblp227ia" path="res://assets/sprites/power_pole.png" id="1_xfd3o"]
 [ext_resource type="PackedScene" uid="uid://c7nx4xr0tlq18" path="res://scenes/machines/wire.tscn" id="2_tlqtr"]
 [ext_resource type="PackedScene" uid="uid://cc3xw6g1jv8wm" path="res://scenes/machines/powered_wire.tscn" id="3_q7ibn"]
@@ -46,6 +46,7 @@ emission_ring_axis = Vector3(0, 0, 1)
 emission_ring_height = 1.0
 emission_ring_radius = 10.0
 emission_ring_inner_radius = 6.0
+emission_ring_cone_angle = 90.0
 angle_min = -180.0
 angle_max = 180.0
 radial_velocity_min = -2.23517e-05
@@ -92,8 +93,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_chok4"]
 _data = {
-"power_off": SubResource("Animation_r6m1m"),
-"power_on": SubResource("Animation_y5a7m")
+&"power_off": SubResource("Animation_r6m1m"),
+&"power_on": SubResource("Animation_y5a7m")
 }
 
 [sub_resource type="Animation" id="Animation_e6imy"]
@@ -114,7 +115,7 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jho05"]
 _data = {
-"spawn": SubResource("Animation_e6imy")
+&"spawn": SubResource("Animation_e6imy")
 }
 
 [node name="PowerPole" type="StaticBody2D" groups=["machines"]]
@@ -141,20 +142,20 @@ offset = Vector2(0, -14)
 position = Vector2(0, -1)
 emitting = false
 amount = 64
-process_material = SubResource("ParticleProcessMaterial_4k6d5")
 lifetime = 0.1
 one_shot = true
 explosiveness = 0.1
 visibility_rect = Rect2(-12.1448, -6.09782, 23.4457, 12.2191)
+process_material = SubResource("ParticleProcessMaterial_4k6d5")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_chok4")
+&"": SubResource("AnimationLibrary_chok4")
 }
 
 [node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_jho05")
+&"": SubResource("AnimationLibrary_jho05")
 }
 autoplay = "spawn"
 

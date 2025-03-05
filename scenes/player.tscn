@@ -1,13 +1,13 @@
 [gd_scene load_steps=26 format=3 uid="uid://cj8ksno35aduj"]
 
-[ext_resource type="Script" path="res://scenes/player.gd" id="1_fexe0"]
+[ext_resource type="Script" uid="uid://bxfdu057frh88" path="res://scenes/player.gd" id="1_fexe0"]
 [ext_resource type="Texture2D" uid="uid://dsj2s2nybm52e" path="res://assets/sprites/player.png" id="2_cyxtv"]
 [ext_resource type="Resource" uid="uid://jjgw2g514cgo" path="res://resources/default.EntityRegistry.tres" id="2_hp7f3"]
 [ext_resource type="Gradient" uid="uid://dgn4q6wqo5ctv" path="res://resources/shadow_gradient.Gradient.tres" id="2_itq32"]
 [ext_resource type="Texture2D" uid="uid://by700onp21lqn" path="res://assets/sprites/player_beaming.png" id="5_vt3jp"]
 [ext_resource type="AudioStream" uid="uid://wavwj6cpx5v4" path="res://assets/sfx/walk_1.wav" id="6_8u8kc"]
 [ext_resource type="Material" uid="uid://d36i8ou3b3qft" path="res://resources/laser.ParticleProcessMaterial.tres" id="6_mh0a2"]
-[ext_resource type="Script" path="res://scripts/random_audio_stream_player_2d.gd" id="7_4pov0"]
+[ext_resource type="Script" uid="uid://dbh50cxufv4hh" path="res://scripts/random_audio_stream_player_2d.gd" id="7_4pov0"]
 [ext_resource type="AudioStream" uid="uid://byu0oh7w2y445" path="res://assets/sfx/walk_2.wav" id="8_tnww5"]
 [ext_resource type="AudioStream" uid="uid://b7higjmpnso2i" path="res://assets/sfx/walk_3.wav" id="9_s4vuq"]
 [ext_resource type="AudioStream" uid="uid://bn57xkw5t8l8x" path="res://assets/sfx/slurp_1.wav" id="11_ej8yj"]
@@ -185,9 +185,9 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_4vcqf"]
 _data = {
-"RESET": SubResource("Animation_ix4y3"),
-"idle": SubResource("Animation_y515q"),
-"walk": SubResource("Animation_ul62y")
+&"RESET": SubResource("Animation_ix4y3"),
+&"idle": SubResource("Animation_y515q"),
+&"walk": SubResource("Animation_ul62y")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8y212"]
@@ -255,15 +255,15 @@ default_color = Color(1, 0, 0.952941, 1)
 visible = false
 emitting = false
 amount = 16
-process_material = ExtResource("6_mh0a2")
 lifetime = 0.15
+process_material = ExtResource("6_mh0a2")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(4, 0, 0, 2, -4, 0, 0, -2)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_4vcqf")
+&"": SubResource("AnimationLibrary_4vcqf")
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
