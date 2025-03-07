@@ -17,11 +17,7 @@ runs:
     - name: Extract Godot Templates
       shell: bash
       env:
-        BASE_PATH: ~/.local/share/godot/export_templates
-        OUTPUT_PATH: ~/.local/share/godot/export_templates/${{ inputs.version }}.stable
+        OUTPUT_DIR: ~/.local/share/godot/export_templates/${{ inputs.version }}.stable
       run: |
-        mkdir -v -p $OUTPUT_PATH
-        unzip Godot_v${{ inputs.version }}-stable_export_templates.tpz -d $BASE_PATH
-        mv $BASE_PATH/templates/* $OUTPUT_PATH
-        ls -l $OUTPUT_PATH
-    
+        mkdir -p ${{ env.OUTPUT_DIR }}
+        unzip -j Godot_v${{ inputs.version }}-stable_export_templates.tpz templates/* -d ${{ env.OUTPUT_DIR }}
