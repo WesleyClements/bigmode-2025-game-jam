@@ -100,7 +100,7 @@ jobs:
           ( steps.restore-windows-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES )
         uses: ./.github/actions/download-godot-export-templates
         with:
-          godot-version: ${{ env.GODOT_VERSION }}
+          version: ${{ env.GODOT_VERSION }}
 
       - name: Save Web Export Templates Cache
         if: ${{ steps.restore-web-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WEB_EXPORT_TEMPLATES }}

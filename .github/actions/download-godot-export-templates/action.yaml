@@ -1,10 +1,10 @@
 name: 'Download Godot'
 description: 'Download Godot'
 inputs:
-  godot-version:
+  version:
     description: 'Version of godot to download'
     required: true
-    default: '4.3'
+    default: '4.4'
 runs:
   using: 'composite'
   steps:
@@ -12,13 +12,16 @@ runs:
       uses: robinraju/release-downloader@v1
       with:
         repository: godotengine/godot
-        tag: ${{ env.GODOT_VERSION }}-stable
-        filename: Godot_v${{ env.GODOT_VERSION }}-stable_export_templates.tpz
+        tag: ${{ inputs.version }}-stable
+        filename: Godot_v${{ inputs.version }}-stable_export_templates.tpz
     - name: Extract Godot Templates
       shell: bash
+      env:
+        BASE_PATH: ~/.local/share/godot/export_templates
+        OUTPUT_PATH: ~/.local/share/godot/export_templates/${{ inputs.version }}.stable
       run: |
-        mkdir -v -p ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
-        unzip Godot_v${{ env.GODOT_VERSION }}-stable_export_templates.tpz -d ~/.local/share/godot/export_templates
-        mv ~/.local/share/godot/export_templates/templates/* ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
-        ls -l ~/.local/share/godot/export_templates/${{ env.GODOT_VERSION }}.stable
+        mkdir -v -p $OUTPUT_PATH
+        unzip Godot_v${{ inputs.version }}-stable_export_templates.tpz -d $BASE_PATH
+        mv $BASE_PATH/templates/* $OUTPUT_PATH
+        ls -l $OUTPUT_PATH
     
