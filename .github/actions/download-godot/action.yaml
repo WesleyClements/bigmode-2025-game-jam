@@ -1,25 +1,38 @@
 name: 'Download Godot'
 description: 'Download Godot'
 inputs:
-  godot-version:
+  version:
     description: 'Version of godot to download'
     required: true
-    default: '4.3'
+    default: '4.4'
+  base-path:
+    description: 'Path to download the godot executable'
+    required: true
+    default: '.'
+  executable-name:
+    description: 'Name of the godot executable'
+    required: true
+    default: 'godot_stable_linux.x86_64'
+outputs:
+  executable-path:
+    description: 'Path to the godot executable'
+    value: ${{inputs.base-path}}/${{ inputs.executable-name }}
 runs:
   using: 'composite'
+  env
   steps:
     - name: Download Godot
       uses: robinraju/release-downloader@v1
       with:
         repository: godotengine/godot
-        tag: ${{ env.GODOT_VERSION }}-stable
-        filename: Godot_v${{ env.GODOT_VERSION }}-stable_linux.x86_64.zip
+        tag: ${{ inputs.version }}-stable
+        filename: Godot_v${{ inputs.version }}-stable_linux.x86_64.zip
         extract: true
     - name: Rename Godot
       shell: bash
       run: |
-        mv Godot_v${{ env.GODOT_VERSION }}-stable_linux.x86_64 godot_stable_linux.x86_64
+        mv Godot_v${{ inputs.version }}-stable_linux.x86_64 ${{ inputs.base-path }}/${{ inputs.executable-name }}
     - name: Make Godot Executable
       shell: bash
       run: |
-        chmod +x godot_stable_linux.x86_64
+        chmod +x ${{ inputs.base-path }}/${{ inputs.executable-name }}

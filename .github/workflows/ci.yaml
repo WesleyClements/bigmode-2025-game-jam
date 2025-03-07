@@ -49,7 +49,7 @@ jobs:
         if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
         uses: ./.github/actions/download-godot
         with:
-          godot-version: ${{ env.GODOT_VERSION }}
+          version: ${{ env.GODOT_VERSION }}
       - name: Save Engine Cache
         if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
