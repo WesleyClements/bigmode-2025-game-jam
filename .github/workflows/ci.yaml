@@ -6,6 +6,7 @@
 #   GODOT_WINDOWS_EXPORT_NAME: The name of the exported file for windows exports. Default: game.exe
 #   ITCH_USER: The itch.io user to deploy to.
 #   ITCH_GAME: The itch.io game to deploy to.
+#   ITCH_VERSION: The itch.io version to deploy to. If it is a file path, the version will be read from the file.
 #   ITCH_WEB_CHANNEL: The itch.io channel to use for web exports. Default: web
 #   ITCH_WINDOWS_CHANNEL : The itch.io channel to use for windows exports. Default: windows
 # Secrets:
@@ -287,4 +288,10 @@ jobs:
           fail-on-cache-miss: true
       - name: Deploy
         run: |
-          ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
+          if [ -f ${{ vars.ITCH_VERSION }} ]; then
+            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
+          elif [ -n "${{ vars.ITCH_VERSION }}" ]; then
+            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion ${{ vars.ITCH_VERSION }}
+          else
+            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }}
+          fi
