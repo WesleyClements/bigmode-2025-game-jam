@@ -30,22 +30,12 @@ jobs:
       GODOT_EXECUTABLE: ./godot_stable_linux.x86_64
       SHOULD_CACHE_WEB_EXPORT_TEMPLATES: ${{ vars.GODOT_WEB_EXPORT_PRESET != '' }}
       GODOT_WEB_EXPORT_TEMPLATE_PATHS: |-
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_debug.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_debug.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_nothreads_debug.zip
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_nothreads_release.zip
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_release.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_nothreads_debug.zip
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_nothreads_release.zip
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_release.zip
       SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES: ${{ vars.GODOT_WINDOWS_EXPORT_PRESET != '' }}
       GODOT_WINDOWS_EXPORT_TEMPLATE_PATHS: |-
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_arm64.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_arm64_console.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_x86_32.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_x86_32_console.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_x86_64.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_debug_x86_64_console.exe
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_arm64.exe
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_arm64_console.exe
         ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_x86_32.exe
