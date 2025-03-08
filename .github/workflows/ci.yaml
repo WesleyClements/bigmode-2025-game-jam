@@ -9,6 +9,7 @@ on:
     branches: [main]
 jobs:
   build-game:
+    name: Build Game
     uses: WesleyClements/godot-workflows/.github/workflows/build-game.yaml@main
     with:
       godot-version: '4.4'
@@ -37,6 +38,7 @@ jobs:
 
 
   deploy-itch:
+    name: Deploy to itch.io
     needs: [build-game]
     uses: WesleyClements/godot-workflows/.github/workflows/deploy-itch.yaml@main
     with:
