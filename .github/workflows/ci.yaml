@@ -145,9 +145,9 @@ jobs:
           key: ${{ needs.cache-engine.outputs.web-export-templates-cache-key }}
           fail-on-cache-miss: true
       - name: Export
-        run: |
-          mkdir -v -p $EXPORT_PATH
-          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" $EXPORT_PATH/$EXPORT_NAME
+        run: |-
+          mkdir -v -p ${{ env.EXPORT_PATH }}
+          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" ${{ env.EXPORT_PATH }}/$EXPORT_NAME
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -206,9 +206,9 @@ jobs:
           key: ${{ needs.cache-engine.outputs.windows-export-templates-cache-key }}
           fail-on-cache-miss: true
       - name: Export
-        run: |
-          mkdir -v -p $EXPORT_PATH
-          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" $EXPORT_PATH/$EXPORT_NAME
+        run: |-
+          mkdir -v -p ${{ env.EXPORT_PATH }}
+          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" ${{ env.EXPORT_PATH }}/$EXPORT_NAME
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -236,7 +236,7 @@ jobs:
           lookup-only: true
       - name: Download butler
         if: ${{ env.CACHE_BUTLER && steps.restore-butler-cache.outputs.cache-hit != 'true' }}
-        run: |
+        run: |-
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip butler.zip
           chmod +x butler
@@ -244,8 +244,7 @@ jobs:
         if: ${{ env.CACHE_BUTLER && steps.restore-butler-cache.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
         with:
-          path: |
-            ./butler
+          path: ./butler
           key: ${{ steps.restore-butler-cache.outputs.cache-primary-key }}
 
   deploy-to-itch:
@@ -260,12 +259,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+      GAME_VERSION: ${{ vars.ITCH_VERSION }}
     strategy:
       matrix:
         artifact:
           - name: ${{ needs.export-web.outputs.artifact-name }}
+            path: build/${{ needs.export-web.outputs.artifact-name }}
             channel: ${{ vars.ITCH_WEB_CHANNEL || 'web' }}
           - name: ${{ needs.export-windows.outputs.artifact-name }}
+            path: build/${{ needs.export-windows.outputs.artifact-name }}
             channel: ${{ vars.ITCH_WINDOWS_CHANNEL || 'windows' }}
         exclude:
           - artifact:
@@ -279,7 +281,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact.name }}
-          path: build/${{ matrix.artifact.name }}
+          path: ${{ matrix.artifact.path }}
       - name: Restore Butler Cache
         uses: actions/cache/restore@v4
         with:
@@ -287,11 +289,26 @@ jobs:
           key: ${{ needs.cache-butler.outputs.butler-cache-key }}
           fail-on-cache-miss: true
       - name: Deploy
-        run: |
-          if [ -f ${{ vars.ITCH_VERSION }} ]; then
-            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion-file version.txt
-          elif [ -n "${{ vars.ITCH_VERSION }}" ]; then
-            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }} --userversion ${{ vars.ITCH_VERSION }}
+        env:
+          BUILD_PATH: ${{ matrix.artifact.path }}
+          ITCH_USER: ${{ vars.ITCH_USER }}
+          ITCH_GAME: ${{ vars.ITCH_GAME }}
+          ITCH_CHANNEL: ${{ matrix.artifact.channel }}
+        run: |-
+          SEMVER_REGEX="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+          if [[ -f $GAME_VERSION ]]; then
+            VERSION_FLAG="--userversion-file $GAME_VERSION"
+            echo "Deploying with version file $GAME_VERSION: $(cat $GAME_VERSION)"
+          elif [[ -n "$GAME_VERSION" ]]; then
+            if [[ $GAME_VERSION =~ $SEMVER_REGEX ]]; then
+              VERSION_FLAG="--userversion $GAME_VERSION"
+              echo "Deploying with version $GAME_VERSION"
+            else
+              echo "::warning ITCH_VERSION should be a valid version number"
+              exit 1
+            fi
           else
-            ./butler push build/${{ matrix.artifact.name }} ${{ vars.ITCH_USER }}/${{ vars.ITCH_GAME }}:${{ matrix.artifact.channel }}
+            VERSION_FLAG=""
+            echo "Deploying with incremental versioning"
           fi
+          ./butler push $BUILD_PATH $ITCH_USER/$ITCH_GAME:$ITCH_CHANNEL $VERSION_FLAG
