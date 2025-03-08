@@ -1,165 +1,23 @@
 # Variables:
-#   GODOT_VERSION: The version of Godot Engine to use. Default: 4.4
-#   GODOT_WEB_EXPORT_PRESET: The export preset to use for web exports. Will not export if empty.
-#   GODOT_WEB_EXPORT_NAME: The name of the exported file for web exports. Default: index.html
-#   GODOT_WINDOWS_EXPORT_PRESET: The export preset to use for windows exports. Will not export if empty.
-#   GODOT_WINDOWS_EXPORT_NAME: The name of the exported file for windows exports. Default: game.exe
-#   ITCH_USER: The itch.io user to deploy to.
-#   ITCH_GAME: The itch.io game to deploy to.
-#   ITCH_VERSION: The itch.io version to deploy to. If it is a file path, the version will be read from the file.
-#   ITCH_WEB_CHANNEL: The itch.io channel to use for web exports. Default: web
-#   ITCH_WINDOWS_CHANNEL : The itch.io channel to use for windows exports. Default: windows
+#   ITCH_USER: The itch.io user to deploy to. (required)
+#   ITCH_GAME: The itch.io game to deploy to. (required)
 # Secrets:
-#   BUTLER_API_KEY: The API key for butler. Required for deploying to itch.io.
+#   BUTLER_API_KEY: The API key for butler. Required for deploying to itch.io. (required)
 name: 'CI'
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 jobs:
-  cache-engine:
-    name: Cache Godot Engine
-    if: >
-      vars.GODOT_WEB_EXPORT_PRESET != '' ||
-      vars.GODOT_WINDOWS_EXPORT_PRESET != ''
-    runs-on: ubuntu-latest
-    env:
-      GODOT_VERSION: ${{ vars.GODOT_VERSION || '4.4' }}
-      GODOT_EXECUTABLE: ./godot_stable_linux.x86_64
-      SHOULD_CACHE_WEB_EXPORT_TEMPLATES: ${{ vars.GODOT_WEB_EXPORT_PRESET != '' }}
-      GODOT_WEB_EXPORT_TEMPLATE_PATHS: |-
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_nothreads_release.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_dlink_release.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_nothreads_release.zip
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/web_release.zip
-      SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES: ${{ vars.GODOT_WINDOWS_EXPORT_PRESET != '' }}
-      GODOT_WINDOWS_EXPORT_TEMPLATE_PATHS: |-
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_arm64.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_arm64_console.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_x86_32.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_x86_32_console.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_x86_64.exe
-        ~/.local/share/godot/export_templates/${{ vars.GODOT_VERSION || '4.4' }}.stable/windows_release_x86_64_console.exe
-    outputs:
-      engine-cache-key: ${{ steps.restore-engine-cache.outputs.cache-primary-key }}
-      godot-executable-path: ${{ env.GODOT_EXECUTABLE }}
-      web-export-templates-cache-key: ${{ steps.restore-web-export-templates-cache.outputs.cache-primary-key }}
-      web-export-templates-path: ${{ env.GODOT_WEB_EXPORT_TEMPLATE_PATHS }}
-      windows-export-templates-cache-key: ${{ steps.restore-windows-export-templates-cache.outputs.cache-primary-key }}
-      windows-export-templates-path: ${{ env.GODOT_WINDOWS_EXPORT_TEMPLATE_PATHS }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-      - name: Restore Engine Cache
-        id: restore-engine-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.GODOT_EXECUTABLE }}
-          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-engine
-          lookup-only: true
-      - name: Download Godot
-        if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
-        id: download-godot
-        uses: ./.github/actions/download-godot
-        with:
-          version: ${{ env.GODOT_VERSION }}
-          executable-path: ${{ env.GODOT_EXECUTABLE }}
-      - name: Save Engine Cache
-        if: ${{ steps.restore-engine-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.GODOT_EXECUTABLE }}
-          key: ${{ steps.restore-engine-cache.outputs.cache-primary-key }}
+  build-game:
+    uses: WesleyClements/godot-workflows/.github/workflows/build-game.yaml@main
+    with:
+      godot-version: '4.4'
+      web-preset: 'Web'
+      windows-preset: 'Windows Desktop'
 
-      - name: Restore Web Export Templates Cache
-        if: ${{ env.SHOULD_CACHE_WEB_EXPORT_TEMPLATES }}
-        id: restore-web-export-templates-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.GODOT_WEB_EXPORT_TEMPLATE_PATHS }}
-          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-web-export-templates
-          lookup-only: true
-      - name: Restore Windows Export Templates Cache
-        if: ${{ env.SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES }}
-        id: restore-windows-export-templates-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.GODOT_WINDOWS_EXPORT_TEMPLATE_PATHS }}
-          key: ${{ runner.os }}-godot-${{ env.GODOT_VERSION }}-windows-export-templates
-          lookup-only: true
-
-      - name: Download Godot Export Templates
-        if: >
-          ( steps.restore-web-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WEB_EXPORT_TEMPLATES ) ||
-          ( steps.restore-windows-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES )
-        uses: ./.github/actions/download-godot-export-templates
-        with:
-          version: ${{ env.GODOT_VERSION }}
-
-      - name: Save Web Export Templates Cache
-        if: ${{ steps.restore-web-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WEB_EXPORT_TEMPLATES }}
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.GODOT_WEB_EXPORT_TEMPLATE_PATHS }}
-          key: ${{ steps.restore-web-export-templates-cache.outputs.cache-primary-key }}
-      - name: Save Windows Export Templates Cache
-        if: ${{ steps.restore-windows-export-templates-cache.outputs.cache-hit != 'true' && env.SHOULD_CACHE_WINDOWS_EXPORT_TEMPLATES }}
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.GODOT_WINDOWS_EXPORT_TEMPLATE_PATHS }}
-          key: ${{ steps.restore-windows-export-templates-cache.outputs.cache-primary-key }}
-
-  export-web:
-    name: Web Export
-    needs: [cache-engine]
-    if: " vars.GODOT_WEB_EXPORT_PRESET != '' "
-    runs-on: ubuntu-latest
-    env:
-      ARTIFACT_NAME: web-export
-      EXPORT_PRESET: ${{ vars.GODOT_WEB_EXPORT_PRESET }}
-      EXPORT_PATH: build/web
-      EXPORT_NAME: ${{ vars.GODOT_WEB_EXPORT_NAME || 'index.html' }}
-      GODOT_PATH: ${{ needs.cache-engine.outputs.godot-executable-path }}
-    outputs:
-      artifact-name: ${{ vars.GODOT_WEB_EXPORT_PRESET != '' && env.ARTIFACT_NAME || '' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-      - name: Restore Engine Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.GODOT_PATH }}
-          key: ${{ needs.cache-engine.outputs.engine-cache-key }}
-          fail-on-cache-miss: true
-      - name: Restore Web Export Templates Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ needs.cache-engine.outputs.web-export-templates-path }}
-          key: ${{ needs.cache-engine.outputs.web-export-templates-cache-key }}
-          fail-on-cache-miss: true
-      - name: Export
-        run: |-
-          mkdir -v -p ${{ env.EXPORT_PATH }}
-          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" ${{ env.EXPORT_PATH }}/$EXPORT_NAME
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.EXPORT_PATH }}
-      - name: Upload GitHub Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '${{ env.EXPORT_PATH }}'
   deploy-gh-pages:
     name: Deploy to GitHub Pages
-    needs: [export-web]
+    needs: [build-game]
 
     permissions:
       pages: write
@@ -174,141 +32,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ needs.build-game.outputs.web-artifact-name }}
 
-  export-windows:
-    name: Windows Export
-    needs: [cache-engine]
-    if: " vars.GODOT_WINDOWS_EXPORT_PRESET != '' "
-    runs-on: ubuntu-latest
-    env:
-      ARTIFACT_NAME: windows-export
-      EXPORT_PRESET: ${{ vars.GODOT_WINDOWS_EXPORT_PRESET }}
-      EXPORT_PATH: build/windows
-      EXPORT_NAME: ${{ vars.GODOT_WINDOWS_EXPORT_NAME || 'game.exe' }}
-      GODOT_PATH: ${{ needs.cache-engine.outputs.godot-executable-path }}
-    outputs:
-      artifact-name: ${{ vars.GODOT_WINDOWS_EXPORT_PRESET != '' && env.ARTIFACT_NAME || '' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-      - name: Restore Engine Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.GODOT_PATH }}
-          key: ${{ needs.cache-engine.outputs.engine-cache-key }}
-          fail-on-cache-miss: true
-      - name: Restore Windows Export Templates Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ needs.cache-engine.outputs.windows-export-templates-path }}
-          key: ${{ needs.cache-engine.outputs.windows-export-templates-cache-key }}
-          fail-on-cache-miss: true
-      - name: Export
-        run: |-
-          mkdir -v -p ${{ env.EXPORT_PATH }}
-          $GODOT_PATH --headless --verbose --export-release "$EXPORT_PRESET" ${{ env.EXPORT_PATH }}/$EXPORT_NAME
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ env.EXPORT_PATH }}
 
-  cache-butler:
-    name: Cache butler
-    runs-on: ubuntu-latest
-    if: >
-      vars.GODOT_WEB_EXPORT_PRESET != '' ||
-      vars.GODOT_WINDOWS_EXPORT_PRESET != ''
-    env:
-      CACHE_BUTLER: ${{ secrets.BUTLER_API_KEY != '' }}
-    outputs:
-      butler-cache-key: ${{ steps.restore-butler-cache.outputs.cache-primary-key }}
-    steps:
-      - name: Restore Butler Cache
-        if : ${{ env.CACHE_BUTLER }}
-        id: restore-butler-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./butler
-          key: ${{ runner.os }}-butler
-          lookup-only: true
-      - name: Download butler
-        if: ${{ env.CACHE_BUTLER && steps.restore-butler-cache.outputs.cache-hit != 'true' }}
-        run: |-
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-          chmod +x butler
-      - name: Save Butler Cache
-        if: ${{ env.CACHE_BUTLER && steps.restore-butler-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
-        with:
-          path: ./butler
-          key: ${{ steps.restore-butler-cache.outputs.cache-primary-key }}
-
-  deploy-to-itch:
-    name: Deploy to itch.io
-    needs: [cache-butler, export-web, export-windows]
-    if: >
-      always() &&
-      contains(needs.*.result, 'success') &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled') &&
-      needs.cache-butler.outputs.butler-cache-key != ''
-    runs-on: ubuntu-latest
-    env:
-      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-      GAME_VERSION: ${{ vars.ITCH_VERSION }}
-    strategy:
-      matrix:
-        artifact:
-          - name: ${{ needs.export-web.outputs.artifact-name }}
-            path: build/${{ needs.export-web.outputs.artifact-name }}
-            channel: ${{ vars.ITCH_WEB_CHANNEL || 'web' }}
-          - name: ${{ needs.export-windows.outputs.artifact-name }}
-            path: build/${{ needs.export-windows.outputs.artifact-name }}
-            channel: ${{ vars.ITCH_WINDOWS_CHANNEL || 'windows' }}
-        exclude:
-          - artifact:
-              name: ''
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.artifact.name }}
-          path: ${{ matrix.artifact.path }}
-      - name: Restore Butler Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./butler
-          key: ${{ needs.cache-butler.outputs.butler-cache-key }}
-          fail-on-cache-miss: true
-      - name: Deploy
-        env:
-          BUILD_PATH: ${{ matrix.artifact.path }}
-          ITCH_USER: ${{ vars.ITCH_USER }}
-          ITCH_GAME: ${{ vars.ITCH_GAME }}
-          ITCH_CHANNEL: ${{ matrix.artifact.channel }}
-        run: |-
-          SEMVER_REGEX="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
-          if [[ -f $GAME_VERSION ]]; then
-            VERSION_FLAG="--userversion-file $GAME_VERSION"
-            echo "Deploying with version file $GAME_VERSION: $(cat $GAME_VERSION)"
-          elif [[ -n "$GAME_VERSION" ]]; then
-            if [[ $GAME_VERSION =~ $SEMVER_REGEX ]]; then
-              VERSION_FLAG="--userversion $GAME_VERSION"
-              echo "Deploying with version $GAME_VERSION"
-            else
-              echo "::warning ITCH_VERSION should be a valid version number"
-              exit 1
-            fi
-          else
-            VERSION_FLAG=""
-            echo "Deploying with incremental versioning"
-          fi
-          ./butler push $BUILD_PATH $ITCH_USER/$ITCH_GAME:$ITCH_CHANNEL $VERSION_FLAG
+  deploy-itch:
+    needs: [build-game]
+    uses: WesleyClements/godot-workflows/.github/workflows/deploy-itch.yaml@main
+    with:
+      itch-user: ${{ vars.ITCH_USER }}
+      itch-game: ${{ vars.ITCH_GAME }}
+      game-version: 'version.txt'
+      web-artifact-name: ${{ needs.build-game.outputs.web-artifact-name }}
+      windows-artifact-name: ${{ needs.build-game.outputs.windows-artifact-name }}
+    secrets:
+      butler-api-key: ${{ secrets.BUTLER_API_KEY }}
