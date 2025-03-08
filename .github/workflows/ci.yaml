@@ -30,11 +30,18 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build-game.outputs.web-artifact-name }}
+          path: gh-pages
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: gh-pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: ${{ needs.build-game.outputs.web-artifact-name }}
 
 
   deploy-itch:
